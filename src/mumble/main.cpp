@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 
 	os_init();
 
-	bool bAllowMultiple = false;
+    bool bAllowMultiple = false;
 	bool suppressIdentity = false;
 	bool bRpcMode = false;
 	QString rpcCommand;
@@ -647,7 +647,7 @@ int main(int argc, char **argv) {
 		
 		bool ok = (ShellExecuteEx(&si) == TRUE);
 #else
-		bool ok = QProcess::startDetached(qApp->applicationFilePath(), arguments);
+        bool ok = QProcess::startDetached(qApp->applicationFilePath(), arguments);
 #endif
 		if(!ok) {
 			QMessageBox::warning(NULL,

@@ -6,6 +6,7 @@ release/
 asio/
 local/
 indent.sh
+.vs
 *.pdb
 *.sln
 *.sdf

@@ -21,6 +21,8 @@
 #include <iostream>
 #include <stdint.h>
 
+#include <Psapi.h>
+
 #include "mumble_plugin.h"
 
 DWORD dwPid;
@@ -125,17 +127,48 @@ static inline procptr_t peekProcPtr(procptr_t base) {
 	return v;
 }
 
+static SIZE_T inline GetProcessMemoryUsage(unsigned long long int Pid)
+{
+    SIZE_T MemoryUsage = 0;
+    HANDLE ProcessHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, static_cast<DWORD>(Pid));
+    if (ProcessHandle) {
+        PROCESS_MEMORY_COUNTERS_EX Pmc;
+        ZeroMemory(&Pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+        GetProcessMemoryInfo(ProcessHandle, (PROCESS_MEMORY_COUNTERS*)&Pmc, sizeof(Pmc));
+        MemoryUsage = Pmc.PrivateUsage;
+    }
+    CloseHandle(ProcessHandle);
+    return MemoryUsage;
+}
+
 static bool inline initialize(const std::multimap<std::wstring, unsigned long long int> &pids, const wchar_t *procname, const wchar_t *modname = NULL) {
 	hProcess = NULL;
 	pModule = 0;
 
 	if (! pids.empty()) {
-		std::multimap<std::wstring, unsigned long long int>::const_iterator iter = pids.find(std::wstring(procname));
+                if (pids.count(std::wstring(procname)) > 1) {
+                        SIZE_T SelectedPidMemoryUsage = 0;
+                        unsigned long long int SelectedPid = 0;
 
-		if (iter != pids.end())
-			dwPid = static_cast<DWORD>(iter->second);
-		else
-			dwPid = 0;
+                        for (auto& Pid : pids) {
+                            if (Pid.first == std::wstring(procname)) {
+                                auto MemoryUsage = GetProcessMemoryUsage(Pid.second);
+                                if (MemoryUsage > SelectedPidMemoryUsage) {
+                                    SelectedPidMemoryUsage = MemoryUsage;
+                                    SelectedPid = Pid.second;
+                                }
+                            }
+                        }
+
+                        dwPid = static_cast<DWORD>(SelectedPid);
+                } else {
+                    std::multimap<std::wstring, unsigned long long int>::const_iterator iter = pids.find(std::wstring(procname));
+
+                    if (iter != pids.end())
+                            dwPid = static_cast<DWORD>(iter->second);
+                    else
+                            dwPid = 0;
+                }
 	} else {
 		dwPid=getProcess(procname);
 	}

@@ -10,7 +10,7 @@
 #define MUMTEXT(X) MUMXTEXT(X)
 
 #ifndef MUMBLE_VERSION
-#define MUMBLE_RELEASE "Compiled by User"
+#define MUMBLE_RELEASE "Realitymod - Radio client"
 #else
 #define MUMBLE_RELEASE MUMTEXT(MUMBLE_VERSION)
 #endif

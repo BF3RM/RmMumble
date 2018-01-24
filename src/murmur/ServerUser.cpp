@@ -28,6 +28,18 @@ ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), U
 	bOpus = false;
 }
 
+void ServerUser::UpdateContext(std::string NewContext)
+{
+    if (ssContext != NewContext) {
+        ssContext = NewContext;
+        MoveToContextualChannel();
+    }
+}
+
+void ServerUser::MoveToContextualChannel()
+{
+
+}
 
 ServerUser::operator QString() const {
 	return QString::fromLatin1("%1:%2(%3)").arg(qsName).arg(uiSession).arg(iId);

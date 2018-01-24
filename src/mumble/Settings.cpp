@@ -220,7 +220,7 @@ Settings::Settings() {
 	qRegisterMetaType<QVariant> ("QVariant");
 
 	atTransmit = VAD;
-	bTransmitPosition = false;
+    bTransmitPosition = true;
 	bMute = bDeaf = false;
 	bTTS = true;
 	bTTSMessageReadBack = false;
@@ -325,11 +325,11 @@ Settings::Settings() {
 	iPortAudioOutput = -1; // default device
 
 	bPositionalAudio = true;
-	bPositionalHeadphone = false;
+    bPositionalHeadphone = true;
 	fAudioMinDistance = 1.0f;
-	fAudioMaxDistance = 15.0f;
-	fAudioMaxDistVolume = 0.80f;
-	fAudioBloom = 0.5f;
+    fAudioMaxDistance = 40.0f;
+    fAudioMaxDistVolume = 0.0f;
+    fAudioBloom = 0.0f;
 
 	// OverlayPrivateWin
 	iOverlayWinHelperRestartCooldownMsec = 10000;
@@ -619,20 +619,20 @@ void Settings::load(QSettings* settings_ptr) {
 	LOADENUM(iaeIdleAction, "audio/idleaction");
 	SAVELOAD(bUndoIdleActionUponActivity, "audio/undoidleactionuponactivity");
 
-	SAVELOAD(fAudioMinDistance, "audio/mindistance");
-	SAVELOAD(fAudioMaxDistance, "audio/maxdistance");
-	SAVELOAD(fAudioMaxDistVolume, "audio/maxdistancevolume");
-	SAVELOAD(fAudioBloom, "audio/bloom");
+    //SAVELOAD(fAudioMinDistance, "audio/mindistance");
+    //SAVELOAD(fAudioMaxDistance, "audio/maxdistance");
+    //SAVELOAD(fAudioMaxDistVolume, "audio/maxdistancevolume");
+    //SAVELOAD(fAudioBloom, "audio/bloom");
 	SAVELOAD(bEcho, "audio/echo");
 	SAVELOAD(bEchoMulti, "audio/echomulti");
 	SAVELOAD(bExclusiveInput, "audio/exclusiveinput");
 	SAVELOAD(bExclusiveOutput, "audio/exclusiveoutput");
-	SAVELOAD(bPositionalAudio, "audio/positional");
-	SAVELOAD(bPositionalHeadphone, "audio/headphone");
+    //SAVELOAD(bPositionalAudio, "audio/positional");
+    //SAVELOAD(bPositionalHeadphone, "audio/headphone");
 	SAVELOAD(qsAudioInput, "audio/input");
 	SAVELOAD(qsAudioOutput, "audio/output");
 	SAVELOAD(bWhisperFriends, "audio/whisperfriends");
-	SAVELOAD(bTransmitPosition, "audio/postransmit");
+    //SAVELOAD(bTransmitPosition, "audio/postransmit");
 
 	SAVELOAD(bUseOpusMusicEncoding, "codec/opus/encoder/music");
 

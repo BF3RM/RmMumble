@@ -145,53 +145,14 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
     return true;
 }
 
-static SOCKET CreateSocket()
-{
-    return (SOCKET) 1;
-    WSADATA WSAData;
-    SOCKET server;
-    SOCKADDR_IN addr;
-
-    WSAStartup(MAKEWORD(2,0), &WSAData);
-    server = socket(AF_INET, SOCK_DGRAM, 0);
-
-    addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // replace the ip with your futur server ip address. If server AND client are running on the same computer, you can use the local ip 127.0.0.1
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(1234);
-
-    connect(server, (SOCKADDR *)&addr, sizeof(addr));
-
-    return server;
-}
-
-static void CloseSocket(SOCKET Sock)
-{
-    return;
-    closesocket(Sock);
-    WSACleanup();
-}
-
-static void SendSockMessage(SOCKET Sock, std::string String)
-{
-    return;
-    send(Sock, String.c_str(), (int)String.length(), 0);
-}
-
 static int trylock(const std::multimap<std::wstring, unsigned long long int> &pids) {
-    SOCKET sock = CreateSocket();
-
-    SendSockMessage(sock, "Trylock Called\n");
-
     if (pids.count(L"vu.exe") < 3) {
         return false;
     }
 
     if (!initialize(pids, L"vu.exe")) { // Retrieve game executable's memory address
         return false;
-        CloseSocket(sock);
     }
-
-    SendSockMessage(sock, "Initialised.");
 
     // Check if we can get meaningful data from i
     float apos[3], afront[3], atop[3], cpos[3], cfront[3], ctop[3];
@@ -199,13 +160,9 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
     std::string scontext;
 
     if (fetch(apos, afront, atop, cpos, cfront, ctop, scontext, sidentity)) {
-        SendSockMessage(sock, "Fetched data.");
-        CloseSocket(sock);
         return true;
     } else {
-        SendSockMessage(sock, "Couldn't fetch any data.");
         generic_unlock();
-        CloseSocket(sock);
         return false;
     }
 }

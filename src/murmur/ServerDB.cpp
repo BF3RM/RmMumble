@@ -739,6 +739,27 @@ bool ServerDB::execBatch(QSqlQuery &query, const QString &str, bool fatal) {
 	}
 }
 
+#define CREATE_CHANNEL(ID, PARENT, NAME) \
+    SQLPREP("INSERT INTO `%1channels` (`server_id`, `channel_id`, `parent_id`, `name`) VALUES (?, ?, ?, ?)"); \
+    query.addBindValue(iServerNum); \
+    query.addBindValue(ID); \
+    query.addBindValue(PARENT); \
+    query.addBindValue(NAME); \
+    SQLEXEC();
+
+#define CREATE_SUBCHANNEL(BASEID, PARENT) \
+    CREATE_CHANNEL(BASEID, PARENT, QLatin1String("Unassigned")) \
+    CREATE_CHANNEL(BASEID + 1, PARENT, QLatin1String("Squad 1")) \
+    CREATE_CHANNEL(BASEID + 2, PARENT, QLatin1String("Squad 2")) \
+    CREATE_CHANNEL(BASEID + 3, PARENT, QLatin1String("Squad 3")) \
+    CREATE_CHANNEL(BASEID + 4, PARENT, QLatin1String("Squad 4")) \
+    CREATE_CHANNEL(BASEID + 5, PARENT, QLatin1String("Squad 5")) \
+    CREATE_CHANNEL(BASEID + 6, PARENT, QLatin1String("Squad 6")) \
+    CREATE_CHANNEL(BASEID + 7, PARENT, QLatin1String("Squad 7")) \
+    CREATE_CHANNEL(BASEID + 8, PARENT, QLatin1String("Squad 8")) \
+    CREATE_CHANNEL(BASEID + 9, PARENT, QLatin1String("Squad 9"));
+
+
 void Server::initialize() {
 	TransactionHolder th;
 
@@ -748,16 +769,11 @@ void Server::initialize() {
 	query.addBindValue(iServerNum);
 	SQLEXEC();
 	if (! query.next()) {
-		SQLPREP("INSERT INTO `%1channels` (`server_id`, `channel_id`, `parent_id`, `name`) VALUES (?, ?, ?, ?)");
-		query.addBindValue(iServerNum);
-		query.addBindValue(0);
-		query.addBindValue(QVariant());
-		query.addBindValue(QLatin1String("Root"));
-		SQLEXEC();
-		SQLPREP("UPDATE `%1channels` SET `channel_id` = 0 WHERE `server_id` = ? AND `name` = ? AND `parent_id` IS NULL");
-		query.addBindValue(iServerNum);
-		query.addBindValue(QLatin1String("Root"));
-		SQLEXEC();
+        CREATE_CHANNEL(0, QVariant(), QLatin1String("Root"));
+        CREATE_CHANNEL(1, 0, QLatin1String("US"));
+        CREATE_CHANNEL(2, 0, QLatin1String("RU"));
+        CREATE_SUBCHANNEL(10, 1);
+        CREATE_SUBCHANNEL(20, 2);
 	}
 
 	SQLPREP("SELECT `user_id` FROM `%1users` WHERE `server_id` = ? AND `user_id` = 0");

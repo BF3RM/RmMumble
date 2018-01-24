@@ -46,6 +46,8 @@
 #include "Themes.h"
 #include "SSLCipherInfo.h"
 
+#include <fstream>
+
 #ifdef Q_OS_WIN
 #include "TaskList.h"
 #endif
@@ -171,6 +173,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 void MainWindow::createActions() {
 	int idx = 1;
+
 	gsPushTalk=new GlobalShortcut(this, idx++, tr("Push-to-Talk", "Global Shortcut"));
 	gsPushTalk->setObjectName(QLatin1String("PushToTalk"));
 	gsPushTalk->qsToolTip = tr("Push and hold this button to send voice.", "Global Shortcut");
@@ -216,7 +219,7 @@ void MainWindow::createActions() {
 	gsVolumeDown->setObjectName(QLatin1String("VolumeDown"));
 
 	qstiIcon = new QSystemTrayIcon(qiIcon, this);
-	qstiIcon->setToolTip(tr("Mumble -- %1").arg(QLatin1String(MUMBLE_RELEASE)));
+    qstiIcon->setToolTip(tr("%1").arg(QLatin1String(MUMBLE_RELEASE)));
 	qstiIcon->setObjectName(QLatin1String("Icon"));
 
 	gsWhisper = new GlobalShortcut(this, idx++, tr("Whisper/Shout"), QVariant::fromValue(ShortcutTarget()));
@@ -235,6 +238,9 @@ void MainWindow::createActions() {
 	gsSendClipboardTextMessage=new GlobalShortcut(this, idx++, tr("Send Clipboard Text Message", "Global Shortcut"));
 	gsSendClipboardTextMessage->setObjectName(QLatin1String("gsSendClipboardTextMessage"));
 	gsSendClipboardTextMessage->qsWhatsThis = tr("This will send your Clipboard content to the channel you are currently in.", "Global Shortcut");
+
+    GsWhisperSquadLeader = new GlobalShortcut(this, idx++, tr("Realitymod - Radio", "Global Shortcut"), QVariant(QString()));
+    GsWhisperSquadLeader->setObjectName(QLatin1String("GsWhisperSquadLeader"));
 
 #ifndef Q_OS_MAC
 	qstiIcon->show();
@@ -373,9 +379,9 @@ void MainWindow::setupGui()  {
 void MainWindow::updateWindowTitle() {
 	QString title;
 	if (g.s.bMinimalView) {
-		title = tr("Mumble - Minimal View -- %1");
+        title = tr("Minimal View -- %1");
 	} else {
-		title = tr("Mumble -- %1");
+        title = tr("%1");
 	}
 	setWindowTitle(title.arg(QLatin1String(MUMBLE_RELEASE)));
 }
@@ -2639,8 +2645,13 @@ void MainWindow::updateTarget() {
 	}
 }
 
+void MainWindow::on_GsWhisperSquadLeader_triggered(bool /*Down*/, QVariant /*Data*/)
+{
+    g.l->log(Log::Information, tr("Whisper squad leader."));
+}
+
 void MainWindow::on_gsWhisper_triggered(bool down, QVariant scdata) {
-	ShortcutTarget st = scdata.value<ShortcutTarget>();
+    ShortcutTarget st = scdata.value<ShortcutTarget>();
 
 	if (down) {
 		if (gsJoinChannel->active()) {
@@ -3009,7 +3020,7 @@ void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString re
 			}
 		}
 	}
-	qstiIcon->setToolTip(tr("Mumble -- %1").arg(QLatin1String(MUMBLE_RELEASE)));
+    qstiIcon->setToolTip(tr("%1").arg(QLatin1String(MUMBLE_RELEASE)));
 	AudioInput::setMaxBandwidth(-1);
 }
 

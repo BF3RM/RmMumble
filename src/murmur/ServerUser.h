@@ -59,6 +59,10 @@ class ServerUser : public Connection, public User {
 	private:
 		Q_OBJECT
 		Q_DISABLE_COPY(ServerUser)
+    public:
+        void UpdateContext(std::string NewContext);
+    protected:
+        void MoveToContextualChannel();
 	protected:
 		Server *s;
 	public:

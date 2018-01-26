@@ -2645,9 +2645,39 @@ void MainWindow::updateTarget() {
 	}
 }
 
-void MainWindow::on_GsWhisperSquadLeader_triggered(bool /*Down*/, QVariant /*Data*/)
+void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
 {
+    if (!Down) return on_gsWhisper_triggered(false, QVariant());
+
     g.l->log(Log::Information, tr("Whisper squad leader."));
+    auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
+    if (!ContextChannel) {
+        g.l->log(Log::Information, QLatin1String("Context channel not found."));
+        return;
+    }
+
+    auto ParentChannel = ContextChannel->cParent;
+    if (!ParentChannel) {
+        g.l->log(Log::Information, QLatin1String("Parent channel not found."));
+        g.l->log(Log::Information, ContextChannel->qsName);
+        return;
+    }
+
+    int ParentChannelId = ParentChannel->iId;
+    // ParentChannelId must be 1 (US) or 2 (RU)
+    if (ParentChannelId != 1 && ParentChannelId != 2) {
+        return;
+    }
+
+    int TargetChannelId = (ParentChannelId * 10) + Data.toInt(); // 11 -> US Alpha - 21 -> RU Alpha
+
+    auto TargetChannel = Channel::get(TargetChannelId);
+    if (!TargetChannel) return;
+//    for (auto InChannelUser : TargetChannel->qlUsers) {
+        //if (g.)InChannelUser
+//    }
+
+    g.sh->RequestChannelSquadLeader(TargetChannelId);
 }
 
 void MainWindow::on_gsWhisper_triggered(bool down, QVariant scdata) {

@@ -703,6 +703,19 @@ void MainWindow::msgACL(const MumbleProto::ACL &msg) {
 	}
 }
 
+void MainWindow::msgChannelSquadLeader(const MumbleProto::ChannelSquadLeader &Message)
+{
+    for (auto User : Channel::get(Message.channelid())->qlUsers) {
+        if (User->iId == Message.userid()) {
+            ShortcutTarget Target;
+            Target.bUsers = true;
+            Target.qlUsers.append(User->qsName);
+            Global::g_global_struct->mw->on_gsWhisper_triggered(true, QVariant::fromValue(ShortcutTarget()));
+            return;
+        }
+    }
+}
+
 void MainWindow::msgQueryUsers(const MumbleProto::QueryUsers &msg) {
 	if (aclEdit)
 		aclEdit->returnQuery(msg);

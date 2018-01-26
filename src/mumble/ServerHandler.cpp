@@ -834,6 +834,14 @@ void ServerHandler::sendUserTextMessage(unsigned int uiSession, const QString &m
 	sendMessage(mptm);
 }
 
+void ServerHandler::RequestChannelSquadLeader(unsigned int ChannelId)
+{
+    MumbleProto::ChannelSquadLeader Message;
+    Message.set_channelid(ChannelId);
+
+    sendMessage(Message);
+}
+
 void ServerHandler::sendChannelTextMessage(unsigned int channel, const QString &message_, bool tree) {
 	MumbleProto::TextMessage mptm;
 	if (tree) {

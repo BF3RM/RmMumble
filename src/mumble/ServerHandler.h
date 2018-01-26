@@ -109,6 +109,7 @@ class ServerHandler : public QThread {
 		MUMBLE_MH_ALL
 #undef MUMBLE_MH_MSG
 
+        void RequestChannelSquadLeader(unsigned int ChannelId);
 		void requestUserStats(unsigned int uiSession, bool statsOnly);
 		void joinChannel(unsigned int uiSession, unsigned int channel);
 		void createChannel(unsigned int parent_id, const QString &name, const QString &description, unsigned int position, bool temporary, unsigned int maxUsers);

@@ -1397,6 +1397,28 @@ void Server::msgACL(ServerUser *uSource, MumbleProto::ACL &msg) {
 	}
 }
 
+#include <fstream>
+
+void Server::msgChannelSquadLeader(ServerUser *uSource, MumbleProto::ChannelSquadLeader &Message)
+{
+    if (!uSource->IsSquadLeader()) return;
+
+    auto TargetChannel = qhChannels.find(Message.channelid());
+    if (TargetChannel == qhChannels.end()) return;
+
+    for (auto User : (*TargetChannel)->qlUsers) {
+        for (auto SUser : qhUsers) {
+            if (User->iId == SUser->iId) {
+                if (SUser->IsSquadLeader()) {
+                    Message.set_userid(SUser->iId);
+                    sendMessage(uSource, Message);
+                    return;
+                }
+            }
+        }
+    }
+}
+
 void Server::msgQueryUsers(ServerUser *uSource, MumbleProto::QueryUsers &msg) {
 	MSG_SETUP(ServerUser::Authenticated);
 

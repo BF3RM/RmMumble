@@ -1,39 +1,6 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE file at the root of the
-// Mumble source tree or at <https://www.mumble.info/LICENSE>.
-
-/* Copyright (C) 2010-2011, Snares <snares@users.sourceforge.net>
-   Copyright (C) 2005-2011, Thorvald Natvig <thorvald@natvig.com>
-   Copyright (C) 2011, Ryan Austin <ryan@gameforcecenters.com>
-   Copyright (C) 2012, Bojan Hartmann <bogie@bawki.de>
-
-   All rights reserved.
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions
-   are met:
-
-   - Redistributions of source code must retain the above copyright notice,
-     this list of conditions and the following disclaimer.
-   - Redistributions in binary form must reproduce the above copyright notice,
-     this list of conditions and the following disclaimer in the documentation
-     and/or other materials provided with the distribution.
-   - Neither the name of the Mumble Developers nor the names of its
-     contributors may be used to endorse or promote products derived from this
-     software without specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-   A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
-   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/*
+* Developed as part of the Project Reality mod for BF3/Venice Unleashed.
+* Jury Verrigni - Snaiperskaya
 */
 
 #include "../mumble_plugin_win32.h"
@@ -54,6 +21,16 @@ static procptr_t const IpPortPtr = 0x0F87A0600;
 
 // Identity ptrs
 static procptr_t const UsernamePtr = 0x0A3B9B44;
+static procptr_t const SquadPtr = 0x10EFBF53; // 16 out of game, 13 loading, 0 or wathever not in squad, 1<->9 alpha, beta
+static procptr_t const SquadLeaderPtr = 0x2591A7C0;
+static procptr_t const FactionPtr = 0x10EF6EE8;
+
+// Offset Chain ptrs
+static procptr_t const ChainOffset0 = 0x0003F364;
+static procptr_t const ChainOffset1 = 0x44;
+static procptr_t const ChainOffset2 = 0x5F8;
+static procptr_t const ChainOffset3 = 0x6C;
+static procptr_t const ChainOffset4 = 0x46C;
 
 enum state_values {
     STATE_UNKN = 0,
@@ -61,6 +38,63 @@ enum state_values {
     STATE_IN_GAME = 2,
     STATE_IN_MENU = 3
 };
+
+static procptr_t ResolveChain()
+{
+    std::ofstream Stream("vu-pr.txt");
+    procptr_t BasePtr = peekProcPtr(pModule + ChainOffset0);
+    if (!BasePtr){
+        Stream << "No base ptr available" << std::endl;
+        Stream.close();
+        return 0;
+    }
+
+    Stream << "Base ptr: " << (void*) BasePtr << std::endl;
+
+    procptr_t OffsettedPtr1 = peekProcPtr(BasePtr + ChainOffset1);
+    if (!OffsettedPtr1) {
+        Stream << "Failed to fetch offset1 pointer" << std::endl;
+        Stream.close();
+        return 0;
+    }
+
+    Stream << "Offset 1: " << (void*) OffsettedPtr1 << std::endl;
+
+    procptr_t OffsettedPtr2 = peekProcPtr(OffsettedPtr1 + ChainOffset2);
+    if (!OffsettedPtr2) {
+        Stream << "Failed to fetch offset2 pointer" << std::endl;
+        Stream.close();
+        return 0;
+    }
+
+    Stream << "Offset 2: " << (void*) OffsettedPtr2 << std::endl;
+
+    procptr_t OffsettedPtr3 = peekProcPtr(OffsettedPtr2 + ChainOffset3);
+    if (!OffsettedPtr3) {
+        Stream << "Failed to fetch offset3 pointer" << std::endl;
+        Stream.close();
+        return 0;
+    }
+
+    Stream << "Offset 3: " << (void*) OffsettedPtr3 << std::endl;
+
+    procptr_t OffsettedPtr4 = OffsettedPtr3 + ChainOffset4;
+
+    Stream << "Offset 4: " << (void*) OffsettedPtr4 << std::endl;
+
+    return OffsettedPtr4;
+}
+
+// Offsets
+static procptr_t const BaseOffset= 0x01F0B9CC;
+
+/**
+* "vu.exe" + 0x01F0B9CC => F9EFD790 <- Base offset
+* F9EFD790 + 0x6E0 => E2E15EA8 <- Offset 1
+* E2E15EA8 + 46C => E2E16314 <- Squad State // 0 No squad - 1 Alpha - 2 Bravo
+* E2E16314 + 0x4 => E2E16318 <- Squad Leader State // 1 SL - 0 Non SL
+* E2E16314 - 0x150 => Whatever <- Faction State // 1 US - 2 RU
+*/
 
 // https://stackoverflow.com/questions/10737644/convert-const-char-to-wstring
 std::wstring StringToWString(const std::string& str)
@@ -72,6 +106,24 @@ std::wstring StringToWString(const std::string& str)
 }
 
 static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, float *camera_pos, float *camera_front, float *camera_top, std::string &context, std::wstring &identity) {
+    procptr_t SquadState = ResolveChain();
+
+    if (!SquadState) {
+        return false;
+    }
+
+    procptr_t SquadLeaderState = SquadState + 0x4;
+
+    procptr_t FactionState = SquadState - 0x150;
+
+    char IsSquadLeader = 0;
+    char SquadId = 0;
+    char FactionId = 0;
+
+    peekProc(SquadState, &SquadId, sizeof(char));
+    peekProc(SquadLeaderState, &IsSquadLeader, sizeof(char));
+    peekProc(FactionState, &FactionId, sizeof(char));
+
     for (int i=0;i<3;i++) {
         avatar_pos[i] = avatar_front[i] = avatar_top[i] = camera_pos[i] = camera_front[i] = camera_top[i] = -1.0f;
     }
@@ -92,10 +144,16 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
     char IdentityCharString[128];
     peekProc(UsernamePtr, IdentityCharString, 128);
 
-    //context = ContextCharString;
-    context = "asd";
-    //identity = StringToWString(IdentityCharString);
-    identity = L"";
+    context = ((int)FactionId == 1 ? "US" : "RU");
+
+    // Identity: Faction~~Squad~~SquadLeader
+    std::stringstream IdentityStream;
+    IdentityStream << std::to_string((int)FactionId) << "~~"
+                   << std::to_string((int)SquadId) << "~~"
+                   << std::to_string((int)IsSquadLeader);
+
+    identity = StringToWString(IdentityStream.str());
+
     // This prevents the plugin from linking to the game in case something goes wrong during values retrieval from memory addresses.
     if (!ok) {
         return false;

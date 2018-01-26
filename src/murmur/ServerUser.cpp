@@ -28,6 +28,20 @@ ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), U
 	bOpus = false;
 }
 
+/**
+ * Identity = Faction~~Squad~~IsSquadLeader
+ */
+
+bool ServerUser::IsSquadLeader()
+{
+    auto SplitIdentity = qsIdentity.split("~~");
+    if (SplitIdentity[2] == "1") {
+        return true;
+    }
+
+    return false;
+}
+
 void ServerUser::UpdateContext(std::string NewContext)
 {
     if (ssContext != NewContext) {

@@ -408,5 +408,5 @@ CONFIG(no-pch) {
 }
 
 CONFIG(debug, debug|release) {
-	DEFINES *= SNAPSHOT_BUILD
+        #DEFINES *= SNAPSHOT_BUILD
 }

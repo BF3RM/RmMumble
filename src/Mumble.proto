@@ -9,6 +9,14 @@ package MumbleProto;
 
 option optimize_for = SPEED;
 
+// Sent by a client when it wants to retrieve the Squad Leader of a specified channel.
+// Client sends only the ChannelId, while server send both.
+message ChannelSquadLeader {
+    required uint32 ChannelId = 1;
+
+    optional uint32 UserId = 2;
+}
+
 message Version {
 	// 2-byte Major, 1-byte Minor and 1-byte Patch version number.
 	optional uint32 version = 1;

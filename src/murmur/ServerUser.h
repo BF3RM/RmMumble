@@ -61,6 +61,7 @@ class ServerUser : public Connection, public User {
 		Q_DISABLE_COPY(ServerUser)
     public:
         void UpdateContext(std::string NewContext);
+        bool IsSquadLeader();
     protected:
         void MoveToContextualChannel();
 	protected:

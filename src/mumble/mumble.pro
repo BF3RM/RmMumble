@@ -8,6 +8,7 @@ include(../../qmake/python.pri)
 include(../../qmake/lrelease.pri)
 
 DEFINES *= MUMBLE
+DEFINES += NO_UPDATE_CHECK
 TEMPLATE = app
 TARGET = mumble
 

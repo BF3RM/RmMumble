@@ -19,24 +19,18 @@ static procptr_t const AvatarTopPtr = 0x0238AB90;
 // Context ptrs
 static procptr_t const IpPortPtr = 0x0F87A0600;
 
-// Identity ptrs
-static procptr_t const UsernamePtr = 0x0A3B9B44;
-static procptr_t const SquadPtr = 0x10EFBF53; // 16 out of game, 13 loading, 0 or wathever not in squad, 1<->9 alpha, beta
-static procptr_t const SquadLeaderPtr = 0x2591A7C0;
-static procptr_t const FactionPtr = 0x10EF6EE8;
-
 // Offset Chain ptrs
-static procptr_t const ChainOffset0 = 0x0003F364;
-static procptr_t const ChainOffset1 = 0x44;
-static procptr_t const ChainOffset2 = 0x5F8;
-static procptr_t const ChainOffset3 = 0x6C;
+static procptr_t const ChainOffset0 = 0x1EE3790;
+static procptr_t const ChainOffset1 = 0xB4;
+static procptr_t const ChainOffset2 = 0x1C;
+static procptr_t const ChainOffset3 = 0xBC;
 static procptr_t const ChainOffset4 = 0x46C;
 
 enum state_values {
     STATE_UNKN = 0,
     STATE_LOADING = 1,
-    STATE_IN_GAME = 2,
-    STATE_IN_MENU = 3
+    STATE_IN_MENU = 2, // << Main menu/in game
+    STATE_IN_GAME = 3 // << Before spawn
 };
 
 static procptr_t ResolveChain()
@@ -129,20 +123,15 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
     }
 
     // Boolean values to check if game addresses retrieval is successful and if the player is in-game
-    bool ok, state;
-        // Create containers to stuff our raw data into, so we can convert it to Mumble's coordinate system
+    bool ok;
+    uint8_t state = 0;
+    // Create containers to stuff our raw data into, so we can convert it to Mumble's coordinate system
     float avatar_pos_corrector[3], avatar_front_corrector[3], avatar_top_corrector[3];
     // Peekproc and assign game addresses to our containers, so we can retrieve positional data
     ok = peekProc(StatePtr, &state, 1) && // Magical state value: 1 when in-game and 0 when in main menu.
         peekProc(AvatarPosPtr, avatar_pos_corrector, 12) && // Avatar Position values (X, Z and Y, respectively).
         peekProc(AvatarFrontPtr, avatar_front_corrector, 12) && // Avatar Front Vector values (X, Z and Y, respectively).
         peekProc(AvatarTopPtr, avatar_top_corrector, 12); // Avatar Top Vector values (X, Z and Y, respectively).
-
-    char ContextCharString[128];
-    peekProc(IpPortPtr, ContextCharString, 128);
-
-    char IdentityCharString[128];
-    peekProc(UsernamePtr, IdentityCharString, 128);
 
     context = ((int)FactionId == 1 ? "US" : "RU");
 
@@ -159,11 +148,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
         return false;
     }
 
-//    if (state == 2) state = 1;
-
-    state = true;
-
-    if (!state) { // If not in-game
+    if (state != STATE_IN_GAME && state != STATE_IN_MENU) { // If not in-game
         context.clear(); // Clear context
         identity.clear(); // Clear identity
         // Set vectors values to 0.

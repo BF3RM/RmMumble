@@ -61,9 +61,12 @@ class ServerUser : public Connection, public User {
 		Q_DISABLE_COPY(ServerUser)
     public:
         void UpdateContext(std::string NewContext);
+        void UpdateIdentity(QString NewIdentity);
         bool IsSquadLeader();
-    protected:
+        int GetSquadId();
+        int GetFactionId();
         void MoveToContextualChannel();
+        Channel* GetContextualChannel();
 	protected:
 		Server *s;
 	public:

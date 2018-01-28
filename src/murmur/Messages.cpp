@@ -653,7 +653,7 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 	}
 
 	if (msg.has_plugin_identity()) {
-		uSource->qsIdentity = u8(msg.plugin_identity());
+        uSource->UpdateIdentity(u8(msg.plugin_identity()));
 		// Make sure to clear this from the packet so we don't broadcast it
 		msg.clear_plugin_identity();
 	}
@@ -1397,8 +1397,6 @@ void Server::msgACL(ServerUser *uSource, MumbleProto::ACL &msg) {
 	}
 }
 
-#include <fstream>
-
 void Server::msgChannelSquadLeader(ServerUser *uSource, MumbleProto::ChannelSquadLeader &Message)
 {
     if (!uSource->IsSquadLeader()) return;
@@ -1408,9 +1406,9 @@ void Server::msgChannelSquadLeader(ServerUser *uSource, MumbleProto::ChannelSqua
 
     for (auto User : (*TargetChannel)->qlUsers) {
         for (auto SUser : qhUsers) {
-            if (User->iId == SUser->iId) {
+            if (User->uiSession == SUser->uiSession) {
                 if (SUser->IsSquadLeader()) {
-                    Message.set_userid(SUser->iId);
+                    Message.set_userid(SUser->uiSession);
                     sendMessage(uSource, Message);
                     return;
                 }

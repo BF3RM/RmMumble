@@ -706,11 +706,12 @@ void MainWindow::msgACL(const MumbleProto::ACL &msg) {
 void MainWindow::msgChannelSquadLeader(const MumbleProto::ChannelSquadLeader &Message)
 {
     for (auto User : Channel::get(Message.channelid())->qlUsers) {
-        if (User->iId == Message.userid()) {
+        if (User->uiSession == Message.userid()) {
             ShortcutTarget Target;
             Target.bUsers = true;
-            Target.qlUsers.append(User->qsName);
-            Global::g_global_struct->mw->on_gsWhisper_triggered(true, QVariant::fromValue(ShortcutTarget()));
+            Target.qlUsers << User->qsHash;
+            Global::g_global_struct->mw->SquadLeaderWhispMap[Message.squadid()] = User->qsHash;
+            Global::g_global_struct->mw->on_gsWhisper_triggered(true, QVariant::fromValue(Target));
             return;
         }
     }

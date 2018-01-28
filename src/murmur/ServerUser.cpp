@@ -8,8 +8,9 @@
 #include "Server.h"
 #include "ServerUser.h"
 #include "Meta.h"
+#include "Channel.h"
 
-ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), User(), s(NULL) {
+ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), User(), s(p) {
 	sState = ServerUser::Connected;
 	sUdpSocket = INVALID_SOCKET;
 
@@ -35,6 +36,8 @@ ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), U
 bool ServerUser::IsSquadLeader()
 {
     auto SplitIdentity = qsIdentity.split("~~");
+	if (SplitIdentity.size() < 3) return false;
+
     if (SplitIdentity[2] == "1") {
         return true;
     }
@@ -42,17 +45,51 @@ bool ServerUser::IsSquadLeader()
     return false;
 }
 
+int ServerUser::GetSquadId()
+{
+    if (qsIdentity.isEmpty()) return 0;
+    auto SplitIdentity = qsIdentity.split("~~");
+    if (SplitIdentity.size() < 3) return 0;
+    return SplitIdentity[1].toInt();
+}
+
+int ServerUser::GetFactionId()
+{
+    if (qsIdentity.isEmpty()) return 0;
+    auto SplitIdentity = qsIdentity.split("~~");
+    if (qsIdentity.size() < 3) return 0;
+    return SplitIdentity[0].toInt();
+}
+
 void ServerUser::UpdateContext(std::string NewContext)
 {
     if (ssContext != NewContext) {
         ssContext = NewContext;
+    }
+}
+
+void ServerUser::UpdateIdentity(QString NewIdentity)
+{
+    if (qsIdentity != NewIdentity) {
+        qsIdentity = NewIdentity;
         MoveToContextualChannel();
     }
 }
 
+Channel* ServerUser::GetContextualChannel()
+{
+    int ChannelId = GetFactionId() * 10 + GetSquadId();
+    return s->qhChannels[ChannelId];
+}
+
 void ServerUser::MoveToContextualChannel()
 {
-
+    if (!s) return;
+    auto TargetChannel = GetContextualChannel();
+    if (TargetChannel == cChannel) return;
+    if (TargetChannel) {
+        s->setUserState(this, TargetChannel, this->bMute, this->bDeaf, this->bSuppress, this->bPrioritySpeaker, this->qsName, this->qsComment);
+    }
 }
 
 ServerUser::operator QString() const {

@@ -166,9 +166,45 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	         (g.s.bMinimalView && g.s.aotbAlwaysOnTop == Settings::OnTopInMinimal) ||
 	         (!g.s.bMinimalView && g.s.aotbAlwaysOnTop == Settings::OnTopInNormal));
 
+    CreatePrShortcuts();
+
+    g.s.atTransmit = g.s.AudioTransmit::PushToTalk;
+
 #ifdef NO_UPDATE_CHECK
 	delete qaHelpVersionCheck;
 #endif
+}
+
+void MainWindow::CreatePrShortcuts()
+{
+    QFile File(QLatin1String("prhk.bin"));
+    if (File.exists()) {
+        File.open(QIODevice::ReadOnly);
+        QDataStream DataStream(&File);
+        qint32 NumberOfShortcuts;
+        DataStream >> NumberOfShortcuts;
+        for (int I = 0; I < NumberOfShortcuts; I++) {
+            Shortcut S;
+            DataStream >> S.iIndex;
+            DataStream >> S.qlButtons;
+            DataStream >> S.qvData;
+            S.bSuppress = false;
+
+            bool ShouldCreateShortcute = true;
+            for (auto& Ss : g.s.qlShortcuts) {
+                if (Ss.iIndex == S.iIndex && Ss.qvData == S.qvData) {
+                    ShouldCreateShortcute = false;
+                }
+            }
+
+            if (ShouldCreateShortcute) {
+                g.s.qlShortcuts << S;
+            }
+        }
+
+        GlobalShortcutEngine::engine->bNeedRemap = true;
+        GlobalShortcutEngine::engine->needRemap();
+    }
 }
 
 void MainWindow::createActions() {
@@ -241,6 +277,12 @@ void MainWindow::createActions() {
 
     GsWhisperSquadLeader = new GlobalShortcut(this, idx++, tr("Realitymod - Radio", "Global Shortcut"), QVariant(QString()));
     GsWhisperSquadLeader->setObjectName(QLatin1String("GsWhisperSquadLeader"));
+
+    GsLocal = new GlobalShortcut(this, idx++, tr("Realitymod - Local", "Global Shortcut"));
+    GsLocal->setObjectName(QLatin1String("GsLocal"));
+
+    GsSquad = new GlobalShortcut(this, idx++, tr("Realitymod - Squad", "Global Shortcut"));
+    GsSquad->setObjectName(QLatin1String("GsSquad"));
 
 #ifndef Q_OS_MAC
 	qstiIcon->show();
@@ -2645,21 +2687,67 @@ void MainWindow::updateTarget() {
 	}
 }
 
-void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
+void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
 {
-    if (!Down) return on_gsWhisper_triggered(false, QVariant());
-
-    g.l->log(Log::Information, tr("Whisper squad leader."));
     auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
     if (!ContextChannel) {
-        g.l->log(Log::Information, QLatin1String("Context channel not found."));
+        return;
+    }
+
+    // Make sure it's a squad channel by checking that
+    // the channel is not 10 or 20 (unassigned us/ru)
+    if (ContextChannel->iId == 0 || ContextChannel->iId % 10 == 0) return;
+
+    ShortcutTarget TargetChannel;
+    TargetChannel.iChannel = ContextChannel->iId;
+    TargetChannel.bChildren = false;
+    TargetChannel.bForceCenter = true;
+    TargetChannel.bUsers = false;
+    TargetChannel.bLinks = false;
+
+    on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
+}
+
+void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
+{
+    auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
+    if (!ContextChannel) {
         return;
     }
 
     auto ParentChannel = ContextChannel->cParent;
     if (!ParentChannel) {
-        g.l->log(Log::Information, QLatin1String("Parent channel not found."));
-        g.l->log(Log::Information, ContextChannel->qsName);
+        return;
+    }
+
+    ShortcutTarget TargetChannel;
+    TargetChannel.iChannel = ParentChannel->iId;
+    TargetChannel.bChildren = true;
+    TargetChannel.bForceCenter = false;
+    TargetChannel.bUsers = false;
+    TargetChannel.bLinks = false;
+
+	on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
+}
+
+void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
+{
+    if (!Down) {
+        ShortcutTarget Target;
+        Target.bUsers = true;
+        Target.qlUsers << SquadLeaderWhispMap[Data.toInt()];
+        Target.bForceCenter = true;
+        SquadLeaderWhispMap.remove(Data.toInt());
+        return on_gsWhisper_triggered(false, QVariant::fromValue(Target));
+    }
+
+    auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
+    if (!ContextChannel) {
+        return;
+    }
+
+    auto ParentChannel = ContextChannel->cParent;
+    if (!ParentChannel) {
         return;
     }
 
@@ -2673,17 +2761,14 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
 
     auto TargetChannel = Channel::get(TargetChannelId);
     if (!TargetChannel) return;
-//    for (auto InChannelUser : TargetChannel->qlUsers) {
-        //if (g.)InChannelUser
-//    }
 
-    g.sh->RequestChannelSquadLeader(TargetChannelId);
+    g.sh->RequestChannelSquadLeader(TargetChannelId, Data.toInt());
 }
 
 void MainWindow::on_gsWhisper_triggered(bool down, QVariant scdata) {
     ShortcutTarget st = scdata.value<ShortcutTarget>();
 
-	if (down) {
+    if (down) {
 		if (gsJoinChannel->active()) {
 			if (! st.bUsers) {
 				Channel *c = mapChannel(st.iChannel);

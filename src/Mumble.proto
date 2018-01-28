@@ -14,7 +14,9 @@ option optimize_for = SPEED;
 message ChannelSquadLeader {
     required uint32 ChannelId = 1;
 
-    optional uint32 UserId = 2;
+    required uint32 SquadId = 2;
+
+    optional uint32 UserId = 3;
 }
 
 message Version {

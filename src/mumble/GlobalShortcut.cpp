@@ -676,6 +676,21 @@ void GlobalShortcutConfig::load(const Settings &r) {
 }
 
 void GlobalShortcutConfig::save() const {
+    QFile DevF(QLatin1String("dev"));
+    if (DevF.exists()) {
+        DevF.close();
+        QFile File(QLatin1String("prhk.bin"));
+        File.open(QIODevice::WriteOnly);
+        QDataStream DataStream(&File);
+        DataStream << (qint32) qlShortcuts.size();
+        for (auto& Shortcut : qlShortcuts) {
+            DataStream << Shortcut.iIndex;
+            DataStream << Shortcut.qlButtons;
+            DataStream << Shortcut.qvData;
+        }
+        File.close();
+    }
+
 	s.qlShortcuts = qlShortcuts;
 	s.bShortcutEnable = qcbEnableGlobalShortcuts->checkState() == Qt::Checked;
 

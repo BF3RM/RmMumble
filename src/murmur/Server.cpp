@@ -1665,6 +1665,14 @@ bool Server::unregisterUser(int id) {
 }
 
 void Server::userEnterChannel(User *p, Channel *c, MumbleProto::UserState &mpus) {
+	// Yea, we don't really need any logic here, force the client to stay in the 
+	// channel it belongs
+    ServerUser* serverUser = static_cast<ServerUser*>(p);
+    if (serverUser->GetContextualChannel() != c) {
+        serverUser->MoveToContextualChannel();
+		return;
+    }
+
 	if (p->cChannel == c)
 		return;
 
@@ -1674,7 +1682,7 @@ void Server::userEnterChannel(User *p, Channel *c, MumbleProto::UserState &mpus)
 		QWriteLocker wl(&qrwlVoiceThread);
 		c->addUser(p);
 
-		bool mayspeak = ChanACL::hasPermission(static_cast<ServerUser *>(p), c, ChanACL::Speak, NULL);
+        bool mayspeak = ChanACL::hasPermission(serverUser, c, ChanACL::Speak, NULL);
 		bool sup = p->bSuppress;
 
 		if (mayspeak == sup) {
@@ -1691,9 +1699,9 @@ void Server::userEnterChannel(User *p, Channel *c, MumbleProto::UserState &mpus)
 		QCoreApplication::instance()->postEvent(this, new ExecEvent(boost::bind(&Server::removeChannel, this, old->iId)));
 	}
 
-	sendClientPermission(static_cast<ServerUser *>(p), c);
+    sendClientPermission(serverUser, c);
 	if (c->cParent)
-		sendClientPermission(static_cast<ServerUser *>(p), c->cParent);
+        sendClientPermission(serverUser, c->cParent);
 }
 
 bool Server::hasPermission(ServerUser *p, Channel *c, QFlags<ChanACL::Perm> perm) {

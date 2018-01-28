@@ -73,8 +73,9 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		QIcon qiIcon, qiIconMutePushToMute, qiIconMuteSelf, qiIconMuteServer, qiIconDeafSelf, qiIconDeafServer, qiIconMuteSuppressed;
 		QIcon qiTalkingOn, qiTalkingWhisper, qiTalkingShout, qiTalkingOff;
 		QMap<unsigned int, UserLocalVolumeDialog *> qmUserVolTracker;
+        QHash<int /** SquadId **/, QString /** Hash **/> SquadLeaderWhispMap;
 
-        GlobalShortcut* GsWhisperSquadLeader;
+        GlobalShortcut *GsWhisperSquadLeader, *GsLocal, *GsSquad;
 		GlobalShortcut *gsPushTalk, *gsResetAudio, *gsMuteSelf, *gsDeafSelf;
 		GlobalShortcut *gsUnlink, *gsPushMute, *gsJoinChannel, *gsToggleOverlay;
 		GlobalShortcut *gsMinimal, *gsVolumeUp, *gsVolumeDown, *gsWhisper, *gsLinkChannel;
@@ -154,6 +155,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		QAction *qaTransmitMode;
 		QAction *qaTransmitModeSeparator;
 
+        void CreatePrShortcuts();
 		void createActions();
 		void setupGui();
 		void updateWindowTitle();
@@ -256,6 +258,8 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void on_gsMuteSelf_down(QVariant);
 		void on_gsDeafSelf_down(QVariant);
 		void on_gsWhisper_triggered(bool, QVariant);
+        void on_GsLocal_triggered(bool, QVariant);
+        void on_GsSquad_triggered(bool, QVariant);
         void on_GsWhisperSquadLeader_triggered(bool, QVariant);
 		void addTarget(ShortcutTarget *);
 		void removeTarget(ShortcutTarget *);

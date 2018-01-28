@@ -834,10 +834,11 @@ void ServerHandler::sendUserTextMessage(unsigned int uiSession, const QString &m
 	sendMessage(mptm);
 }
 
-void ServerHandler::RequestChannelSquadLeader(unsigned int ChannelId)
+void ServerHandler::RequestChannelSquadLeader(unsigned int ChannelId, unsigned int SquadId)
 {
     MumbleProto::ChannelSquadLeader Message;
     Message.set_channelid(ChannelId);
+    Message.set_squadid(SquadId);
 
     sendMessage(Message);
 }

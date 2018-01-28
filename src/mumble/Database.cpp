@@ -165,6 +165,12 @@ Database::Database() {
 	execQueryAndLogFailure(query, QLatin1String("SELECT sqlite_version()"));
 	while (query.next())
 		qWarning() << "Database SQLite:" << query.value(0).toString();
+
+    /*auto Shortcuts = getShortcuts(g.sh->qbaDigest);
+    for (auto Shortcut : Shortcuts) {
+        Shortcut.
+    }
+    */
 }
 
 Database::~Database() {

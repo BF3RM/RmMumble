@@ -151,6 +151,7 @@ static bool inline initialize(const std::multimap<std::wstring, unsigned long lo
                         unsigned long long int SelectedPid = 0;
 
                         for (auto& Pid : pids) {
+                            if (Pid.first.find(L"Server") != std::wstring::npos) continue;
                             if (Pid.first == std::wstring(procname)) {
                                 auto MemoryUsage = GetProcessMemoryUsage(Pid.second);
                                 if (MemoryUsage > SelectedPidMemoryUsage) {

@@ -825,6 +825,8 @@ void Settings::load(QSettings* settings_ptr) {
 	settings_ptr->beginGroup(QLatin1String("overlay"));
 	os.load(settings_ptr);
 	settings_ptr->endGroup();
+
+    g.s.atTransmit = g.s.AudioTransmit::PushToTalk;
 }
 
 #undef SAVELOAD
@@ -838,7 +840,7 @@ void OverlaySettings::save() {
 }
 
 void OverlaySettings::save(QSettings* settings_ptr) {
-	OverlaySettings def;
+    OverlaySettings def;
 
 	settings_ptr->setValue(QLatin1String("version"), QLatin1String(MUMTEXT(MUMBLE_VERSION_STRING)));
 	settings_ptr->sync();
@@ -916,6 +918,7 @@ void OverlaySettings::save(QSettings* settings_ptr) {
 	settings_ptr->setValue(QLatin1String("pathsexclude"), qslPathsExclude);
 	settings_ptr->setValue(QLatin1String("blacklist"), qslBlacklist);
 	settings_ptr->setValue(QLatin1String("blacklistexclude"), qslBlacklistExclude);
+    g.s.atTransmit = g.s.AudioTransmit::PushToTalk;
 }
 
 void Settings::save() {
@@ -1162,4 +1165,5 @@ void Settings::save() {
 	settings_ptr->beginGroup(QLatin1String("overlay"));
 	os.save(settings_ptr);
 	settings_ptr->endGroup();
+    g.s.atTransmit = g.s.AudioTransmit::PushToTalk;
 }

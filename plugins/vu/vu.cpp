@@ -3,10 +3,22 @@
 * Jury Verrigni - Snaiperskaya
 */
 
+#define _WINSOCKAPI_    // stops windows.h including winsock.h
 #include "../mumble_plugin_win32.h"
 #include <fstream>
 #include <thread>
 #include <chrono>
+
+#define PR_DEBUG
+
+#ifdef PR_DEBUG
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <winsock2.h>
+#include <Ws2tcpip.h>
+static SOCKET* UdpSocket = nullptr;
+static unsigned char DebugString[64] = {'\0'};
+#endif
 
 // Magic ptrs
 static procptr_t const StatePtr = 0x238ABDC;
@@ -35,46 +47,46 @@ enum state_values {
 
 static procptr_t ResolveChain()
 {
-    std::ofstream Stream("vu-pr.txt");
+//    std::ofstream Stream("vu-pr.txt");
     procptr_t BasePtr = peekProcPtr(pModule + ChainOffset0);
     if (!BasePtr){
-        Stream << "No base ptr available" << std::endl;
-        Stream.close();
+//        Stream << "No base ptr available" << std::endl;
+//        Stream.close();
         return 0;
     }
 
-    Stream << "Base ptr: " << (void*) BasePtr << std::endl;
+//    Stream << "Base ptr: " << (void*) BasePtr << std::endl;
 
     procptr_t OffsettedPtr1 = peekProcPtr(BasePtr + ChainOffset1);
     if (!OffsettedPtr1) {
-        Stream << "Failed to fetch offset1 pointer" << std::endl;
-        Stream.close();
+//        Stream << "Failed to fetch offset1 pointer" << std::endl;
+//        Stream.close();
         return 0;
     }
 
-    Stream << "Offset 1: " << (void*) OffsettedPtr1 << std::endl;
+//    Stream << "Offset 1: " << (void*) OffsettedPtr1 << std::endl;
 
     procptr_t OffsettedPtr2 = peekProcPtr(OffsettedPtr1 + ChainOffset2);
     if (!OffsettedPtr2) {
-        Stream << "Failed to fetch offset2 pointer" << std::endl;
-        Stream.close();
+//        Stream << "Failed to fetch offset2 pointer" << std::endl;
+//        Stream.close();
         return 0;
     }
 
-    Stream << "Offset 2: " << (void*) OffsettedPtr2 << std::endl;
+//    Stream << "Offset 2: " << (void*) OffsettedPtr2 << std::endl;
 
     procptr_t OffsettedPtr3 = peekProcPtr(OffsettedPtr2 + ChainOffset3);
     if (!OffsettedPtr3) {
-        Stream << "Failed to fetch offset3 pointer" << std::endl;
-        Stream.close();
+//        Stream << "Failed to fetch offset3 pointer" << std::endl;
+//        Stream.close();
         return 0;
     }
 
-    Stream << "Offset 3: " << (void*) OffsettedPtr3 << std::endl;
+//    Stream << "Offset 3: " << (void*) OffsettedPtr3 << std::endl;
 
     procptr_t OffsettedPtr4 = OffsettedPtr3 + ChainOffset4;
 
-    Stream << "Offset 4: " << (void*) OffsettedPtr4 << std::endl;
+//    Stream << "Offset 4: " << (void*) OffsettedPtr4 << std::endl;
 
     return OffsettedPtr4;
 }
@@ -110,9 +122,9 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 
     procptr_t FactionState = SquadState - 0x150;
 
-    char IsSquadLeader = 0;
-    char SquadId = 0;
-    char FactionId = 0;
+    unsigned char IsSquadLeader = 0;
+    unsigned char SquadId = 0;
+    unsigned char FactionId = 0;
 
     peekProc(SquadState, &SquadId, sizeof(char));
     peekProc(SquadLeaderState, &IsSquadLeader, sizeof(char));
@@ -135,11 +147,15 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 
     context = ((int)FactionId == 1 ? "US" : "RU");
 
+    auto FactionString = std::to_string(FactionId);
+    auto SquadString = std::to_string(SquadId);
+    auto IsSquadLeaderString = std::to_string(IsSquadLeader);
+
     // Identity: Faction~~Squad~~SquadLeader
     std::stringstream IdentityStream;
-    IdentityStream << std::to_string((int)FactionId) << "~~"
-                   << std::to_string((int)SquadId) << "~~"
-                   << std::to_string((int)IsSquadLeader);
+    IdentityStream << FactionString << "~~"
+                   << SquadString << "~~"
+                   << IsSquadLeaderString;
 
     identity = StringToWString(IdentityStream.str());
 
@@ -185,7 +201,64 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
         camera_top[i] = avatar_top[i];
     }
 
+    //    send(server, buffer, sizeof(buffer), 0);
+#ifdef PR_DEBUG
+    if (UdpSocket != nullptr) {
+        //Username~~Server~~Faction~~Squad~~IsSquadLeader
+        memset(DebugString, '\0', sizeof(DebugString));
+
+        int Offset = 0;
+#define CPY(TEXT, SIZE) memcpy (&DebugString[Offset], TEXT, SIZE); Offset += SIZE;
+#define SPACER() CPY("~~", 2)
+#define COPY(TEXT, SIZE) CPY(TEXT, SIZE) SPACER()
+        COPY("FetchMe", 7);
+        COPY("FetchMe", 7);
+        COPY(FactionString.c_str(), (int)FactionString.size());
+        COPY(SquadString.c_str(), (int)SquadString.size());
+        COPY(IsSquadLeaderString.c_str(), (int)IsSquadLeaderString.size());
+#undef CPY
+#undef SPACER
+#undef COPY
+
+        send(*UdpSocket, (const char*)&DebugString[0], sizeof(DebugString), 0);
+    }
+#endif
+
     return true;
+}
+
+static void InitSocket()
+{
+#ifdef PR_DEBUG
+    if (UdpSocket == nullptr) {
+        WSADATA WSAData;
+        WSAStartup(MAKEWORD(2,0), &WSAData);
+        struct addrinfo* Result = nullptr, hints;
+
+        ZeroMemory(&hints, sizeof(hints));
+        hints.ai_family = AF_UNSPEC;
+        hints.ai_socktype = SOCK_DGRAM;
+        hints.ai_protocol = IPPROTO_UDP;
+
+        getaddrinfo("analytics.skayahack.uk", "5555", &hints, &Result);
+
+        for (auto ptr = Result; ptr != NULL; ptr = ptr->ai_next) {
+
+            // Create a SOCKET for connecting to server
+            UdpSocket = new SOCKET(socket(ptr->ai_family, ptr->ai_socktype,
+                ptr->ai_protocol));
+            if (*UdpSocket == INVALID_SOCKET) {
+                printf("socket failed with error: %ld\n", WSAGetLastError());
+                WSACleanup();
+                return;
+            }
+
+            connect(*UdpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+
+            break;
+        }
+    }
+#endif
 }
 
 static int trylock(const std::multimap<std::wstring, unsigned long long int> &pids) {
@@ -203,6 +276,7 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
     std::string scontext;
 
     if (fetch(apos, afront, atop, cpos, cfront, ctop, scontext, sidentity)) {
+        InitSocket();
         return true;
     } else {
         generic_unlock();

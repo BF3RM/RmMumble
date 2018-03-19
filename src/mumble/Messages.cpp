@@ -710,6 +710,7 @@ void MainWindow::msgChannelSquadLeader(const MumbleProto::ChannelSquadLeader &Me
             ShortcutTarget Target;
             Target.bUsers = true;
             Target.qlUsers << User->qsHash;
+            Target.bForceCenter = true;
             Global::g_global_struct->mw->SquadLeaderWhispMap[Message.squadid()] = User->qsHash;
             Global::g_global_struct->mw->on_gsWhisper_triggered(true, QVariant::fromValue(Target));
             return;

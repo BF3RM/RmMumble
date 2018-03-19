@@ -2699,7 +2699,7 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
     if (ContextChannel->iId == 0 || ContextChannel->iId % 10 == 0) return;
 
     ShortcutTarget TargetChannel;
-    TargetChannel.iChannel = ContextChannel->iId;
+    TargetChannel.iChannel = SHORTCUT_TARGET_CURRENT;
     TargetChannel.bChildren = false;
     TargetChannel.bForceCenter = true;
     TargetChannel.bUsers = false;

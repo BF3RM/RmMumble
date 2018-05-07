@@ -21,7 +21,7 @@
 #include <iostream>
 #include <stdint.h>
 
-#include <Psapi.h>
+#include <psapi.h>
 
 #include "mumble_plugin.h"
 

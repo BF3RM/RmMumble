@@ -8,4 +8,4 @@ include(../plugins.pri)
 
 TARGET = vu
 SOURCES = vu.cpp
-LIBS += -luser32 -lWs2_32 -lMswsock -lAdvapi32
+# LIBS += -luser32 -lWs2_32 -lMswsock -lAdvapi32

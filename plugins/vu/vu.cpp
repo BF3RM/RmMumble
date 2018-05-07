@@ -9,7 +9,7 @@
 #include <thread>
 #include <chrono>
 
-#define PR_DEBUG
+//#define PR_DEBUG
 
 #ifdef PR_DEBUG
 #define WIN32_LEAN_AND_MEAN

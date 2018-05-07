@@ -17,6 +17,8 @@ win32 {
   equals(MUMBLE_ARCH, x86_64) {
     #SUBDIRS += bf1 bf4 ffxiv_x64 gtav wow_x64
   }
+
+  LIBS += -lpsapi
 }
 
 linux {

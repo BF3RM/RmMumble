@@ -1,6 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-apt install dirmngr
+apt update
+
+apt install -y gnupg
+apt install -y dirmngr wget unzip
 
 echo "deb http://pkg.mxe.cc/repos/apt/debian jessie main" > /etc/apt/sources.list.d/mxeapt.list
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D43A795B73B16ABE9643FE1AFD8FFF16DB45C6AB

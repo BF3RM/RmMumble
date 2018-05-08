@@ -12,7 +12,7 @@ SUBDIRS = link \
     vu
 
 win32 {
-  SUBDIRS += bf3 vu
+  SUBDIRS += vu
 
   equals(MUMBLE_ARCH, x86_64) {
     #SUBDIRS += bf1 bf4 ffxiv_x64 gtav wow_x64
@@ -22,5 +22,5 @@ win32 {
 }
 
 linux {
-  SUBDIRS += l4d2 rl
+#  SUBDIRS += 
 }

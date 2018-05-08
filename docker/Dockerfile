@@ -1,6 +1,6 @@
 FROM debian:stretch
-ADD . /mumble
-WORKDIR /mumble
+WORKDIR /
+COPY docker /docker
 
-RUN ./docker/install-dependencies.sh
-CMD ./docker/build.sh
+RUN /docker/install-dependencies.sh
+CMD /docker/build.sh

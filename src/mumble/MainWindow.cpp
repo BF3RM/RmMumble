@@ -122,7 +122,6 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	banEdit = NULL;
 	userEdit = NULL;
 	tokenEdit = NULL;
-	PRPlugin = nullptr;
 
 	voiceRecorderDialog = NULL;
 

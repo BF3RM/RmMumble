@@ -51,8 +51,6 @@ class Plugins : public QObject {
 		QReadWriteLock qrwlPlugins;
 		QMutex qmPluginStrings;
 		QList<PluginInfo *> qlPlugins;
-		PluginInfo *locked;
-		PluginInfo *prevlocked;
 		void clearPlugins();
 		int iPluginTry;
 		QMap<QString, PluginFetchMeta> qmPluginFetchMeta;
@@ -64,6 +62,9 @@ class Plugins : public QObject {
 		DWORD cbPrevious;
 #endif
 	public:
+		PluginInfo *locked;
+		PluginInfo *prevlocked;
+
 		std::string ssContext, ssContextSent;
 		std::wstring swsIdentity, swsIdentitySent;
 		bool bValid;

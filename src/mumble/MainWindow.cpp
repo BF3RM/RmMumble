@@ -56,6 +56,19 @@
 #include "AppNap.h"
 #endif
 
+struct PluginInfo {
+    bool locked;
+    bool enabled;
+    QLibrary lib;
+    QString filename;
+    QString description;
+    QString shortname;
+    class MumblePlugin *p;
+    class MumblePlugin2 *p2;
+    class MumblePluginQt *pqt;
+    PluginInfo();
+};
+
 MessageBoxEvent::MessageBoxEvent(QString m) : QEvent(static_cast<QEvent::Type>(MB_QEVENT)) {
 	msg = m;
 }
@@ -2689,6 +2702,7 @@ void MainWindow::updateTarget() {
 
 void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
 {
+    if (!g.sh->isStrong()) return;
 	if (g.p->locked == nullptr || g.p->locked->shortname != QString::fromUtf8("VU Realitymod")) return;
 
     auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
@@ -2712,7 +2726,8 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
 
 void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
 {
-	if (g.p->locked == nullptr || g.p->locked->shortname != QString::fromUtf8("VU Realitymod")) return;
+    if (!g.sh->isStrong()) return;
+    if (g.p->locked == nullptr || g.p->locked->shortname != QString::fromUtf8("VU Realitymod")) return;
 
     auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
     if (!ContextChannel) {
@@ -2736,7 +2751,8 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
 
 void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
 {
-	if (g.p->locked == nullptr || g.p->locked->shortname != QString::fromUtf8("VU Realitymod")) return;
+    if (!g.sh->isStrong()) return;
+    if (g.p->locked == nullptr || g.p->locked->shortname != QString::fromUtf8("VU Realitymod")) return;
 
     if (!Down) {
         ShortcutTarget Target;

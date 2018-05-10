@@ -8,8 +8,7 @@ include(../qmake/compiler.pri)
 TEMPLATE = subdirs
 
 CONFIG += debug_and_release
-SUBDIRS = link \
-    vu
+SUBDIRS = link
 
 win32 {
   SUBDIRS += vu

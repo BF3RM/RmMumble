@@ -2702,8 +2702,9 @@ void MainWindow::updateTarget() {
 
 void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
 {
-    if (!g.sh->isStrong()) return;
-	if (g.p->locked == nullptr || g.p->locked->shortname != QString::fromUtf8("VU Realitymod")) return;
+	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
+		return;
+	}
 
     auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
     if (!ContextChannel) {
@@ -2726,8 +2727,9 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
 
 void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
 {
-    if (!g.sh->isStrong()) return;
-    if (g.p->locked == nullptr || g.p->locked->shortname != QString::fromUtf8("VU Realitymod")) return;
+	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
+		return;
+	}
 
     auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
     if (!ContextChannel) {
@@ -2751,8 +2753,9 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
 
 void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
 {
-    if (!g.sh->isStrong()) return;
-    if (g.p->locked == nullptr || g.p->locked->shortname != QString::fromUtf8("VU Realitymod")) return;
+	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
+		return;
+	}
 
     if (!Down) {
         ShortcutTarget Target;

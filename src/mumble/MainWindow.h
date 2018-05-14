@@ -25,7 +25,6 @@
 #include "Usage.h"
 #include "UserLocalVolumeDialog.h"
 #include "MUComboBox.h"
-
 #include "ui_MainWindow.h"
 
 #define MB_QEVENT (QEvent::User + 939)

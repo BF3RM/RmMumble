@@ -45,8 +45,10 @@
 #include "Settings.h"
 #include "Themes.h"
 #include "SSLCipherInfo.h"
-
+#include <QTcpServer> 
 #include <fstream>
+#include "RMSocket.h"
+#include "RMMessage.h"
 
 #ifdef Q_OS_WIN
 #include "TaskList.h"
@@ -186,6 +188,20 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 #ifdef NO_UPDATE_CHECK
 	delete qaHelpVersionCheck;
 #endif
+
+	auto RmSocket = new RMSocket;
+    connect(RmSocket, &RMSocket::finished, RmSocket, &QObject::deleteLater);
+
+	RmSocket->AddListener([this](RMMessage* Message) {
+		MessageBox(nullptr, L"Hello World", L"Hello", 0);
+	}, EMessageType::Ping);
+
+	RmSocket->AddListener([this](RMMessage* Message) {
+		auto Str = QString::fromUtf8(Message->Data, 63);
+		MessageBox(nullptr, Str.toStdWString().c_str(), L"Hello", 0);
+	}, EMessageType::Uuid);
+
+    RmSocket->start();
 }
 
 void MainWindow::CreatePrShortcuts()

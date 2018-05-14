@@ -141,7 +141,10 @@ HEADERS *= BanEditor.h \
     widgets/MUComboBox.h \
     DeveloperConsole.h \
     PathListWidget.h \
-    XMLTools.h
+    XMLTools.h \
+    RMSocket.h \
+    RMMessage.h
+    
 
 SOURCES *= BanEditor.cpp \
     ACLEditor.cpp \
@@ -209,7 +212,8 @@ SOURCES *= BanEditor.cpp \
     widgets/MUComboBox.cpp \
     DeveloperConsole.cpp \
     PathListWidget.cpp \
-    XMLTools.cpp
+    XMLTools.cpp \
+    RMSocket.cpp
 
 CONFIG(qtspeech) {
   SOURCES *= TextToSpeech.cpp

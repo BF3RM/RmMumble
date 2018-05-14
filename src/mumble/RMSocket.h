@@ -22,4 +22,6 @@ protected:
 protected:
     class QTcpSocket* Socket;
     std::map<EMessageType, std::vector<OnMessageCallback>> MessageCallbacks;
+signals:
+    void OnUuidReceived(QString Uuid);
 };

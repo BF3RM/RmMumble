@@ -49,6 +49,8 @@
 #include <fstream>
 #include "RMSocket.h"
 #include "RMMessage.h"
+#include <QJsonDocument> 
+#include <QAbstractSocket> 
 
 #ifdef Q_OS_WIN
 #include "TaskList.h"
@@ -70,6 +72,8 @@ struct PluginInfo {
     class MumblePluginQt *pqt;
     PluginInfo();
 };
+
+static void recreateServerHandler();
 
 MessageBoxEvent::MessageBoxEvent(QString m) : QEvent(static_cast<QEvent::Type>(MB_QEVENT)) {
 	msg = m;
@@ -193,15 +197,79 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
     connect(RmSocket, &RMSocket::finished, RmSocket, &QObject::deleteLater);
 
 	RmSocket->AddListener([this](RMMessage* Message) {
-		MessageBox(nullptr, L"Hello World", L"Hello", 0);
+		//QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("Hello"), QString::fromUtf8("Ping Received")).exec();
+		Message->Data[0] = (char)EMessageType::Ping;
+		memcpy(&Message->Data[1], "Pong", 4);
+		Message->Send();
 	}, EMessageType::Ping);
 
-	RmSocket->AddListener([this](RMMessage* Message) {
-		auto Str = QString::fromUtf8(Message->Data, 63);
-		MessageBox(nullptr, Str.toStdWString().c_str(), L"Hello", 0);
+/*	RmSocket->AddListener([this](RMMessage* Message) {
+		QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
+		QString Uuid = QString::fromUtf8(Message->Data).replace(QChar(0x0a), QChar(0x0));
+		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(Uuid);
+		auto Request = new QNetworkRequest(QUrl(Url));
+		HttpManager.get(*Request);
+		//QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("Hello"), QString::fromUtf8(Message->Data)).exec();
 	}, EMessageType::Uuid);
+*/
+
+	connect(RmSocket, &RMSocket::OnUuidReceived, this, [this](QString Uuid) {
+		QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
+		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(Uuid);
+		auto Request = new QNetworkRequest(QUrl(Url));
+		HttpManager.get(*Request);
+	});
 
     RmSocket->start();
+}
+
+void MainWindow::OnUuidReceived(QNetworkReply* Reply)
+{
+	QString Response = QString::fromUtf8(Reply->readAll());
+	QJsonDocument LoadDoc(QJsonDocument::fromJson(Response.toUtf8()));
+	if (!LoadDoc.isObject()) {
+		QMessageBox(QMessageBox::Icon::Information, tr("ServerInfo"), tr("Invalid json from %1:\n%2").arg(Reply->url().toString(), Response)).exec();
+		return;
+	}
+
+	auto Json = LoadDoc.object();
+
+	//g.sh->start(QThread::TimeCriticalPriority);
+
+
+	QString Host = Json[QString::fromUtf8("mumbleHost")].toString();
+	int Port = Json[QString::fromUtf8("mumblePort")].toInt();
+
+	QString User = tr("User");
+	QString Pw = tr("");
+	
+	if (g.uiSession == 0) {
+		//QMessageBox(QMessageBox::Icon::Information, tr("ServerInfo"), tr("Starting new server")).exec();
+		recreateServerHandler();
+
+		g.s.qsLastServer = tr("test");
+		rtLast = MumbleProto::Reject_RejectType_None;
+		bRetryServer = true;
+		qaServerDisconnect->setEnabled(true);
+		g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor(Qt::escape(Host), Log::Server)));
+		g.sh->setConnectionInfo(Host, Port, User, Pw);
+		g.sh->start(QThread::TimeCriticalPriority);
+	} else {
+		QObject::connect(g.sh.get(), &ServerHandler::disconnected, this, [this, Host, Port, User, Pw](QAbstractSocket::SocketError, QString) {
+			recreateServerHandler();
+
+			g.s.qsLastServer = tr("test");
+			rtLast = MumbleProto::Reject_RejectType_None;
+			bRetryServer = true;
+			qaServerDisconnect->setEnabled(true);
+			g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor(Qt::escape(Host), Log::Server)));
+			g.sh->setConnectionInfo(Host, Port, User, Pw);
+			g.sh->start(QThread::TimeCriticalPriority);
+		});
+
+		g.sh->disconnect();
+	}
+//	QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("ServerInfo"), Answer).exec();
 }
 
 void MainWindow::CreatePrShortcuts()

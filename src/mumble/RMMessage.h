@@ -3,10 +3,10 @@
 class RMMessage
 {
 public:
-    RMMessage(QTcpSocket* Socket, size_t DataSize = 64) : Socket(Socket), DataSize(DataSize)
+    RMMessage(QTcpSocket* Socket, size_t DataSize = 64) : Data(nullptr), DataSize(DataSize), Socket(Socket)
     {
-        memset(&Data[0], '\0', 64);
         Data = (char*) malloc(DataSize);
+        memset(&Data[0], '\0', 64);
     }
 
     ~RMMessage()

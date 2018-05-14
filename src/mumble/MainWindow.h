@@ -153,7 +153,9 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		MUComboBox *qcbTransmitMode;
 		QAction *qaTransmitMode;
 		QAction *qaTransmitModeSeparator;
+		QNetworkAccessManager HttpManager;
 
+		void OnUuidReceived(class QNetworkReply* Reply);
         void CreatePrShortcuts();
 		void createActions();
 		void setupGui();

@@ -1,16 +1,6 @@
 #include "RMSocket.h"
 #include "RMMessage.h"
 #include <QTcpServer> 
-#include <string>
-
-inline std::wstring convert( const std::string& as )
-{
-    wchar_t* buf = new wchar_t[as.size() * 2 + 2];
-    swprintf( buf, L"%S", as.c_str() );
-    std::wstring rval = buf;
-    delete[] buf;
-    return rval;
-}
 
 void RMSocket::run()
 {
@@ -34,17 +24,29 @@ void RMSocket::run()
                     Status = Socket->read(Data, 64);
                     if (Status == -1 || Data[0] == '\n') break;
                     if (Status > 0) {
-                        if (Data[0] == 123 && strncmp("Ping", &Data[1], 4) == 0) {
-                            Socket->write("Pong", 4);
-                        }
-                    }
+                        auto Message = NewMessage(63);
+                        memcpy(Message->Data, &Data[1], 63);
+                        Message->DataSize = Status - 1; // Ignoring the 0x0 at the end
 
-                    auto Message = NewMessage(63);
-                    memcpy(Message->Data, &Data[1], 63);
-                    for (auto& Listener : MessageCallbacks[(EMessageType)(uint8_t)Data[0]]) {
-                        Listener(Message);
+                        // Eventually removing 0xa
+                        if (Message->Data[Status - 2] == 0xa) {
+                            Message->Data[Status - 2] = '\0';
+                            Message->DataSize --;
+                        }
+
+                        for (auto& Listener : MessageCallbacks[(EMessageType)(uint8_t)Data[0]]) {
+                            Listener(Message);
+                        }
+
+                        switch((EMessageType)Data[0]) {
+                            case EMessageType::Uuid:
+                                emit OnUuidReceived(QString::fromUtf8(Message->Data));
+                            default: break;
+                        }
+
+                        delete Message;
                     }
-                    delete Message;
+                    memset(Data, '\0', 64);
                 }
             } else break;
         }

@@ -193,7 +193,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	delete qaHelpVersionCheck;
 #endif
 
-	auto RmSocket = new RMSocket;
+	RmSocket = new RMSocket;
     connect(RmSocket, &RMSocket::finished, RmSocket, &QObject::deleteLater);
 
 	RmSocket->AddListener([this](RMMessage* Message) {
@@ -202,16 +202,6 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		memcpy(&Message->Data[1], "Pong", 4);
 		Message->Send();
 	}, EMessageType::Ping);
-
-/*	RmSocket->AddListener([this](RMMessage* Message) {
-		QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
-		QString Uuid = QString::fromUtf8(Message->Data).replace(QChar(0x0a), QChar(0x0));
-		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(Uuid);
-		auto Request = new QNetworkRequest(QUrl(Url));
-		HttpManager.get(*Request);
-		//QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("Hello"), QString::fromUtf8(Message->Data)).exec();
-	}, EMessageType::Uuid);
-*/
 
 	connect(RmSocket, &RMSocket::OnUuidReceived, this, [this](QString Uuid) {
 		QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
@@ -2397,6 +2387,20 @@ void MainWindow::userStateChanged() {
 		return;
 	}
 
+	auto SendTalkingMessage = [this, user]() {
+		auto Message = new RMMessage(RmSocket->GetSocket(), 64);
+		Message->Data[0] = (char)EMessageType::Talking;
+		memcpy(&Message->Data[1], user->qsName.left(63).leftJustified(63, QChar::fromLatin1('\0')).toUtf8().constData(), 63);
+		Message->Send();
+	};
+
+	auto SendStopTalkingMessage = [this, user]() {
+		auto Message = new RMMessage(RmSocket->GetSocket(), 64);
+		Message->Data[0] = (char)EMessageType::StopTalking;
+		memcpy(&Message->Data[1], user->qsName.left(63).leftJustified(63, QChar::fromLatin1('\0')).toUtf8().constData(), 63);
+		Message->Send();
+	};
+
 	switch (user->tsState) {
 		case Settings::Talking:
 		case Settings::Whispering:
@@ -2406,10 +2410,11 @@ void MainWindow::userStateChanged() {
 			g.prioritySpeakerActiveOverride =
 			        g.s.bAttenuateUsersOnPrioritySpeak
 			        && user->bPrioritySpeaker;
-			
+			if (RmSocket->IsAlive()) SendTalkingMessage();
 			break;
 		case Settings::Passive:
 		default:
+			if (RmSocket->IsAlive()) SendStopTalkingMessage();
 			g.bAttenuateOthers = false;
 			g.prioritySpeakerActiveOverride = false;
 			break;

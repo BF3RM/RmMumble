@@ -1,6 +1,7 @@
 #include "RMSocket.h"
 #include "RMMessage.h"
 #include <QTcpServer> 
+#include <iostream>
 
 void RMSocket::run()
 {
@@ -12,6 +13,8 @@ void RMSocket::run()
     while (true) {
         Server.waitForNewConnection(-1);
         Socket = Server.nextPendingConnection();
+
+        if (!Socket) continue;
 
         auto Data = (char*) malloc(64);
         memset(Data, '\0', 64);
@@ -38,6 +41,7 @@ void RMSocket::run()
                             Listener(Message);
                         }
 
+                        // Some stuff needs to happen in the main thread, so we use qt signals to automate this
                         switch((EMessageType)Data[0]) {
                             case EMessageType::Uuid:
                                 emit OnUuidReceived(QString::fromUtf8(Message->Data));

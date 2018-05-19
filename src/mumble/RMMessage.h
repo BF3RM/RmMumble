@@ -1,4 +1,9 @@
+#ifndef RMMESSAGE_H
+#define RMMESSAGE_H
+
 #include <QTcpSocket> 
+
+typedef std::function<void(class RMMessage*)> OnMessageCallback;
 
 class RMMessage
 {
@@ -24,3 +29,5 @@ public:
 protected:
     QTcpSocket* Socket;
 };
+
+#endif

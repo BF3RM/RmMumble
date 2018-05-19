@@ -136,7 +136,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 	protected:
 		Usage uUsage;
 		QTimer *qtReconnect;
-
+		class RMSocket* RmSocket;
 		QList<QAction *> qlServerActions;
 		QList<QAction *> qlChannelActions;
 		QList<QAction *> qlUserActions;

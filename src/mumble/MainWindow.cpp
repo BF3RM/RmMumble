@@ -192,12 +192,18 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 #ifdef NO_UPDATE_CHECK
 	delete qaHelpVersionCheck;
 #endif
+	RmPingTimeout = new QTimer(this);
+	connect(RmPingTimeout, &QTimer::timeout, this, [this](){
+		g.sh->disconnect();
+		g.sh->wait();
+	});
 
 	RmSocket = new RMSocket;
     connect(RmSocket, &RMSocket::finished, RmSocket, &QObject::deleteLater);
 
 	RmSocket->AddListener([this](RMMessage* Message) {
-		//QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("Hello"), QString::fromUtf8("Ping Received")).exec();
+		RmPingTimeout->start(11000);
+
 		Message->Data[0] = (char)EMessageType::Ping;
 		memcpy(&Message->Data[1], "Pong", 4);
 		Message->Send();
@@ -267,6 +273,7 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 		});
 
 		g.sh->disconnect();
+		g.sh->wait();
 	}
 //	QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("ServerInfo"), Answer).exec();
 }

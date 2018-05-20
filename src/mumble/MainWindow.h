@@ -154,9 +154,12 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		QAction *qaTransmitMode;
 		QAction *qaTransmitModeSeparator;
 		QNetworkAccessManager HttpManager;
+
 		QString RmUser;
 		QString RmLastConnectedUuid;
 		QString RmConnectingUuid;
+		QTimer* RmPingTimeout = nullptr;
+
 		void OnUuidReceived(class QNetworkReply* Reply);
         void CreatePrShortcuts();
 		void createActions();

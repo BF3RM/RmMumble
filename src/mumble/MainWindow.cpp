@@ -205,7 +205,14 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 	connect(RmSocket, &RMSocket::OnUuidReceived, this, [this](QString Uuid) {
 		QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
-		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(Uuid);
+		QStringList SplitMessage = Uuid.split(tr("|"));
+		if (SplitMessage.length() < 2) return;
+		if (RmLastConnectedUuid == SplitMessage[0]) return;
+
+		RmConnectingUuid = SplitMessage[0];
+		RmUser = SplitMessage[1];
+
+		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(RmConnectingUuid);
 		auto Request = new QNetworkRequest(QUrl(Url));
 		HttpManager.get(*Request);
 	});
@@ -218,7 +225,7 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 	QString Response = QString::fromUtf8(Reply->readAll());
 	QJsonDocument LoadDoc(QJsonDocument::fromJson(Response.toUtf8()));
 	if (!LoadDoc.isObject()) {
-		QMessageBox(QMessageBox::Icon::Information, tr("ServerInfo"), tr("Invalid json from %1:\n%2").arg(Reply->url().toString(), Response)).exec();
+		//QMessageBox(QMessageBox::Icon::Information, tr("ServerInfo"), tr("Invalid json from %1:\n%2").arg(Reply->url().toString(), Response)).exec();
 		return;
 	}
 
@@ -229,8 +236,10 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 
 	QString Host = Json[QString::fromUtf8("mumbleHost")].toString();
 	int Port = Json[QString::fromUtf8("mumblePort")].toInt();
+	RmLastConnectedUuid = RmConnectingUuid;
 
-	QString User = tr("User");
+
+	QString User = RmUser;
 	QString Pw = tr("");
 	
 	if (g.uiSession == 0) {

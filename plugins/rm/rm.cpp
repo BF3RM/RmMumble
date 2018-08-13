@@ -288,8 +288,8 @@ static const std::wstring longdesc() {
     return std::wstring(L"Supports Battlefield 3 with context and identity support.");
 }
 
-static std::wstring description(L"Venice Unleashed - Realitymod");
-static std::wstring shortname(L"VU Realitymod");
+static std::wstring description(L"RealityMod");
+static std::wstring shortname(L"RealityMod");
 
 static int trylock1() {
     return trylock(std::multimap<std::wstring, unsigned long long int>());

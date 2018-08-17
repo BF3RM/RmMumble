@@ -11,7 +11,7 @@ CONFIG += debug_and_release
 SUBDIRS = link
 
 win32 {
-  SUBDIRS += vu
+  SUBDIRS += rm
 
   equals(MUMBLE_ARCH, x86_64) {
     #SUBDIRS += bf1 bf4 ffxiv_x64 gtav wow_x64

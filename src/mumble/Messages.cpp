@@ -814,7 +814,7 @@ void MainWindow::msgUserList(const MumbleProto::UserList &msg) {
 }
 
 void MainWindow::msgVoiceTarget(const MumbleProto::VoiceTarget &) {
-	QMessageBox(QMessageBox::NoIcon, "title", "Text", QMessageBox::Ok).exec();
+	QMessageBox(QMessageBox::NoIcon, QLatin1String("title"), QLatin1String("Text"), QMessageBox::Ok).exec();
 }
 
 void MainWindow::msgPermissionQuery(const MumbleProto::PermissionQuery &msg) {

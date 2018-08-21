@@ -24,6 +24,12 @@
 // latter lives in a separate thread and so cannot touch the
 // GUI.
 
+enum class ShortcutTargetType : uint8_t {
+	Local,
+	Squad,
+	SquadLeader
+};
+
 struct Shortcut {
 	int iIndex;
 	QList<QVariant> qlButtons;
@@ -43,6 +49,7 @@ struct ShortcutTarget {
 	bool bLinks;
 	bool bChildren;
 	bool bForceCenter;
+	ShortcutTargetType Type;
 	ShortcutTarget();
 	bool isServerSpecific() const;
 	bool operator <(const ShortcutTarget &) const;

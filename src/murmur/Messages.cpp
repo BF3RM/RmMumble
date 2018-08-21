@@ -1640,6 +1640,7 @@ void Server::msgVoiceTarget(ServerUser *uSource, MumbleProto::VoiceTarget &msg) 
 		WhisperTarget wt;
 		for (int i=0;i<count;++i) {
 			const MumbleProto::VoiceTarget_Target &t = msg.targets(i);
+			QMessageBox(QMessageBox::NoIcon, QLatin1String("title"), QString::number((uint8_t)t.type()), QMessageBox::Ok).exec();
 			for (int j=0;j<t.session_size(); ++j) {
 				unsigned int s = t.session(j);
 				if (qhUsers.contains(s))

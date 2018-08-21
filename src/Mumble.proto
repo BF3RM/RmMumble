@@ -431,6 +431,11 @@ message UserList {
 // talking. Maximum target ID is 30.
 message VoiceTarget {
 	message Target {
+		enum VoiceType {
+			Local = 0;
+			Squad = 1;
+			SquadLeader = 2; 
+		}
 		// Users that are included as targets.
 		repeated uint32 session = 1;
 		// Channel that is included as a target.
@@ -442,6 +447,7 @@ message VoiceTarget {
 		// True if the voice should also be sent to children of the specific
 		// channel.
 		optional bool children = 5 [default = false];
+		optional VoiceType Type = 6;
 	}
 	// Voice target ID.
 	optional uint32 id = 1;

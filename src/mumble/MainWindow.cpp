@@ -2763,6 +2763,7 @@ void MainWindow::updateTarget() {
 							t->set_links(true);
 						if (! st.qsGroup.isEmpty())
 							t->set_group(u8(st.qsGroup));
+						t->set_type((MumbleProto::VoiceTarget_Target_VoiceType)st.Type);
 					}
 				}
 				g.sh->sendMessage(mpvt);
@@ -2815,15 +2816,16 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
     TargetChannel.bForceCenter = true;
     TargetChannel.bUsers = false;
     TargetChannel.bLinks = false;
+    TargetChannel.Type = ShortcutTargetType::Squad;
 
     on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
 }
 
 void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
 {
-	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
-		return;
-	}
+    if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
+	return;
+    }
 
     auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
     if (!ContextChannel) {
@@ -2841,21 +2843,26 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
     TargetChannel.bForceCenter = false;
     TargetChannel.bUsers = false;
     TargetChannel.bLinks = false;
+    TargetChannel.Type = ShortcutTargetType::Local;
 
-	on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
+    on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
 }
 
 void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
 {
-	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
-		return;
-	}
+    auto STarget = static_cast<ShortcutTarget*>(Data.value<void*>());
+    STarget->Type = ShortcutTargetType::SquadLeader;
+
+    if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
+	return;
+    }
 
     if (!Down) {
         ShortcutTarget Target;
         Target.bUsers = true;
         Target.qlUsers << SquadLeaderWhispMap[Data.toInt()];
         Target.bForceCenter = true;
+	Target.Type = ShortcutTargetType::SquadLeader;
         SquadLeaderWhispMap.remove(Data.toInt());
         return on_gsWhisper_triggered(false, QVariant::fromValue(Target));
     }
@@ -3499,5 +3506,4 @@ void MainWindow::destroyUserInformation() {
 		}
 	}
 }
-
 

@@ -78,17 +78,17 @@ QDataStream &operator<< (QDataStream &qds, const ShortcutTarget &st) {
 	qds << st.bUsers << st.bForceCenter;
 
 	if (st.bUsers)
-		return qds << st.qlUsers;
+		return qds << st.qlUsers << (uint8_t)st.Type;
 	else
-		return qds << st.iChannel << st.qsGroup << st.bLinks << st.bChildren;
+		return qds << st.iChannel << st.qsGroup << st.bLinks << st.bChildren << (uint8_t)st.Type;
 }
 
 QDataStream &operator>> (QDataStream &qds, ShortcutTarget &st) {
 	qds >> st.bUsers >> st.bForceCenter;
 	if (st.bUsers)
-		return qds >> st.qlUsers;
+		return qds >> st.qlUsers >> (uint8_t&)st.Type;
 	else
-		return qds >> st.iChannel >> st.qsGroup >> st.bLinks >> st.bChildren;
+		return qds >> st.iChannel >> st.qsGroup >> st.bLinks >> st.bChildren >> (uint8_t&)st.Type;
 }
 
 const QString Settings::cqsDefaultPushClickOn = QLatin1String(":/on.ogg");

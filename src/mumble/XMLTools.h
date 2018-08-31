@@ -8,9 +8,8 @@
 
 #include <QObject>
 #include <QMap>
-
-class QXmlStreamReader;
-class QXmlStreamWriter;
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 class XMLTools : public QObject {
 		Q_OBJECT
@@ -22,7 +21,7 @@ class XMLTools : public QObject {
 		static void recurseParse(QXmlStreamReader &reader,
 		                         QXmlStreamWriter &writer,
 		                         int &paragraphs,
-		                         const QMap<QString, QString> &opstyle = QMap<QString, QString>(),
+		                         const QMap<QString, QString> &opstyle,
 		                         const int close = 0, bool ignore = true);
 
 		/* Iterate XML and remove close-followed-by-open.

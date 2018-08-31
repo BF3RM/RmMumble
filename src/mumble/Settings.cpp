@@ -240,6 +240,7 @@ Settings::Settings() {
 	iJitterBufferSize = 1;
 	iFramesPerPacket = 2;
 	iNoiseSuppress = -30;
+	bDenoise = false;
 	uiAudioInputChannelMask = 0xffffffffffffffffULL;
 
 	// Idle auto actions
@@ -314,6 +315,11 @@ Settings::Settings() {
 
 	qsALSAInput=QLatin1String("default");
 	qsALSAOutput=QLatin1String("default");
+
+	qsJackClientName = QLatin1String("mumble");
+	qsJackAudioOutput = QLatin1String("1");
+	bJackStartServer = true;
+	bJackAutoConnect = true;
 
 	bEcho = false;
 	bEchoMulti = true;
@@ -418,8 +424,11 @@ Settings::Settings() {
 	qmMessageSounds[Log::ServerConnected] = QLatin1String(":/ServerConnected.ogg");
 	qmMessageSounds[Log::ServerDisconnected] = QLatin1String(":/ServerDisconnected.ogg");
 	qmMessageSounds[Log::TextMessage] = QLatin1String(":/TextMessage.ogg");
+	qmMessageSounds[Log::PrivateTextMessage] = qmMessageSounds[Log::TextMessage];
 	qmMessageSounds[Log::ChannelJoin] = QLatin1String(":/UserJoinedChannel.ogg");
 	qmMessageSounds[Log::ChannelLeave] = QLatin1String(":/UserLeftChannel.ogg");
+	qmMessageSounds[Log::ChannelJoinConnect] = qmMessageSounds[Log::ChannelJoin];
+	qmMessageSounds[Log::ChannelLeaveDisconnect] = qmMessageSounds[Log::UserLeave];
 	qmMessageSounds[Log::YouMutedOther] = QLatin1String(":/UserMutedYouOrByYou.ogg");
 	qmMessageSounds[Log::YouMuted] = QLatin1String(":/UserMutedYouOrByYou.ogg");
 	qmMessageSounds[Log::YouKicked] = QLatin1String(":/UserKickedYouOrByYou.ogg");
@@ -610,6 +619,7 @@ void Settings::load(QSettings* settings_ptr) {
 	SAVELOAD(fVADmin, "audio/vadmin");
 	SAVELOAD(fVADmax, "audio/vadmax");
 	SAVELOAD(iNoiseSuppress, "audio/noisesupress");
+	SAVELOAD(bDenoise, "audio/denoise");
 	SAVELOAD(uiAudioInputChannelMask, "audio/inputchannelmask");
 	SAVELOAD(iVoiceHold, "audio/voicehold");
 	SAVELOAD(iOutputDelay, "audio/outputdelay");
@@ -653,6 +663,10 @@ void Settings::load(QSettings* settings_ptr) {
 
 	SAVELOAD(qsPulseAudioInput, "pulseaudio/input");
 	SAVELOAD(qsPulseAudioOutput, "pulseaudio/output");
+
+	SAVELOAD(qsJackAudioOutput, "jack/output");
+	SAVELOAD(bJackStartServer, "jack/startserver");
+	SAVELOAD(bJackAutoConnect, "jack/autoconnect");
 
 	SAVELOAD(qsOSSInput, "oss/input");
 	SAVELOAD(qsOSSOutput, "oss/output");
@@ -949,6 +963,7 @@ void Settings::save() {
 	SAVELOAD(fVADmin, "audio/vadmin");
 	SAVELOAD(fVADmax, "audio/vadmax");
 	SAVELOAD(iNoiseSuppress, "audio/noisesupress");
+	SAVELOAD(bDenoise, "audio/denoise");
 	SAVELOAD(uiAudioInputChannelMask, "audio/inputchannelmask");
 	SAVELOAD(iVoiceHold, "audio/voicehold");
 	SAVELOAD(iOutputDelay, "audio/outputdelay");
@@ -992,6 +1007,10 @@ void Settings::save() {
 
 	SAVELOAD(qsPulseAudioInput, "pulseaudio/input");
 	SAVELOAD(qsPulseAudioOutput, "pulseaudio/output");
+
+	SAVELOAD(qsJackAudioOutput, "jack/output");
+	SAVELOAD(bJackStartServer, "jack/startserver");
+	SAVELOAD(bJackAutoConnect, "jack/autoconnect");
 
 	SAVELOAD(qsOSSInput, "oss/input");
 	SAVELOAD(qsOSSOutput, "oss/output");

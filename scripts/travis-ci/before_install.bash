@@ -8,13 +8,22 @@
 MUMBLE_HOST_DEB=${MUMBLE_HOST/_/-}
 
 if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+	# Bump the apt http timeout to 120 seconds.
+	# Without this, we'd regularly get timeout errors
+	# from our MXE mirror on dl.mumble.info.
+	#
+	# See mumble-voip/mumble#3312 for more information.
+	echo 'Acquire::http::Timeout "120";' | sudo tee /etc/apt/apt.conf.d/99zzztimeout
+
 	if [ "${MUMBLE_QT}" == "qt4" ] && [ "${MUMBLE_HOST}" == "x86_64-linux-gnu" ]; then
 		sudo apt-get -qq update
 		sudo apt-get build-dep -qq mumble
+		sudo apt-get install libjack-jackd2-dev
 	elif [ "${MUMBLE_QT}" == "qt5" ] && [ "${MUMBLE_HOST}" == "x86_64-linux-gnu" ]; then
 		sudo apt-get -qq update
 		sudo apt-get build-dep -qq mumble
 		sudo apt-get install qt5-default qttools5-dev qttools5-dev-tools qtbase5-dev qtbase5-dev-tools qttranslations5-l10n libqt5svg5-dev
+		sudo apt-get install libjack-jackd2-dev
 	elif [ "${MUMBLE_QT}" == "qt5" ] && [ "${MUMBLE_HOST}" == "i686-w64-mingw32" ]; then
 		sudo dpkg --add-architecture i386
 		sudo apt-get -qq update
@@ -57,7 +66,17 @@ if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
 		exit 1
 	fi
 elif [ "${TRAVIS_OS_NAME}" == "osx" ]; then
-	brew update && brew install qt5 libogg libvorbis flac libsndfile protobuf openssl ice
+	# We install the protobuf package via brew,
+	# which depends on "python@2".
+	#
+	# The build image upgraded the installed "python",
+	# and now "python@2" conflicts with it when trying
+	# to create symlinks.
+	#
+	# We don’t use the symlinked "python" installed
+	# by default in the image, so we unlink it to allow
+	# the "python@2" package to be installed without conflict.
+	brew update && brew unlink python && brew install qt5 libogg libvorbis flac libsndfile protobuf openssl ice
 else
 	exit 1
 fi

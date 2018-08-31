@@ -67,7 +67,8 @@ static HANDLE loadQoS() {
 }
 #endif
 
-ServerHandler::ServerHandler() {
+ServerHandler::ServerHandler()
+    : database(new Database(QLatin1String("ServerHandler"))) {
 	cConnection.reset();
 	qusUdp = NULL;
 	bStrong = false;
@@ -295,6 +296,7 @@ void ServerHandler::run() {
 		int ret = exec();
 		if (ret < 0) {
 			qWarning("ServerHandler: failed to resolve hostname");
+			emit error(QAbstractSocket::HostNotFoundError, tr("Unable to resolve hostname"));
 			return;
 		}
 	}
@@ -442,7 +444,7 @@ void ServerHandler::setSslErrors(const QList<QSslError> &errors) {
 #endif
 
 	bStrong = false;
-	if ((qscCert.size() > 0)  && (QString::fromLatin1(qscCert.at(0).digest(QCryptographicHash::Sha1).toHex()) == Database::getDigest(qsHostName, usPort)))
+	if ((qscCert.size() > 0)  && (QString::fromLatin1(qscCert.at(0).digest(QCryptographicHash::Sha1).toHex()) == database->getDigest(qsHostName, usPort)))
 		connection->proceedAnyway();
 	else
 		qlErrors = newErrors;
@@ -557,14 +559,14 @@ void ServerHandler::message(unsigned int msgType, const QByteArray &qbaMsg) {
 					else
 						g.mw->msgBox(tr("UDP packets cannot be received from the server. Switching to TCP mode."));
 
-					Database::setUdp(qbaDigest, false);
+					database->setUdp(qbaDigest, false);
 				}
 			} else if (!bUdp && (cs.uiRemoteGood > 3) && (cs.uiGood > 3)) {
 				bUdp = true;
 				if (! NetworkConfig::TcpModeEnabled()) {
 					g.mw->msgBox(tr("UDP packets can be sent to and received from the server. Switching back to UDP mode."));
 
-					Database::setUdp(qbaDigest, true);
+					database->setUdp(qbaDigest, true);
 				}
 			}
 		}
@@ -648,7 +650,7 @@ void ServerHandler::serverConnectionConnected() {
 	if (! qscCert.isEmpty()) {
 		const QSslCertificate &qsc = qscCert.last();
 		qbaDigest = sha1(qsc.publicKey().toDer());
-		bUdp = Database::getUdp(qbaDigest);
+		bUdp = database->getUdp(qbaDigest);
 	} else {
 		// Shouldn't reach this
 		qCritical("Server must have a certificate. Dropping connection");
@@ -675,7 +677,7 @@ void ServerHandler::serverConnectionConnected() {
 	mpa.set_username(u8(qsUserName));
 	mpa.set_password(u8(qsPassword));
 
-	QStringList tokens = Database::getTokens(qbaDigest);
+	QStringList tokens = database->getTokens(qbaDigest);
 	foreach(const QString &qs, tokens)
 		mpa.add_tokens(u8(qs));
 
@@ -915,7 +917,7 @@ void ServerHandler::setUserTexture(unsigned int uiSession, const QByteArray &qba
 	sendMessage(mpus);
 
 	if (! texture.isEmpty()) {
-		Database::setBlob(sha1(texture), texture);
+		database->setBlob(sha1(texture), texture);
 	}
 }
 

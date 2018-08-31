@@ -35,6 +35,7 @@
 #include "ServerAddress.h"
 
 class Connection;
+class Database;
 class Message;
 class PacketDataStream;
 class QUdpSocket;
@@ -55,6 +56,8 @@ class ServerHandler : public QThread {
 	private:
 		Q_OBJECT
 		Q_DISABLE_COPY(ServerHandler)
+
+		Database *database;
 	protected:
 		QString qsHostName;
 		QString qsUserName;
@@ -136,6 +139,7 @@ class ServerHandler : public QThread {
 		void disconnect();
 		void run() Q_DECL_OVERRIDE;
 	signals:
+		void error(QAbstractSocket::SocketError, QString reason);
 		void disconnected(QAbstractSocket::SocketError, QString reason);
 		void connected();
 		void pingRequested();

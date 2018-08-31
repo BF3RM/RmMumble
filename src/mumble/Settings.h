@@ -183,6 +183,7 @@ struct Settings {
 	QString qsTTSLanguage;
 	int iQuality, iMinLoudness, iVoiceHold, iJitterBufferSize;
 	int iNoiseSuppress;
+	bool bDenoise;
 	quint64 uiAudioInputChannelMask;
 
 	// Idle auto actions
@@ -206,6 +207,8 @@ struct Settings {
 
 	QString qsALSAInput, qsALSAOutput;
 	QString qsPulseAudioInput, qsPulseAudioOutput;
+	QString qsJackClientName, qsJackAudioOutput;
+	bool bJackStartServer, bJackAutoConnect;
 	QString qsOSSInput, qsOSSOutput;
 	int iPortAudioInput, iPortAudioOutput;
 
@@ -273,7 +276,7 @@ struct Settings {
 	bool bEnableUIAccess;
 	QList<Shortcut> qlShortcuts;
 
-	enum MessageLog { LogNone = 0x00, LogConsole = 0x01, LogTTS = 0x02, LogBalloon = 0x04, LogSoundfile = 0x08};
+	enum MessageLog { LogNone = 0x00, LogConsole = 0x01, LogTTS = 0x02, LogBalloon = 0x04, LogSoundfile = 0x08, LogHighlight = 0x10 };
 	int iMaxLogBlocks;
 	QMap<int, QString> qmMessageSounds;
 	QMap<int, quint32> qmMessages;

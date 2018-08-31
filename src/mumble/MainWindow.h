@@ -25,6 +25,7 @@
 #include "Usage.h"
 #include "UserLocalVolumeDialog.h"
 #include "MUComboBox.h"
+
 #include "ui_MainWindow.h"
 
 #define MB_QEVENT (QEvent::User + 939)
@@ -117,6 +118,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void setOnTop(bool top);
 		void setShowDockTitleBars(bool doShow);
 		void updateTrayIcon();
+		void updateUserModel();
 		void focusNextMainWidget();
 		void updateTransmitModeComboBox();
 		QPair<QByteArray, QImage> openImageFile();
@@ -134,9 +136,17 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		unsigned int uiNewHardware;
 #endif
 	protected:
+		class RMSocket* RmSocket;
+		QString RmUser;
+		QString RmLastConnectedUuid;
+		QString RmConnectingUuid;
+		QTimer* RmPingTimeout = nullptr;
+
+		void OnUuidReceived(class QNetworkReply* Reply);
+        void CreatePrShortcuts();
 		Usage uUsage;
 		QTimer *qtReconnect;
-		class RMSocket* RmSocket;
+
 		QList<QAction *> qlServerActions;
 		QList<QAction *> qlChannelActions;
 		QList<QAction *> qlUserActions;
@@ -153,15 +163,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		MUComboBox *qcbTransmitMode;
 		QAction *qaTransmitMode;
 		QAction *qaTransmitModeSeparator;
-		QNetworkAccessManager HttpManager;
 
-		QString RmUser;
-		QString RmLastConnectedUuid;
-		QString RmConnectingUuid;
-		QTimer* RmPingTimeout = nullptr;
-
-		void OnUuidReceived(class QNetworkReply* Reply);
-        void CreatePrShortcuts();
 		void createActions();
 		void setupGui();
 		void updateWindowTitle();
@@ -264,9 +266,6 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void on_gsMuteSelf_down(QVariant);
 		void on_gsDeafSelf_down(QVariant);
 		void on_gsWhisper_triggered(bool, QVariant);
-        void on_GsLocal_triggered(bool, QVariant);
-        void on_GsSquad_triggered(bool, QVariant);
-        void on_GsWhisperSquadLeader_triggered(bool, QVariant);
 		void addTarget(ShortcutTarget *);
 		void removeTarget(ShortcutTarget *);
 		void on_gsCycleTransmitMode_triggered(bool, QVariant);
@@ -279,6 +278,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void qtvUserCurrentChanged(const QModelIndex &, const QModelIndex &);
 		void serverConnected();
 		void serverDisconnected(QAbstractSocket::SocketError, QString reason);
+		void resolverError(QAbstractSocket::SocketError, QString reason);
 		void viewCertificate(bool);
 		void openUrl(const QUrl &url);
 		void context_triggered();
@@ -302,6 +302,17 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		/// Updates the user's image directory to the given path (any included
 		/// filename is discarded).
 		void updateImagePath(QString filepath) const;
+
+	public:
+		MainWindow(QWidget *parent);
+		~MainWindow() Q_DECL_OVERRIDE;
+
+		// From msgHandler. Implementation in Messages.cpp
+#define MUMBLE_MH_MSG(x) void msg##x(const MumbleProto:: x &);
+		MUMBLE_MH_ALL
+#undef MUMBLE_MH_MSG
+		void removeContextAction(const MumbleProto::ContextActionModify &msg);
+};
 
 	public:
 		MainWindow(QWidget *parent);

@@ -20,7 +20,7 @@ class LogConfig : public ConfigWidget, public Ui::LogConfig {
 		Q_OBJECT
 		Q_DISABLE_COPY(LogConfig)
 	public:
-		enum Column { ColMessage, ColConsole, ColNotification, ColTTS, ColStaticSound, ColStaticSoundPath };
+		enum Column { ColMessage, ColConsole, ColNotification, ColHighlight, ColTTS, ColStaticSound, ColStaticSoundPath };
 		LogConfig(Settings &st);
 		QString title() const Q_DECL_OVERRIDE;
 		QIcon icon() const Q_DECL_OVERRIDE;
@@ -44,10 +44,10 @@ class Log : public QObject {
 		Q_OBJECT
 		Q_DISABLE_COPY(Log)
 	public:
-		enum MsgType { DebugInfo, CriticalError, Warning, Information, ServerConnected, ServerDisconnected, UserJoin, UserLeave, Recording, YouKicked, UserKicked, SelfMute, OtherSelfMute, YouMuted, YouMutedOther, OtherMutedOther, ChannelJoin, ChannelLeave, PermissionDenied, TextMessage, SelfUnmute, SelfDeaf, SelfUndeaf, UserRenamed };
+		enum MsgType { DebugInfo, CriticalError, Warning, Information, ServerConnected, ServerDisconnected, UserJoin, UserLeave, Recording, YouKicked, UserKicked, SelfMute, OtherSelfMute, YouMuted, YouMutedOther, OtherMutedOther, ChannelJoin, ChannelLeave, PermissionDenied, TextMessage, SelfUnmute, SelfDeaf, SelfUndeaf, UserRenamed, SelfChannelJoin, SelfChannelJoinOther, ChannelJoinConnect, ChannelLeaveDisconnect, PrivateTextMessage };
 		enum LogColorType { Time, Server, Privilege, Source, Target };
 		static const MsgType firstMsgType = DebugInfo;
-		static const MsgType lastMsgType = UserRenamed;
+		static const MsgType lastMsgType = PrivateTextMessage;
 		
 		// Display order in settingsscreen, allows to insert new events without breaking config-compatibility with older versions.
 		static const MsgType msgOrder[];

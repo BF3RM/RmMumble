@@ -87,6 +87,7 @@ HEADERS *= BanEditor.h \
     AudioOutputSpeech.h \
     AudioOutputUser.h \
     CELTCodec.h \
+    OpusCodec.h \
     CustomElements.h \
     MainWindow.h \
     ServerHandler.h \
@@ -142,6 +143,7 @@ HEADERS *= BanEditor.h \
     DeveloperConsole.h \
     PathListWidget.h \
     XMLTools.h \
+    SvgIcon.h \
     RMSocket.h \
     RMMessage.h
     
@@ -159,6 +161,7 @@ SOURCES *= BanEditor.cpp \
     AudioOutputUser.cpp \
     main.cpp \
     CELTCodec.cpp \
+    OpusCodec.cpp \
     CustomElements.cpp \
     MainWindow.cpp \
     ServerHandler.cpp \
@@ -213,6 +216,7 @@ SOURCES *= BanEditor.cpp \
     DeveloperConsole.cpp \
     PathListWidget.cpp \
     XMLTools.cpp \
+    SvgIcon.cpp \
     RMSocket.cpp
 
 CONFIG(qtspeech) {
@@ -361,13 +365,27 @@ unix:!CONFIG(bundled-opus):system(pkg-config --exists opus) {
   CONFIG(opus) {
     INCLUDEPATH *= ../../3rdparty/opus-src/celt ../../3rdparty/opus-src/include ../../3rdparty/opus-src/src ../../3rdparty/opus-build/src
     DEFINES *= USE_OPUS
-    LIBS *= -lopus
     unix {
       QMAKE_CFLAGS *= "-I../../3rdparty/opus-src/celt" "-isystem  ../../3rdparty/opus-src/celt"
       QMAKE_CFLAGS *= "-I../../3rdparty/opus-src/include" "-isystem ../../3rdparty/opus-src/include"
       QMAKE_CXXFLAGS *= "-I../../3rdparty/opus-src/celt" "-isystem  ../../3rdparty/opus-src/celt"
       QMAKE_CXXFLAGS *= "-I../../3rdparty/opus-src/include" "-isystem ../../3rdparty/opus-src/include"
     }
+  }
+}
+
+unix:!CONFIG(bundled-rnnoise):system(pkg-config --exists rnnoise) {
+  must_pkgconfig(rnnoise)
+  DEFINES *= USE_RNNOISE
+} else {
+  !CONFIG(no-rnnoise) {
+    CONFIG *= rnnoise
+  }
+
+  CONFIG(rnnoise) {
+    INCLUDEPATH *= ../../3rdparty/rnnoise-src/include
+    DEFINES *= USE_RNNOISE
+    LIBS *= -lrnnoise
   }
 }
 
@@ -397,7 +415,14 @@ win32 {
     LIBS *= -llibboost_system-mt -llibboost_thread-mt
   }
   win32-g++ {
-    LIBS *= -lboost_system-mt -lboost_thread_win32-mt
+    LIBS *= -lboost_system-mt
+
+    # The library has a different name in MXE
+    contains(QMAKE_HOST.os, Linux) {
+      LIBS *= -lboost_thread_win32-mt
+    } else {
+      LIBS *= -lboost_thread-mt
+    }
   }
 
   LIBS  *= -ldelayimp -delayload:shell32.dll
@@ -449,16 +474,16 @@ win32 {
 
 unix {
   HAVE_PULSEAUDIO=$$system(pkg-config --modversion --silence-errors libpulse)
-  HAVE_PORTAUDIO=$$system(pkg-config --modversion --silence-errors portaudio-2.0)
-
-  !isEmpty(HAVE_PORTAUDIO):!CONFIG(no-portaudio) {
-    CONFIG *= portaudio
-  }
+  HAVE_JACKAUDIO=$$system(pkg-config --modversion --silence-errors jack)
 
   !isEmpty(HAVE_PULSEAUDIO):!CONFIG(no-pulseaudio) {
-    CONFIG -= portaudio
     CONFIG *= pulseaudio
   }
+
+  !isEmpty(HAVE_JACKAUDIO):!CONFIG(no-jackaudio) {
+    CONFIG *= jackaudio
+  }
+
 
   !CONFIG(no-bundled-speex) {
     QMAKE_CFLAGS *= -I../../3rdparty/speex-src/include -I../../3rdparty/speex-build
@@ -554,6 +579,13 @@ pulseaudio {
   must_pkgconfig(libpulse)
   HEADERS *= PulseAudio.h
   SOURCES *= PulseAudio.cpp
+}
+
+jackaudio {
+  DEFINES *= USE_JACKAUDIO
+  PKGCONFIG *= jack
+  HEADERS *= JackAudio.h
+  SOURCES *= JackAudio.cpp
 }
 
 portaudio {
@@ -695,10 +727,6 @@ CONFIG(no-update) {
   RESOURCES *= mumble_qt_auto.qrc
 }
 
-!CONFIG(no-embed-tango-icons) {
-  RESOURCES *= mumble_tango.qrc
-}
-
 CONFIG(static_qt_plugins) {
   DEFINES += USE_STATIC_QT_PLUGINS
   
@@ -715,10 +743,10 @@ CONFIG(static_qt_plugins) {
   !contains(TEMPLATE, .*app)|lessThan(QT_VERSION_INT, 50300) {
     QTPLUGIN += qsvg qsvgicon
 
-    # The accessiblewidgets plugin is only needed for Qt 5 versions below 5.4.
-    # In Qt 5.4, it was integrated into the QtWidgets library.
+    # For Qt 4 and Qt 5 below 5.4, we need to manually add qtaccessiblewidgets to PLUGINS.
+    # In Qt 5.4, the plugin was integrated into the QtWidgets library.
     # See QTBUG-43007 and Qt commit 4255ba40ab073a for more information.
-    isEqual(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 4) {
+    lessThan(QT_VERSION_INT, 50400) {
       QTPLUGIN *= qtaccessiblewidgets
     }
 

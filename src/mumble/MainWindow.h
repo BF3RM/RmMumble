@@ -136,6 +136,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		unsigned int uiNewHardware;
 #endif
 	protected:
+		QNetworkAccessManager HttpManager;
 		class RMSocket* RmSocket;
 		QString RmUser;
 		QString RmLastConnectedUuid;
@@ -266,6 +267,9 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void on_gsMuteSelf_down(QVariant);
 		void on_gsDeafSelf_down(QVariant);
 		void on_gsWhisper_triggered(bool, QVariant);
+        void on_GsLocal_triggered(bool, QVariant);
+		void on_GsSquad_triggered(bool, QVariant);
+		void on_GsWhisperSquadLeader_triggered(bool, QVariant);
 		void addTarget(ShortcutTarget *);
 		void removeTarget(ShortcutTarget *);
 		void on_gsCycleTransmitMode_triggered(bool, QVariant);
@@ -312,17 +316,5 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		MUMBLE_MH_ALL
 #undef MUMBLE_MH_MSG
 		void removeContextAction(const MumbleProto::ContextActionModify &msg);
-};
-
-	public:
-		MainWindow(QWidget *parent);
-		~MainWindow() Q_DECL_OVERRIDE;
-
-		// From msgHandler. Implementation in Messages.cpp
-#define MUMBLE_MH_MSG(x) void msg##x(const MumbleProto:: x &);
-		MUMBLE_MH_ALL
-#undef MUMBLE_MH_MSG
-		void removeContextAction(const MumbleProto::ContextActionModify &msg);
-};
-
 #endif
+};

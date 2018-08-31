@@ -337,7 +337,7 @@ void ALSAAudioInput::run() {
 			snd_pcm_close(capture_handle);
 			capture_handle = NULL;
 		}
-		g.mw->msgBox(tr("Opening chosen ALSA Input failed: %1").arg(Qt::escape(QLatin1String(snd_strerror(err)))));
+		g.mw->msgBox(tr("Opening chosen ALSA Input failed: %1").arg((QLatin1String(snd_strerror(err))).toHtmlEscaped()));
 		return;
 	}
 
@@ -475,7 +475,7 @@ void ALSAAudioOutput::run() {
 			snd_pcm_writei(pcm_handle, zerobuff, period_size);
 
 	if (! bOk) {
-		g.mw->msgBox(tr("Opening chosen ALSA Output failed: %1").arg(Qt::escape(QLatin1String(snd_strerror(err)))));
+		g.mw->msgBox(tr("Opening chosen ALSA Output failed: %1").arg((QLatin1String(snd_strerror(err))).toHtmlEscaped()));
 		if (pcm_handle) {
 			snd_pcm_close(pcm_handle);
 			pcm_handle = NULL;

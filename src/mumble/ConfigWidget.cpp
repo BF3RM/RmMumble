@@ -6,6 +6,8 @@
 #include "mumble_pch.hpp"
 
 #include "ConfigWidget.h"
+#include <QGuiApplication> 
+#include <QAbstractButton> 
 
 QMap<int, ConfigWidgetNew> *ConfigRegistrar::c_qmNew;
 
@@ -28,7 +30,7 @@ ConfigWidget::ConfigWidget(Settings &st) : s(st) {
 }
 
 QIcon ConfigWidget::icon() const {
-	return qApp->windowIcon();
+	return ((QGuiApplication*)qApp)->windowIcon();
 }
 
 void ConfigWidget::accept() const {

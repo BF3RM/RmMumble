@@ -10,12 +10,16 @@
 #include "AudioOutput.h"
 #include "AudioOutputSample.h"
 #include "Channel.h"
-#include "Global.h"
 #include "MainWindow.h"
 #include "NetworkConfig.h"
 #include "RichTextEditor.h"
+#include <QImageWriter> 
+#include <QDesktopWidget> 
+#include <QTextBlock>
 #include "ServerHandler.h"
 #include "TextToSpeech.h"
+#include <QTextDocumentFragment>
+#include "Global.h"
 
 static ConfigWidget *LogConfigDialogNew(Settings &st) {
 	return new LogConfig(st);

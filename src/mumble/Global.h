@@ -128,6 +128,6 @@ const int MUMBLE_EXIT_CODE_RESTART = 64738;
 // parameter named 'g', that will generate a warning even if the class header
 // is included long before this definition.
 
-#define g (*Global::g_global_struct)
+#define g (*(Global::g_global_struct))
 
 #endif

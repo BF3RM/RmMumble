@@ -43,7 +43,8 @@
 # include <QtWidgets/QtWidgets>
 #endif
 
-#include <QtSvg/QtSvg>
+#include <QMessageBox>
+//#include <QtSvg/QtSvg>
 #ifdef USE_DBUS
 #include <QtDBus/QtDBus>
 #endif

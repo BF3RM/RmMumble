@@ -14,12 +14,9 @@ win32 {
   SUBDIRS += rm
 
   equals(MUMBLE_ARCH, x86_64) {
-    #SUBDIRS += bf1 bf4 ffxiv_x64 gtav wow_x64
   }
-
-  LIBS += -lpsapi
 }
 
 linux {
-#  SUBDIRS += 
+  SUBDIRS += rm
 }

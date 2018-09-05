@@ -8,7 +8,6 @@ include(../../qmake/python.pri)
 include(../../qmake/lrelease.pri)
 
 DEFINES *= MUMBLE
-DEFINES += NO_UPDATE_CHECK
 TEMPLATE = app
 TARGET = mumble
 
@@ -143,10 +142,8 @@ HEADERS *= BanEditor.h \
     DeveloperConsole.h \
     PathListWidget.h \
     XMLTools.h \
-    SvgIcon.h \
     RMSocket.h \
-    RMMessage.h
-    
+    SvgIcon.h
 
 SOURCES *= BanEditor.cpp \
     ACLEditor.cpp \

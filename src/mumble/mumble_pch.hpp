@@ -36,7 +36,7 @@
 #include <ws2tcpip.h>
 #endif
 
-#include <QtCore/QtCore>
+//#include <QtCore/QtCore>
 #include <QtGui/QtGui>
 #if QT_VERSION >= 0x050000
 # include "Qt4Compat.h"

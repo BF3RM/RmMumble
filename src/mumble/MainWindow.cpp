@@ -2071,7 +2071,9 @@ void MainWindow::qmChannel_aboutToShow() {
 	qpContextPosition = QPoint();
 
 	if (c && c->iId != ClientUser::get(g.uiSession)->cChannel->iId) {
+#ifdef RM_DEBUG 
 		qmChannel->addAction(qaChannelJoin);
+#endif
 		qmChannel->addSeparator();
 	}
 
@@ -2145,13 +2147,14 @@ void MainWindow::qmChannel_aboutToShow() {
 	updateMenuPermissions();
 }
 
+#if RM_DEBUG
 void MainWindow::on_qaChannelJoin_triggered() {
 	Channel *c = getContextMenuChannel();
-
 	if (c) {
 		g.sh->joinChannel(g.uiSession, c->iId);
 	}
 }
+#endif
 
 void MainWindow::on_qaChannelFilter_triggered() {
 	Channel *c = getContextMenuChannel();
@@ -2366,7 +2369,9 @@ void MainWindow::updateMenuPermissions() {
 		qaUserInformation->setEnabled(false);
 	}
 
+#if RM_DEBUG
 	qaChannelJoin->setEnabled(p & (ChanACL::Write | ChanACL::Enter));
+#endif
 
 	qaChannelAdd->setEnabled(p & (ChanACL::Write | ChanACL::MakeChannel | ChanACL::MakeTempChannel));
 	qaChannelRemove->setEnabled(p & ChanACL::Write);

@@ -18,5 +18,5 @@ win32 {
 }
 
 linux {
-  SUBDIRS += rm
+#  SUBDIRS += rm
 }

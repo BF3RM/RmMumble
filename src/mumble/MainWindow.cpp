@@ -2708,6 +2708,7 @@ void MainWindow::updateTarget() {
 		QList<ShortcutTarget> ql;
 		foreach(const ShortcutTarget &st, qmCurrentTargets.keys()) {
 			ShortcutTarget nt;
+			nt.RmTarget = st.RmTarget;
 			center = center || st.bForceCenter;
 			nt.bUsers = st.bUsers;
 			if (st.bUsers) {
@@ -2744,8 +2745,6 @@ void MainWindow::updateTarget() {
 
 				i = qm.constBegin();
 				idx = i.value();
-
-
 
 				MumbleProto::VoiceTarget mpvt;
 				mpvt.set_id(idx);
@@ -2816,6 +2815,12 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
     TargetChannel.bUsers = false;
     TargetChannel.bLinks = false;
 
+	MumbleProto::RmVoice VoiceMessage;
+	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Squad);
+	VoiceMessage.set_status(Down ? MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin : 
+						MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
+	g.sh->sendMessage(VoiceMessage);
+
     on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
 }
 
@@ -2842,6 +2847,13 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
     TargetChannel.bUsers = false;
     TargetChannel.bLinks = false;
 
+	MumbleProto::RmVoice VoiceMessage;
+	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Local);
+	VoiceMessage.set_status(Down ? MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin : 
+						MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
+	g.sh->sendMessage(VoiceMessage);
+
+
 	on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
 }
 
@@ -2851,13 +2863,20 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
 		return;
 	}
 
+	MumbleProto::RmVoice VoiceMessage;
+	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_SquadLeader);
+	VoiceMessage.set_status(MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin);
+	VoiceMessage.set_targetid(Data.toInt());
+
     if (!Down) {
         ShortcutTarget Target;
         Target.bUsers = true;
         Target.qlUsers << SquadLeaderWhispMap[Data.toInt()];
         Target.bForceCenter = true;
         SquadLeaderWhispMap.remove(Data.toInt());
-        return on_gsWhisper_triggered(false, QVariant::fromValue(Target));
+		VoiceMessage.set_status(MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
+		g.sh->sendMessage(VoiceMessage);
+	    return on_gsWhisper_triggered(false, QVariant::fromValue(Target));
     }
 
     auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
@@ -2881,6 +2900,7 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
     auto TargetChannel = Channel::get(TargetChannelId);
     if (!TargetChannel) return;
 
+	g.sh->sendMessage(VoiceMessage);
     g.sh->RequestChannelSquadLeader(TargetChannelId, Data.toInt());
 }
 

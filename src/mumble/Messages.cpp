@@ -952,3 +952,32 @@ void MainWindow::msgSuggestConfig(const MumbleProto::SuggestConfig &msg) {
 			g.l->log(Log::Warning, tr("The server requests Push-to-Talk be disabled."));
 	}
 }
+
+void MainWindow::msgRmVoice(const MumbleProto::RmVoice& Message)
+{
+	std::string what, to;
+	switch (Message.target()) {
+		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Local:
+			what = "local";
+			to = "";
+			break;
+		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_SquadLeader:
+			what = "squad leader";
+			to = " to " + std::to_string(Message.targetid());
+			break;
+		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Squad:
+			what = "squad";
+			to = "";
+			break;
+		default:
+			return;
+	}
+
+
+	std::string str = what + " " + (Message.status() == MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin ? "Begin " : "End ") 
+			+ to + "from " + Message.playername();
+	g.l->log(
+		Log::Warning, 
+		tr(str.c_str())
+	);
+}

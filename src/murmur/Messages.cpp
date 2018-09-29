@@ -1813,3 +1813,54 @@ void Server::msgServerConfig(ServerUser *, MumbleProto::ServerConfig &) {
 
 void Server::msgSuggestConfig(ServerUser *, MumbleProto::SuggestConfig &) {
 }
+
+void Server::msgRmVoice(ServerUser* From, MumbleProto::RmVoice& Message)
+{
+	if (!From) return;
+
+	std::vector<ServerUser*> Targets;
+	auto NewMessage = Message;
+
+	switch(Message.target()) {
+		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_SquadLeader:
+		{
+			if (!From->IsSquadLeader()) return;
+			auto Id = From->GetFactionId() * 10 + Message.targetid();
+			if (Id > 23) return;
+			auto Channel = qhChannels[Id];
+			for (auto User : qhUsers) {
+				if (User->cChannel == Channel && User->IsSquadLeader()) {
+					Targets.push_back(User);
+					break;
+				}
+			}
+			break;
+		}
+		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Local:
+		{
+			for (auto User : qhUsers) {
+				if (From->GetFactionId() == User->GetFactionId()) {
+					Targets.push_back(User);
+				}
+			}
+			break;
+		}
+		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Squad:
+		{
+			for (auto User : qhUsers) {
+				if (From->GetSquadId() == User->GetSquadId()) {
+					Targets.push_back(User);
+				}
+			}
+			break;
+		}
+		default:
+			return;
+	}
+
+	NewMessage.set_playername(From->qsName.toUtf8().constData());
+
+	for (auto Target : Targets) {
+		sendMessage(Target, NewMessage);
+	}
+}

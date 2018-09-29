@@ -425,6 +425,24 @@ message UserList {
 	repeated User users = 1;
 }
 
+message RmVoice {
+	enum ERmTarget {
+		Local = 0;
+		Squad = 1;
+		SquadLeader = 2;
+	}
+
+	enum ERmStatus {
+		Begin = 0;
+		End = 1;
+	}
+
+	required ERmTarget Target = 1;
+	required ERmStatus Status = 2;
+	optional uint32 TargetId = 3;
+	optional string PlayerName = 4;
+}
+
 // Sent by the client when it wants to register or clear whisper targets.
 //
 // Note: The first available target ID is 1 as 0 is reserved for normal

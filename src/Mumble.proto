@@ -592,3 +592,10 @@ message SuggestConfig {
 	// True if the administrator suggests push to talk to be used on this server.
 	optional bool push_to_talk = 3;
 }
+
+message RmUpdatePlayerPosition 
+{
+	required float X = 1;
+	required float Y = 2;
+	required float Z = 3;
+}

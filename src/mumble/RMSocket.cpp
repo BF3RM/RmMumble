@@ -16,6 +16,8 @@ void RMSocket::run()
 
         if (!Socket) continue;
 
+        emit OnConnected();
+
         auto Data = (char*) malloc(64);
         memset(Data, '\0', 64);
         
@@ -56,6 +58,7 @@ void RMSocket::run()
         }
 
         if (Socket) Socket->deleteLater();
+        emit OnDisconnected();
     }
 }
 

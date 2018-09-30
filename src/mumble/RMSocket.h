@@ -31,6 +31,8 @@ protected:
     std::map<EMessageType, std::vector<OnMessageCallback>> MessageCallbacks;
 signals:
     void OnUuidReceived(QString Uuid);
+    void OnDisconnected();
+    void OnConnected();
 };
 
 #endif

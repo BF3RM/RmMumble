@@ -60,6 +60,16 @@ struct WhisperTarget {
 	QList<WhisperTarget::Channel> qlChannels;
 };
 
+struct RmPlayerPosition
+{
+	float X = 0.f;
+	float Y = 0.f;
+	float Z = 0.f;
+
+	RmPlayerPosition(float X = 0.f, float Y = 0.f, float Z = 0.f) :
+		X(X), Y(Y), Z(Z) {}
+};
+
 class Server;
 
 #if __cplusplus > 199711L
@@ -97,6 +107,7 @@ class ServerUser : public Connection, public User {
 	protected:
 		Server *s;
 	public:
+		RmPlayerPosition PlayerPosition;
 		enum State { Connected, Authenticated };
 		State sState;
 		operator QString() const;

@@ -1814,6 +1814,18 @@ void Server::msgServerConfig(ServerUser *, MumbleProto::ServerConfig &) {
 void Server::msgSuggestConfig(ServerUser *, MumbleProto::SuggestConfig &) {
 }
 
+bool IsWithinRange(ServerUser* Who, ServerUser* From)
+{
+	RmPlayerPosition X1 = From->PlayerPosition;
+	RmPlayerPosition X2 = Who->PlayerPosition;
+
+	return sqrt(
+		pow(X2.X - X1.X, 2) +
+		pow(X2.Y - X1.Y, 2) +
+		pow(X2.Z - X1.Z, 2)
+	) <= 40.f;
+}
+
 void Server::msgRmVoice(ServerUser* From, MumbleProto::RmVoice& Message)
 {
 	if (!From) return;
@@ -1839,7 +1851,7 @@ void Server::msgRmVoice(ServerUser* From, MumbleProto::RmVoice& Message)
 		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Local:
 		{
 			for (auto User : qhUsers) {
-				if (From->GetFactionId() == User->GetFactionId()) {
+				if (From->GetFactionId() == User->GetFactionId() && IsWithinRange(User, From)) {
 					Targets.push_back(User);
 				}
 			}
@@ -1863,4 +1875,9 @@ void Server::msgRmVoice(ServerUser* From, MumbleProto::RmVoice& Message)
 	for (auto Target : Targets) {
 		sendMessage(Target, NewMessage);
 	}
+}
+
+void Server::msgRmUpdatePlayerPosition(ServerUser* From, MumbleProto::RmUpdatePlayerPosition& Position)
+{
+	From->PlayerPosition = RmPlayerPosition(Position.x(), Position.y(), Position.z());
 }

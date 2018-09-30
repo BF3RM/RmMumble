@@ -142,6 +142,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		QString RmLastConnectedUuid;
 		QString RmConnectingUuid;
 		QTimer* RmPingTimeout = nullptr;
+		QTimer* RmPositionTimer = nullptr;
 
 		void OnUuidReceived(class QNetworkReply* Reply);
         void CreatePrShortcuts();

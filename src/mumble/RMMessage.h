@@ -21,6 +21,7 @@ public:
 
     void Send()
     {
+        if (!Socket) return;
         Socket->write(&Data[0], DataSize);
     }
 public:

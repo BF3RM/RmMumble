@@ -956,66 +956,13 @@ void MainWindow::msgSuggestConfig(const MumbleProto::SuggestConfig &msg) {
 
 void MainWindow::msgRmVoice(const MumbleProto::RmVoice& Message)
 {
-	std::string what, to;
-	switch (Message.target()) {
-		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Local:
-		{
-			ClientUser* Us = nullptr;
-			for (auto User : ClientUser::c_qmUsers) {
-				if (User->qsName.toStdString() == Message.playername()) {
-					Us = User;
-				}
-			}
-			if (Us == nullptr) 
-				return;
-			what = "local";
-			to = "";
-			break;
-		}
-		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_SquadLeader:
-			what = "squad leader";
-			to = " to " + std::to_string(Message.targetid());
-			break;
-		case MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Squad:
-			what = "squad";
-			to = "";
-			break;
-		default:
-			return;
-	}
-
-	/*
-		auto SendTalkingMessage = [this, user]() {
-		auto Message = new RMMessage(RmSocket->GetSocket(), 64);
-		Message->Data[0] = (char)EMessageType::Talking;
-		memcpy(&Message->Data[1], user->qsName.left(63).leftJustified(63, QChar::fromLatin1('\0')).toUtf8().constData(), 63);
-		Message->Send();
-	};
-
-	auto SendStopTalkingMessage = [this, user]() {
-		auto Message = new RMMessage(RmSocket->GetSocket(), 64);
-		Message->Data[0] = (char)EMessageType::StopTalking;
-		memcpy(&Message->Data[1], user->qsName.left(63).leftJustified(63, QChar::fromLatin1('\0')).toUtf8().constData(), 63);
-		Message->Send();
-	};
-
-	if RmSocket->IsAlive()
-	*/
-
-	if (RmSocket->IsAlive()) {
+	if (RmSocket && RmSocket->IsAlive()) {
 		auto LuaMessage = RmSocket->NewMessage();
 		LuaMessage->Data[0] = (char)EMessageType::Talking - (char)Message.status();
 		LuaMessage->Data[1] = (char)Message.target();
 		
 		memcpy(&LuaMessage->Data[2], Message.playername().substr(0, 61).c_str(), Message.playername().size());
 		LuaMessage->Send();
-
-		std::string str = what + " " + (Message.status() == MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin ? "Begin " : "End ") 
-				+ to + "from " + Message.playername();
-		g.l->log(
-			Log::Warning, 
-			tr(str.c_str())
-		);
 	}
 }
 

@@ -1831,6 +1831,7 @@ void Server::msgRmVoice(ServerUser* From, MumbleProto::RmVoice& Message)
 	if (!From) return;
 
 	std::vector<ServerUser*> Targets;
+	Targets.push_back(From);
 	auto NewMessage = Message;
 
 	switch(Message.target()) {

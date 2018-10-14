@@ -47,6 +47,10 @@ void RMSocket::run()
                         switch((EMessageType)Data[0]) {
                             case EMessageType::Uuid:
                                 emit OnUuidReceived(QString::fromUtf8(Message->Data));
+                                break;
+                            case EMessageType::MuteAndDeaf:
+                                emit OnMuteAndDeaf((bool)Data[1], (bool)Data[2]);
+                                break;
                             default: break;
                         }
 

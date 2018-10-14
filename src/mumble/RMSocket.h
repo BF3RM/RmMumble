@@ -12,7 +12,8 @@ enum class EMessageType : uint8_t
     StopTalking = 121,
     Talking = 122,
     Uuid = 123,
-    Ping = 124
+    Ping = 124,
+    MuteAndDeaf = 125,
 };
 
 class RMSocket : public QThread
@@ -31,6 +32,7 @@ protected:
     std::map<EMessageType, std::vector<OnMessageCallback>> MessageCallbacks;
 signals:
     void OnUuidReceived(QString Uuid);
+    void OnMuteAndDeaf(bool Mute, bool Deaf);
     void OnDisconnected();
     void OnConnected();
 };

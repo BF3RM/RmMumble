@@ -247,6 +247,10 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		});
 	});
 
+	connect(RmSocket, &RMSocket::OnMuteAndDeaf, this, [this](bool Mute, bool Deaf) {
+		g.sh->setSelfMuteDeafState(Mute, Deaf);
+	});
+
     RmSocket->start();
 }
 

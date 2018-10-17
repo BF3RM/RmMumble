@@ -29,6 +29,7 @@
 #include "VersionCheck.h"
 #include "ViewCert.h"
 #include "CryptState.h"
+#include "RMSocket.h"
 
 #define ACTOR_INIT \
 	ClientUser *pSrc=NULL; \
@@ -951,4 +952,21 @@ void MainWindow::msgSuggestConfig(const MumbleProto::SuggestConfig &msg) {
 		else
 			g.l->log(Log::Warning, tr("The server requests Push-to-Talk be disabled."));
 	}
+}
+
+void MainWindow::msgRmVoice(const MumbleProto::RmVoice& Message)
+{
+	if (RmSocket && RmSocket->IsAlive()) {
+		auto LuaMessage = RmSocket->NewMessage();
+		LuaMessage->Data[0] = (char)EMessageType::Talking - (char)Message.status();
+		LuaMessage->Data[1] = (char)Message.target();
+		
+		memcpy(&LuaMessage->Data[2], Message.playername().substr(0, 61).c_str(), Message.playername().size());
+		LuaMessage->Send();
+	}
+}
+
+void MainWindow::msgRmUpdatePlayerPosition(const MumbleProto::RmUpdatePlayerPosition& Position)
+{
+
 }

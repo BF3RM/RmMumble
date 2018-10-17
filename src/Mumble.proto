@@ -425,6 +425,24 @@ message UserList {
 	repeated User users = 1;
 }
 
+message RmVoice {
+	enum ERmTarget {
+		Local = 0;
+		Squad = 1;
+		SquadLeader = 2;
+	}
+
+	enum ERmStatus {
+		Begin = 0;
+		End = 1;
+	}
+
+	required ERmTarget Target = 1;
+	required ERmStatus Status = 2;
+	optional uint32 TargetId = 3;
+	optional string PlayerName = 4;
+}
+
 // Sent by the client when it wants to register or clear whisper targets.
 //
 // Note: The first available target ID is 1 as 0 is reserved for normal
@@ -573,4 +591,11 @@ message SuggestConfig {
 	optional bool positional = 2;
 	// True if the administrator suggests push to talk to be used on this server.
 	optional bool push_to_talk = 3;
+}
+
+message RmUpdatePlayerPosition 
+{
+	required float X = 1;
+	required float Y = 2;
+	required float Z = 3;
 }

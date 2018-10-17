@@ -444,10 +444,10 @@ void ServerHandler::setSslErrors(const QList<QSslError> &errors) {
 #endif
 
 	bStrong = false;
-	if ((qscCert.size() > 0)  && (QString::fromLatin1(qscCert.at(0).digest(QCryptographicHash::Sha1).toHex()) == database->getDigest(qsHostName, usPort)))
+	//if ((qscCert.size() > 0)  && (QString::fromLatin1(qscCert.at(0).digest(QCryptographicHash::Sha1).toHex()) == database->getDigest(qsHostName, usPort)))
 		connection->proceedAnyway();
-	else
-		qlErrors = newErrors;
+//	else
+//		qlErrors = newErrors;
 }
 
 void ServerHandler::sendPing() {

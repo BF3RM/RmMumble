@@ -262,10 +262,6 @@ static void InitSocket()
 }
 
 static int trylock(const std::multimap<std::wstring, unsigned long long int> &pids) {
-    if (pids.count(L"vu.exe") < 3) {
-        return false;
-    }
-
     if (!initialize(pids, L"vu.exe")) { // Retrieve game executable's memory address
         return false;
     }

@@ -179,12 +179,43 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 #endif
 	RmPingTimeout = new QTimer(this);
 	connect(RmPingTimeout, &QTimer::timeout, this, [this](){
+		g.l->log(Log::Information, tr("Connection with RM timed-out. Disconnecting."));
 		g.sh->disconnect();
 		g.sh->wait();
 	});
 
+	RmPositionTimer = new QTimer(this);
+	connect(RmPositionTimer, &QTimer::timeout, this, [this]() {
+		if (g.p->fetch()) {
+			MumbleProto::RmUpdatePlayerPosition PositionUpdate;
+			PositionUpdate.set_x(g.p->fPosition[0]);
+			PositionUpdate.set_y(g.p->fPosition[1]);
+			PositionUpdate.set_z(g.p->fPosition[2]);
+			g.sh->sendMessage(PositionUpdate);
+		}
+
+		RmPositionTimer->start(1000);
+	});
+
 	RmSocket = new RMSocket;
     connect(RmSocket, &RMSocket::finished, RmSocket, &QObject::deleteLater);
+
+	connect(RmSocket, &RMSocket::OnDisconnected, this, [this]() {
+		g.l->log(Log::Information, tr("Disconnected from RM."));
+		g.sh->disconnect();
+		g.sh->wait();
+
+		RmPositionTimer->stop();
+	});
+
+	connect(RmSocket, &RMSocket::OnConnected, this, [this]() {
+		g.l->log(Log::Information, tr("Connected to RM."));
+		auto Message = RmSocket->NewMessage();
+		Message->Data[0] = (char)EMessageType::Uuid;
+		Message->Send();
+	
+		RmPositionTimer->start();
+	});
 
 	RmSocket->AddListener([this](RMMessage* Message) {
 		RmPingTimeout->start(11000);
@@ -195,17 +226,29 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	}, EMessageType::Ping);
 
 	connect(RmSocket, &RMSocket::OnUuidReceived, this, [this](QString Uuid) {
-		QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
+		//QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
+
 		QStringList SplitMessage = Uuid.split(tr("|"));
 		if (SplitMessage.length() < 2) return;
-		if (RmLastConnectedUuid == SplitMessage[0]) return;
+		//if (RmLastConnectedUuid == SplitMessage[0]) return;
+
+		g.l->log(Log::Information, tr("Connecting to ") + SplitMessage[0]);
 
 		RmConnectingUuid = SplitMessage[0];
 		RmUser = SplitMessage[1];
 
 		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(RmConnectingUuid);
 		auto Request = new QNetworkRequest(QUrl(Url));
-		HttpManager.get(*Request);
+		auto Reply = HttpManager.get(*Request);
+
+		connect(Reply, &QNetworkReply::readyRead, this, [this, Reply]() {
+			g.l->log(Log::Information, tr("Received response from backend..."));
+			OnUuidReceived(Reply);
+		});
+	});
+
+	connect(RmSocket, &RMSocket::OnMuteAndDeaf, this, [this](bool Mute, bool Deaf) {
+		g.sh->setSelfMuteDeafState(Mute, Deaf);
 	});
 
     RmSocket->start();
@@ -2400,20 +2443,6 @@ void MainWindow::userStateChanged() {
 		return;
 	}
 
-	auto SendTalkingMessage = [this, user]() {
-		auto Message = new RMMessage(RmSocket->GetSocket(), 64);
-		Message->Data[0] = (char)EMessageType::Talking;
-		memcpy(&Message->Data[1], user->qsName.left(63).leftJustified(63, QChar::fromLatin1('\0')).toUtf8().constData(), 63);
-		Message->Send();
-	};
-
-	auto SendStopTalkingMessage = [this, user]() {
-		auto Message = new RMMessage(RmSocket->GetSocket(), 64);
-		Message->Data[0] = (char)EMessageType::StopTalking;
-		memcpy(&Message->Data[1], user->qsName.left(63).leftJustified(63, QChar::fromLatin1('\0')).toUtf8().constData(), 63);
-		Message->Send();
-	};
-
 	switch (user->tsState) {
 		case Settings::Talking:
 		case Settings::Whispering:
@@ -2423,11 +2452,9 @@ void MainWindow::userStateChanged() {
 			g.prioritySpeakerActiveOverride =
 			        g.s.bAttenuateUsersOnPrioritySpeak
 			        && user->bPrioritySpeaker;
-			if (RmSocket->IsAlive()) SendTalkingMessage();
 			break;
 		case Settings::Passive:
 		default:
-			if (RmSocket->IsAlive()) SendStopTalkingMessage();
 			g.bAttenuateOthers = false;
 			g.prioritySpeakerActiveOverride = false;
 			break;
@@ -2713,6 +2740,7 @@ void MainWindow::updateTarget() {
 		QList<ShortcutTarget> ql;
 		foreach(const ShortcutTarget &st, qmCurrentTargets.keys()) {
 			ShortcutTarget nt;
+			nt.RmTarget = st.RmTarget;
 			center = center || st.bForceCenter;
 			nt.bUsers = st.bUsers;
 			if (st.bUsers) {
@@ -2749,8 +2777,6 @@ void MainWindow::updateTarget() {
 
 				i = qm.constBegin();
 				idx = i.value();
-
-
 
 				MumbleProto::VoiceTarget mpvt;
 				mpvt.set_id(idx);
@@ -2821,6 +2847,12 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
     TargetChannel.bUsers = false;
     TargetChannel.bLinks = false;
 
+	MumbleProto::RmVoice VoiceMessage;
+	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Squad);
+	VoiceMessage.set_status(Down ? MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin : 
+						MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
+	g.sh->sendMessage(VoiceMessage);
+
     on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
 }
 
@@ -2847,6 +2879,13 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
     TargetChannel.bUsers = false;
     TargetChannel.bLinks = false;
 
+	MumbleProto::RmVoice VoiceMessage;
+	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Local);
+	VoiceMessage.set_status(Down ? MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin : 
+						MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
+	g.sh->sendMessage(VoiceMessage);
+
+
 	on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
 }
 
@@ -2856,13 +2895,20 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
 		return;
 	}
 
+	MumbleProto::RmVoice VoiceMessage;
+	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_SquadLeader);
+	VoiceMessage.set_status(MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin);
+	VoiceMessage.set_targetid(Data.toInt());
+
     if (!Down) {
         ShortcutTarget Target;
         Target.bUsers = true;
         Target.qlUsers << SquadLeaderWhispMap[Data.toInt()];
         Target.bForceCenter = true;
         SquadLeaderWhispMap.remove(Data.toInt());
-        return on_gsWhisper_triggered(false, QVariant::fromValue(Target));
+		VoiceMessage.set_status(MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
+		g.sh->sendMessage(VoiceMessage);
+	    return on_gsWhisper_triggered(false, QVariant::fromValue(Target));
     }
 
     auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
@@ -2886,6 +2932,7 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
     auto TargetChannel = Channel::get(TargetChannelId);
     if (!TargetChannel) return;
 
+	g.sh->sendMessage(VoiceMessage);
     g.sh->RequestChannelSquadLeader(TargetChannelId, Data.toInt());
 }
 

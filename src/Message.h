@@ -41,8 +41,10 @@
 	MUMBLE_MH_MSG(UserStats) \
 	MUMBLE_MH_MSG(RequestBlob) \
 	MUMBLE_MH_MSG(ServerConfig) \
-        MUMBLE_MH_MSG(SuggestConfig) \
-        MUMBLE_MH_MSG(ChannelSquadLeader)
+	MUMBLE_MH_MSG(SuggestConfig) \
+	MUMBLE_MH_MSG(ChannelSquadLeader) \
+	MUMBLE_MH_MSG(RmVoice) \
+	MUMBLE_MH_MSG(RmUpdatePlayerPosition)
 
 class MessageHandler {
 	public:

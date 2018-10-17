@@ -35,6 +35,16 @@ struct Shortcut {
 };
 
 struct ShortcutTarget {
+	enum class ERmTarget : uint8_t
+	{
+		MumbleDefault = 0,
+		RmLocal = 1,
+		RmSquad = 2,
+		RmSquadLeader = 3
+	};
+
+
+	ERmTarget RmTarget = ERmTarget::MumbleDefault;
 	bool bUsers;
 	QStringList qlUsers;
 	QList<unsigned int> qlSessions;

@@ -270,9 +270,13 @@ outer:
 
 	qgs.setFocus();
 #ifndef Q_OS_MAC
+#ifdef RM_DEBUG
 	g.mw->qteChat->activateWindow();
 #endif
+#endif
+#ifdef RM_DEBUG
 	g.mw->qteChat->setFocus();
+#endif
 
 	qgv.setAttribute(Qt::WA_WState_Hidden, false);
 	qApp->setActiveWindow(&qgv);

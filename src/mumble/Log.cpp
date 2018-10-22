@@ -148,7 +148,9 @@ void LogConfig::save() const {
 
 void LogConfig::accept() const {
 	g.l->tts->setVolume(s.iTTSVolume);
+#ifdef RM_DEBUG
 	g.mw->qteLog->document()->setMaximumBlockCount(s.iMaxLogBlocks);
+#endif
 }
 
 void LogConfig::on_qtwMessages_itemChanged(QTreeWidgetItem* i, int column) {
@@ -450,6 +452,7 @@ QString Log::validHtml(const QString &html, QTextCursor *tc) {
 }
 
 void Log::log(MsgType mt, const QString &console, const QString &terse, bool ownMessage) {
+#ifdef RM_DEBUG
 	QDateTime dt = QDateTime::currentDateTime();
 
 	int ignore = qmIgnore.value(mt);
@@ -486,7 +489,8 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 			qttf.setPadding(2);
 			qttf.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
 			tc.insertFrame(qttf);
-		} else if (! g.mw->qteLog->document()->isEmpty()) {
+		}
+		else if (! g.mw->qteLog->document()->isEmpty()) {
 			tc.insertBlock();
 		}
 		tc.insertHtml(Log::msgColor(QString::fromLatin1("[%1] ").arg(dt.time().toString().toHtmlEscaped()), Log::Time));
@@ -501,6 +505,7 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 	}
 
 	if (!ownMessage) {
+
 		if (!(g.mw->isActiveWindow() && g.mw->qdwLog->isVisible())) {
 			// Message notification with window highlight
 			if (flags & Settings::LogHighlight) {
@@ -574,6 +579,7 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 		tts->say(plain);
 	else if ((! terse.isEmpty()) && (terse.length() <= g.s.iTTSThreshold))
 		tts->say(terse);
+#endif
 }
 
 // Post a notification using the MainWindow's QSystemTrayIcon.

@@ -206,7 +206,9 @@ int main(int argc, char **argv) {
 #endif
 				return 1;
 			} else if (args.at(i) == QLatin1String("-m") || args.at(i) == QLatin1String("--multiple")) {
+	#ifdef RM_DEBUG
 				bAllowMultiple = true;
+	#endif
 			} else if (args.at(i) == QLatin1String("-n") || args.at(i) == QLatin1String("--noidentity")) {
 				suppressIdentity = true;
 				g.s.bSuppressIdentity = true;

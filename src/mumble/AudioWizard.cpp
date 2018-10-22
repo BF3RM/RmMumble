@@ -419,7 +419,9 @@ void AudioWizard::accept() {
 
 		if (qrbNotificationTTS->isChecked()) {
 			g.s.bTTS = true;
+	#ifdef RM_DEBUG
 			g.mw->qaAudioTTS->setChecked(true);
+	#endif
 		}
 	}
 

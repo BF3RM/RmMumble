@@ -152,8 +152,9 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 	connect(qmUser, SIGNAL(aboutToShow()), this, SLOT(qmUser_aboutToShow()));
 	connect(qmChannel, SIGNAL(aboutToShow()), this, SLOT(qmChannel_aboutToShow()));
+#ifdef RM_DEBUG
 	connect(qteChat, SIGNAL(entered(QString)), this, SLOT(sendChatbarMessage(QString)));
-
+#endif
 
 	// Explicitely add actions to mainwindow so their shortcuts are available
 	// if only the main window is visible (e.g. minimal mode)
@@ -283,7 +284,9 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 		g.s.qsLastServer = tr("test");
 		rtLast = MumbleProto::Reject_RejectType_None;
 		bRetryServer = true;
+#ifdef RM_DEBUG
 		qaServerDisconnect->setEnabled(true);
+#endif
 		g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((Host).toHtmlEscaped(), Log::Server)));
 		g.sh->setConnectionInfo(Host, Port, User, Pw);
 		g.sh->start(QThread::TimeCriticalPriority);
@@ -294,7 +297,9 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 			g.s.qsLastServer = tr("test");
 			rtLast = MumbleProto::Reject_RejectType_None;
 			bRetryServer = true;
+#ifdef RM_DEBUG
 			qaServerDisconnect->setEnabled(true);
+#endif
 			g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((Host).toHtmlEscaped(), Log::Server)));
 			g.sh->setConnectionInfo(Host, Port, User, Pw);
 			g.sh->start(QThread::TimeCriticalPriority);
@@ -431,16 +436,20 @@ void MainWindow::setupGui()  {
 	qmWindow->addAction(tr("Minimize"), this, SLOT(showMinimized()), QKeySequence(tr("Ctrl+M")));
 
 	qtvUsers->setAttribute(Qt::WA_MacShowFocusRect, false);
+#ifdef RM_DEBUG
 	qteChat->setAttribute(Qt::WA_MacShowFocusRect, false);
 	qteChat->setFrameShape(QFrame::NoFrame);
+#endif
 	qteLog->setFrameStyle(QFrame::NoFrame);
 #endif
 
+#ifdef RM_DEBUG
 	LogDocument *ld = new LogDocument(qteLog);
 	qteLog->setDocument(ld);
 
 	qteLog->document()->setMaximumBlockCount(g.s.iMaxLogBlocks);
 	qteLog->document()->setDefaultStyleSheet(qApp->styleSheet());
+#endif
 
 	pmModel = new UserModel(qtvUsers);
 	qtvUsers->setModel(pmModel);
@@ -449,11 +458,14 @@ void MainWindow::setupGui()  {
 
 	qaAudioMute->setChecked(g.s.bMute);
 	qaAudioDeaf->setChecked(g.s.bDeaf);
+
+#ifdef RM_DEBUG
 #ifdef USE_NO_TTS
 	qaAudioTTS->setChecked(false);
 	qaAudioTTS->setDisabled(true);
 #else
 	qaAudioTTS->setChecked(g.s.bTTS);
+#endif
 #endif
 	qaFilterToggle->setChecked(g.s.bFilterActive);
 
@@ -467,18 +479,21 @@ void MainWindow::setupGui()  {
 	connect(gsMinimal, SIGNAL(down(QVariant)), qaConfigMinimal, SLOT(trigger()));
 
 	dtbLogDockTitle = new DockTitleBar();
+#ifdef RM_DEBUG
 	qdwLog->setTitleBarWidget(dtbLogDockTitle);
 
 	foreach(QWidget *w, qdwLog->findChildren<QWidget *>()) {
 		w->installEventFilter(dtbLogDockTitle);
 		w->setMouseTracking(true);
 	}
-
+#endif
 	dtbChatDockTitle = new DockTitleBar();
+#ifdef RM_DEBUG
 	qdwChat->setTitleBarWidget(dtbChatDockTitle);
 	qdwChat->installEventFilter(dtbChatDockTitle);
 	qteChat->setDefaultText(tr("<center>Not connected</center>"), true);
 	qteChat->setEnabled(false);
+#endif
 
 	setShowDockTitleBars((g.s.wlWindowLayout == Settings::LayoutCustom) && !g.s.bLockLayout);
 
@@ -582,7 +597,9 @@ void MainWindow::setShowDockTitleBars(bool doShow) {
 
 MainWindow::~MainWindow() {
 	delete qwPTTButtonWidget;
+#ifdef RM_DEBUG
 	delete qdwLog->titleBarWidget();
+#endif
 	delete pmModel;
 	delete qtvUsers;
 	delete Channel::get(0);
@@ -720,8 +737,10 @@ void MainWindow::keyPressEvent(QKeyEvent *e) {
 /// and qtvUsers (users tree view).
 void MainWindow::focusNextMainWidget() {
 	QWidget *mainFocusWidgets[] = {
+#ifdef RM_DEBUG
 		qteLog,
 		qteChat,
+#endif
 		qtvUsers,
 	};
 	const int numMainFocusWidgets = sizeof(mainFocusWidgets)/sizeof(mainFocusWidgets[0]);
@@ -841,7 +860,9 @@ bool MainWindow::handleSpecialContextMenu(const QUrl &url, const QPoint &pos_, b
 		if (ok && cuContextUser) {
 			if (focus) {
 				qtvUsers->setCurrentIndex(pmModel->index(cuContextUser.data()));
+#ifdef RM_DEBUG
 				qteChat->setFocus();
+#endif
 			} else {
 				qpContextPosition = QPoint();
 				qmUser->exec(pos_, NULL);
@@ -857,7 +878,9 @@ bool MainWindow::handleSpecialContextMenu(const QUrl &url, const QPoint &pos_, b
 		if (ok) {
 			if (focus) {
 				qtvUsers->setCurrentIndex(pmModel->index(cContextChannel.data()));
+#ifdef RM_DEBUG
 				qteChat->setFocus();
+#endif
 			} else {
 				qpContextPosition = QPoint();
 				qmChannel->exec(pos_, NULL);
@@ -892,6 +915,7 @@ void MainWindow::on_qtvUsers_customContextMenuRequested(const QPoint &mpos) {
 }
 
 void MainWindow::on_qteLog_customContextMenuRequested(const QPoint &mpos) {
+#ifdef RM_DEBUG
 	QString link = qteLog->anchorAt(mpos);
 	if (! link.isEmpty()) {
 		QUrl l(link);
@@ -928,9 +952,11 @@ void MainWindow::on_qteLog_customContextMenuRequested(const QPoint &mpos) {
 	menu->addAction(tr("Clear"), qteLog, SLOT(clear(void)));
 	menu->exec(qteLog->mapToGlobal(mpos));
 	delete menu;
+#endif
 }
 
 void MainWindow::saveImageAs() {
+#ifdef RM_DEBUG
 	QDateTime now = QDateTime::currentDateTime();
 	QString defaultFname = QString::fromLatin1("Mumble-%1.jpg").arg(now.toString(QString::fromLatin1("yyyy-MM-dd-HHmmss")));
 
@@ -954,6 +980,7 @@ void MainWindow::saveImageAs() {
 	if (!ok) {
 		g.l->log(Log::Warning, tr("Could not save image: %1").arg((fname).toHtmlEscaped()));
 	}
+#endif
 }
 
 QString MainWindow::getImagePath(QString filename) const {
@@ -1098,7 +1125,9 @@ void MainWindow::openUrl(const QUrl &url) {
 	g.s.qsLastServer = name;
 	rtLast = MumbleProto::Reject_RejectType_None;
 	bRetryServer = true;
+#ifdef RM_DEBUG
 	qaServerDisconnect->setEnabled(true);
+#endif
 	g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((host).toHtmlEscaped(), Log::Server)));
 	g.sh->setConnectionInfo(host, port, user, pw);
 	g.sh->start(QThread::TimeCriticalPriority);
@@ -1157,6 +1186,7 @@ void MainWindow::setOnTop(bool top) {
 void MainWindow::setupView(bool toggle_minimize) {
 	bool showit = ! g.s.bMinimalView;
 
+#ifdef RM_DEBUG
 	switch (g.s.wlWindowLayout) {
 		case Settings::LayoutClassic:
 			removeDockWidget(qdwLog);
@@ -1183,10 +1213,13 @@ void MainWindow::setupView(bool toggle_minimize) {
 		default:
 			break;
 	}
+#endif
 
 	updateToolbar();
 
+#ifdef RM_DEBUG
 	qteChat->updateGeometry();
+#endif
 
 	QRect geom = frameGeometry();
 
@@ -1252,8 +1285,10 @@ void MainWindow::setupView(bool toggle_minimize) {
 	}
 
 	if (! showit) {
+#ifdef RM_DEBUG
 		qdwLog->setVisible(showit);
 		qdwChat->setVisible(showit);
+#endif
 		qtIconToolbar->setVisible(showit);
 	}
 	menuBar()->setVisible(showit);
@@ -1319,7 +1354,9 @@ void MainWindow::on_qaServerConnect_triggered(bool autoconnect) {
 		qsDesiredChannel = QString();
 		rtLast = MumbleProto::Reject_RejectType_None;
 		bRetryServer = true;
+#ifdef RM_DEBUG
 		qaServerDisconnect->setEnabled(true);
+#endif
 		g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((cd->qsServer).toHtmlEscaped(), Log::Server)));
 		g.sh->setConnectionInfo(cd->qsServer, cd->usPort, cd->qsUsername, cd->qsPassword);
 		g.sh->start(QThread::TimeCriticalPriority);
@@ -1423,9 +1460,13 @@ void MainWindow::qcbTransmitMode_activated(int index) {
 
 void MainWindow::on_qmServer_aboutToShow() {
 	qmServer->clear();
+#ifdef RM_DEBUG
 	qmServer->addAction(qaServerConnect);
+#endif
 	qmServer->addSeparator();
+#ifdef RM_DEBUG
 	qmServer->addAction(qaServerDisconnect);
+#endif
 	qmServer->addAction(qaServerInformation);
 	qmServer->addAction(qaServerTokens);
 	qmServer->addAction(qaServerUserList);
@@ -1452,12 +1493,14 @@ void MainWindow::on_qmServer_aboutToShow() {
 }
 
 void MainWindow::on_qaServerDisconnect_triggered() {
+#ifdef RM_DEBUG
 	if (qtReconnect->isActive()) {
 		qtReconnect->stop();
 		qaServerDisconnect->setEnabled(false);
 	}
 	if (g.sh && g.sh->isRunning())
 		g.sh->disconnect();
+#endif
 }
 
 void MainWindow::on_qaServerBanList_triggered() {
@@ -1674,7 +1717,9 @@ void MainWindow::qmUser_aboutToShow() {
 		qmUser->addAction(qaUserTextureReset);
 	}
 
+#ifdef RM_DEBUG
 	qmUser->addAction(qaUserTextMessage);
+#endif
 	if (g.sh && g.sh->uiVersion >= 0x010202)
 		qmUser->addAction(qaUserInformation);
 
@@ -1719,7 +1764,9 @@ void MainWindow::qmUser_aboutToShow() {
 	if (! p) {
 		qaUserKick->setEnabled(false);
 		qaUserBan->setEnabled(false);
+#ifdef RM_DEBUG
 		qaUserTextMessage->setEnabled(false);
+#endif
 		qaUserLocalMute->setEnabled(false);
 		qaUserLocalVolume->setEnabled(false);
 		qaUserLocalIgnore->setEnabled(false);
@@ -1729,7 +1776,9 @@ void MainWindow::qmUser_aboutToShow() {
 	} else {
 		qaUserKick->setEnabled(! self);
 		qaUserBan->setEnabled(! self);
+#ifdef RM_DEBUG
 		qaUserTextMessage->setEnabled(true);
+#endif
 		qaUserLocalMute->setEnabled(! self);
 		qaUserLocalVolume->setEnabled(! self);
 		qaUserLocalIgnore->setEnabled(! self);
@@ -2048,8 +2097,9 @@ void MainWindow::sendChatbarMessage(QString qsText) {
 		g.sh->sendUserTextMessage(p->uiSession, qsText);
 		g.l->log(Log::TextMessage, tr("To %1: %2").arg(Log::formatClientUser(p, Log::Target), qsText), tr("Message to %1").arg(p->qsName), true);
 	}
-
+#ifdef RM_DEBUG
 	qteChat->clear();
+#endif
 }
 
 /**
@@ -2057,7 +2107,9 @@ void MainWindow::sendChatbarMessage(QString qsText) {
  * @see ChatbarLineEdit::completeAtCursor()
  */
 void MainWindow::on_qteChat_tabPressed() {
+#ifdef RM_DEBUG
 	qteChat->completeAtCursor();
+#endif
 }
 
 /// Handles Backtab/Shift-Tab for qteChat, which allows
@@ -2072,9 +2124,11 @@ void MainWindow::on_qteChat_backtabPressed() {
  * @see ChatbarLineEdit::completeAtCursor()
  */
 void MainWindow::on_qteChat_ctrlSpacePressed() {
+#ifdef RM_DEBUG
 	unsigned int res = qteChat->completeAtCursor();
 	if (res == 0) return;
 	qtvUsers->setCurrentIndex(pmModel->index(ClientUser::get(res)));
+#endif
 }
 
 void MainWindow::on_qmConfig_aboutToShow() {
@@ -2085,7 +2139,9 @@ void MainWindow::on_qmConfig_aboutToShow() {
 	qmConfig->addAction(qaAudioWizard);
 	qmConfig->addAction(qaConfigCert);
 	qmConfig->addSeparator();
+#ifdef RM_DEBUG
 	qmConfig->addAction(qaAudioTTS);
+#endif
 	qmConfig->addSeparator();
 	qmConfig->addAction(qaConfigMinimal);
 	if (g.s.bMinimalView)
@@ -2190,7 +2246,7 @@ void MainWindow::qmChannel_aboutToShow() {
 	updateMenuPermissions();
 }
 
-#if RM_DEBUG
+#ifdef RM_DEBUG
 void MainWindow::on_qaChannelJoin_triggered() {
 	Channel *c = getContextMenuChannel();
 	if (c) {
@@ -2402,13 +2458,17 @@ void MainWindow::updateMenuPermissions() {
 		qaUserMute->setEnabled(p & (ChanACL::Write | ChanACL::MuteDeafen) && ((cu != user) || cu->bMute || cu->bSuppress));
 		qaUserDeaf->setEnabled(p & (ChanACL::Write | ChanACL::MuteDeafen) && ((cu != user) || cu->bDeaf));
 		qaUserPrioritySpeaker->setEnabled(p & (ChanACL::Write | ChanACL::MuteDeafen));
+#ifdef RM_DEBUG
 		qaUserTextMessage->setEnabled(p & (ChanACL::Write | ChanACL::TextMessage));
+#endif
 		qaUserInformation->setEnabled((g.pPermissions & (ChanACL::Write | ChanACL::Register)) || (p & (ChanACL::Write | ChanACL::Enter)) || (cu == user));
 	} else {
 		qaUserMute->setEnabled(false);
 		qaUserDeaf->setEnabled(false);
 		qaUserPrioritySpeaker->setEnabled(false);
+#ifdef RM_DEBUG
 		qaUserTextMessage->setEnabled(false);
+#endif
 		qaUserInformation->setEnabled(false);
 	}
 
@@ -2427,7 +2487,9 @@ void MainWindow::updateMenuPermissions() {
 	qaChannelCopyURL->setEnabled(c);
 	qaChannelSendMessage->setEnabled(p & (ChanACL::Write | ChanACL::TextMessage));
 	qaChannelFilter->setEnabled(true);
+#ifdef RM_DEBUG
 	qteChat->setEnabled(p & (ChanACL::Write | ChanACL::TextMessage));
+#endif
 }
 
 void MainWindow::userStateChanged() {
@@ -2550,7 +2612,9 @@ void MainWindow::on_qaRecording_triggered() {
 }
 
 void MainWindow::on_qaAudioTTS_triggered() {
+#ifdef RM_DEBUG
 	g.s.bTTS = qaAudioTTS->isChecked();
+#endif
 }
 
 void MainWindow::on_qaAudioStats_triggered() {
@@ -3103,7 +3167,9 @@ void MainWindow::serverConnected() {
 	unsigned short port;
 	g.sh->getConnectionInfo(host, port, uname, pw);
 	g.l->log(Log::ServerConnected, tr("Connected."));
+#ifdef RM_DEBUG
 	qaServerDisconnect->setEnabled(true);
+#endif
 	qaServerInformation->setEnabled(true);
 	qaServerBanList->setEnabled(true);
 
@@ -3139,11 +3205,15 @@ void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString re
 	g.uiSession = 0;
 	g.pPermissions = ChanACL::None;
 	g.bAttenuateOthers = false;
+#ifdef RM_DEBUG
 	qaServerDisconnect->setEnabled(false);
+#endif
 	qaServerInformation->setEnabled(false);
 	qaServerBanList->setEnabled(false);
 	qtvUsers->setCurrentIndex(QModelIndex());
+#ifdef RM_DEBUG
 	qteChat->setEnabled(false);
+#endif
 	updateTrayIcon();
 
 #ifdef Q_OS_MAC
@@ -3240,7 +3310,9 @@ void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString re
 					continue;
 				} else if (res == QMessageBox::Yes) {
 					g.db->setDigest(host, port, QString::fromLatin1(c.digest(QCryptographicHash::Sha1).toHex()));
+#ifdef RM_DEBUG
 					qaServerDisconnect->setEnabled(true);
+#endif
 					on_Reconnect_timeout();
 				}
 				break;
@@ -3296,11 +3368,15 @@ void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString re
 		if (ok && matched) {
 			if (! g.s.bSuppressIdentity)
 				g.db->setPassword(host, port, uname, pw);
+#ifdef RM_DEBUG
 			qaServerDisconnect->setEnabled(true);
+#endif
 			g.sh->setConnectionInfo(host, port, uname, pw);
 			on_Reconnect_timeout();
 		} else if (!matched && g.s.bReconnect && ! reason.isEmpty()) {
+#ifdef RM_DEBUG
 			qaServerDisconnect->setEnabled(true);
+#endif
 			if (bRetryServer) {
 				qtReconnect->start();
 			}
@@ -3318,7 +3394,9 @@ void MainWindow::resolverError(QAbstractSocket::SocketError, QString reason) {
 	}
 
 	if (g.s.bReconnect) {
+#ifdef RM_DEBUG
 		qaServerDisconnect->setEnabled(true);
+#endif
 		if (bRetryServer) {
 			qtReconnect->start();
 		}
@@ -3384,6 +3462,7 @@ void MainWindow::qtvUserCurrentChanged(const QModelIndex &, const QModelIndex &)
 }
 
 void MainWindow::updateChatBar() {
+#ifdef RM_DEBUG
 	User *p = pmModel->getUser(qtvUsers->currentIndex());
 	Channel *c = pmModel->getChannel(qtvUsers->currentIndex());
 
@@ -3401,6 +3480,7 @@ void MainWindow::updateChatBar() {
 	}
 
 	updateMenuPermissions();
+#endif
 }
 
 void MainWindow::customEvent(QEvent *evt) {
@@ -3464,6 +3544,7 @@ void MainWindow::on_qteLog_anchorClicked(const QUrl &url) {
 }
 
 void MainWindow::on_qteLog_highlighted(const QUrl &url) {
+#ifdef RM_DEBUG
 	if (url.scheme() == QString::fromLatin1("clientid") || url.scheme() == QString::fromLatin1("channelid"))
 		return;
 
@@ -3474,6 +3555,7 @@ void MainWindow::on_qteLog_highlighted(const QUrl &url) {
 			QToolTip::showText(QCursor::pos(), url.toString(), qteLog, QRect());
 		}
 	}
+#endif
 }
 
 void MainWindow::context_triggered() {

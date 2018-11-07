@@ -12,6 +12,7 @@
 #include "Server.h"
 #include "ServerUser.h"
 #include "ServerDB.h"
+#include <QDBusArgument>
 
 QDBusArgument &operator<<(QDBusArgument &a, const PlayerInfo &s) {
 	a.beginStructure();

@@ -3,6 +3,13 @@ project(pr_mumble)
 
 set(CMAKE_CXX_STANDARD 14)
 
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Instruct CMake to run moc automatically when needed
+set(CMAKE_AUTOMOC ON)
+# Create code from a list of Qt designer ui files
+set(CMAKE_AUTOUIC ON)
+
 add_subdirectory(3rdparty)
 
 include_directories(plugins)
@@ -11,6 +18,11 @@ include_directories(src/mumble)
 include_directories(src/mumble/widgets)
 include_directories(src/mumble_proto)
 include_directories(src/murmur)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/)
+
+find_package(Protobuf REQUIRED)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${CMAKE_SOURCE_DIR}/src/Mumble.proto)
 
 set(SHARED_SOURCE     src/ACL.cpp
         src/ACL.h
@@ -44,7 +56,7 @@ set(SHARED_SOURCE     src/ACL.cpp
         src/LogEmitter.cpp
         src/LogEmitter.h
         src/Message.h
-        src/Net.cpp
+#        src/Net.cpp
         src/Net.h
         src/OSInfo.cpp
         src/OSInfo.h
@@ -61,7 +73,7 @@ set(SHARED_SOURCE     src/ACL.cpp
         src/ServerAddress.cpp
         src/ServerAddress.h
         src/ServerResolver.h
-        src/ServerResolver_nosrv.cpp
+        #src/ServerResolver_nosrv.cpp
         src/ServerResolver_qt5.cpp
         src/ServerResolverRecord.cpp
         src/ServerResolverRecord.h
@@ -80,7 +92,13 @@ set(SHARED_SOURCE     src/ACL.cpp
         src/User.cpp
         src/User.h
         src/Version.cpp
-        src/Version.h)
+        src/Version.h
+        ${PROTO_SRCS} ${PROTO_HDRS}
+        ${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/arc4random_uniform.cpp
+#        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceBrowser.cpp
+#        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceResolver.cpp
+#        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceRegister.cpp
+        )
 
 set(MUMBLE_SOURCE
         src/mumble/release/qrc_mumble.cpp
@@ -305,24 +323,23 @@ set(MUMBLE_SOURCE
         src/mumble_proto/Mumble.pb.h
         )
 
-set(MURMUR_SOURCE src/murmur/About.cpp
-        src/murmur/About.h
-        src/murmur/BonjourServer.cpp
-        src/murmur/BonjourServer.h
+set(MURMUR_SOURCE
+        #src/murmur/BonjourServer.cpp
+        #src/murmur/BonjourServer.h
         src/murmur/Cert.cpp
-        src/murmur/DBus.cpp
-        src/murmur/DBus.h
+#        src/murmur/DBus.cpp
+#        src/murmur/DBus.h
         src/murmur/main.cpp
         src/murmur/Messages.cpp
         src/murmur/Meta.cpp
         src/murmur/Meta.h
         src/murmur/murmur_pch.h
-        src/murmur/MurmurGRPCImpl.cpp
-        src/murmur/MurmurGRPCImpl.h
+#        src/murmur/MurmurGRPCImpl.cpp
+#        src/murmur/MurmurGRPCImpl.h
         src/murmur/MurmurI.h
-        src/murmur/MurmurIce.cpp
-        src/murmur/MurmurIce.h
-        src/murmur/MurmurIceWrapper.cpp
+#        src/murmur/MurmurIce.cpp
+#        src/murmur/MurmurIce.h
+#        src/murmur/MurmurIceWrapper.cpp
         src/murmur/PBKDF2.cpp
         src/murmur/PBKDF2.h
         src/murmur/Register.cpp
@@ -333,11 +350,16 @@ set(MURMUR_SOURCE src/murmur/About.cpp
         src/murmur/ServerDB.h
         src/murmur/ServerUser.cpp
         src/murmur/ServerUser.h
-        src/murmur/Tray.cpp
-        src/murmur/Tray.h
         src/murmur/UnixMurmur.cpp
         src/murmur/UnixMurmur.h
-        src/murmur_grpcwrapper_protoc_plugin/main.cpp
+#        src/murmur_grpcwrapper_protoc_plugin/main.cpp
+)
+
+if(WIN32)
+    list(APPEND MURMUR_SOURCE src/murmur/About.cpp src/murmur/About.h src/murmur/Tray.cpp src/murmur/Tray.h)
+endif()
+
+set(TESTS_SOURCES
         src/tests/TestCrypt/TestCrypt.cpp
         src/tests/TestCryptographicHash/TestCryptographicHash.cpp
         src/tests/TestCryptographicRandom/TestCryptographicRandom.cpp
@@ -360,8 +382,7 @@ set(MURMUR_SOURCE src/murmur/About.cpp
         src/tests/OverlayTest.cpp
         src/tests/ProtoBuf.cpp
         src/tests/Resample.cpp
-        src/tests/TestLink.cpp
-)
+        src/tests/TestLink.cpp)
 
 #add_executable(pr_mumble
 #        plugins/link/link-posix.cpp
@@ -377,7 +398,22 @@ set(MURMUR_SOURCE src/murmur/About.cpp
 #
 #    )
 
-find_package(Qt5Gui CONFIG REQUIRED)
+set(MURMUR_ADDITIONAL_LIBS "")
+
+if(UNIX)
+list(APPEND MURMUR_ADDITIONAL_LIBS cap)
+endif()
+
+find_package(Qt5 REQUIRED Gui Network Widgets DBus Xml Sql)
+find_package(Boost REQUIRED)
+find_package(OpenSSL REQUIRED)
+
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${Protobuf_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(RealityMurmur ${SHARED_SOURCE} ${MURMUR_SOURCE})
-target_link_libraries(RealityMurmur Qt5::Gui)
+target_include_directories(RealityMurmur PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-src/libcelt)
+target_link_libraries(RealityMurmur Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${OPENSSL_LIBRARIES} ${Protobuf_LIBRARIES} ${MURMUR_ADDITIONAL_LIBS})
+target_compile_definitions(RealityMurmur PRIVATE MURMUR=1)
+

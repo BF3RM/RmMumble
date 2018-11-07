@@ -14,6 +14,11 @@
 #include "About.h"
 #include "Version.h"
 #include "License.h"
+#include <QVBoxLayout>
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QTextBrowser>
+#include <QtWidgets/QLabel>
+#include <QPushButton>
 
 AboutDialog::AboutDialog(QWidget *p, AboutDialogOptions options) : QDialog(p) {
 	setWindowTitle(tr("About Murmur"));

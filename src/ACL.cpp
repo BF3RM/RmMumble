@@ -35,8 +35,8 @@ ChanACL::ChanACL(Channel *chan) : QObject(chan) {
 
 bool ChanACL::hasPermission(ServerUser *p, Channel *chan, QFlags<Perm> perm, ACLCache *cache) {
 	Permissions granted = effectivePermissions(p, chan, cache);
-	// RM (Platy): Users are only allowed to speak so everything else is false by default
-	if (perm == Speak)
+	// RM_DEBUG (Platy): Users are only allowed to speak so everything else is false by default
+	if (perm & Speak)
 		return true;
 	else
 		return false;

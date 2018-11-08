@@ -2,7 +2,7 @@
 find_package(Qt5 COMPONENTS Gui Network Widgets DBus Xml Sql REQUIRED)
 #BOOST_ROOT https://kent.dl.sourceforge.net/project/boost/boost/1.66.0/boost_1_66_0.7z
 find_package(Boost REQUIRED)
-#find_package(OpenSSL REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 add_subdirectory(3rdparty/libsndfile)
 #include_directories(${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src)
@@ -17,11 +17,11 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdparty/)
 include_directories(${CMAKE_SOURCE_DIR}/src/)
 include_directories(${CMAKE_SOURCE_DIR}/src/mumble)
 
-include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto)
-include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl)
+#include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto)
+#include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/)
 
-add_subdirectory(3rdparty/openssl)
+#add_subdirectory(3rdparty/openssl)
 
 set(SHARED_SOURCE
         src/ACL.cpp

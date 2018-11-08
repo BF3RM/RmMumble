@@ -1,13 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
 project(pr_mumble)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 
-# Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
-# Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 
 add_subdirectory(3rdparty/libsndfile)
@@ -16,6 +13,11 @@ include(cmake/protobuf/protobuf.cmake)
 include(cmake/speex/speex.cmake)
 
 include(cmake/mumble/shared.cmake)
+
+add_subdirectory(3rdparty/opus-cmake)
+target_compile_definitions(opus PRIVATE -DUSE_ALLOCA)
+target_include_directories(opus PUBLIC ${OPENSSL_INCLUDE_DIR})
+
 
 include(cmake/mumble/server.cmake)
 include(cmake/mumble/client.cmake)

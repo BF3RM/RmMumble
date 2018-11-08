@@ -1,5 +1,3 @@
-add_subdirectory(3rdparty/opus-cmake)
-target_compile_definitions(opus PRIVATE -DUSE_ALLOCA)
 
 set(MUMBLE_SOURCES
 #        src/mumble/release/qrc_mumble.cpp

@@ -42,4 +42,4 @@
 	url = https://github.com/erikd/libsndfile.git
 [submodule "3rdparty/opus-cmake"]
 	path = 3rdparty/opus-cmake
-	url = https://github.com/rtaudio/opus-cmake.git
+	url = https://github.com/eppixx/opus-cmake.git

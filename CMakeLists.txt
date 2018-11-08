@@ -10,11 +10,16 @@ set(CMAKE_AUTOMOC ON)
 # Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 
+add_subdirectory(3rdparty/libsndfile)
+
 include(cmake/protobuf/protobuf.cmake)
+include(cmake/speex/speex.cmake)
 
 include(cmake/mumble/shared.cmake)
-include(cmake/mumble/client.cmake)
+
 include(cmake/mumble/server.cmake)
+include(cmake/mumble/client.cmake)
+
 
 #[[
 

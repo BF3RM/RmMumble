@@ -2,13 +2,11 @@
 find_package(Qt5 COMPONENTS Gui Network Widgets DBus Xml Sql REQUIRED)
 #BOOST_ROOT https://kent.dl.sourceforge.net/project/boost/boost/1.66.0/boost_1_66_0.7z
 find_package(Boost REQUIRED)
-find_package(OpenSSL REQUIRED)
+#find_package(OpenSSL REQUIRED)
 
-add_subdirectory(3rdparty/libsndfile)
 #include_directories(${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src)
 
 include(cmake/celt/celt.cmake)
-include(cmake/speex/speex.cmake)
 
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${Protobuf_INCLUDE_DIRS})
@@ -16,11 +14,16 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/)
 include_directories(${CMAKE_SOURCE_DIR}/src/)
 include_directories(${CMAKE_SOURCE_DIR}/src/mumble)
+include_directories(${OPENSSL_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/ ${CMAKE_SOURCE_DIR}/src/murmur)
 
-#include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto)
-#include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl)
-include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/)
-
+if (WIN32)
+    add_subdirectory(3rdparty/openssl)
+    set(OPENSSL_LIBRARIES ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/)
+    set(OPENSSL_INCLUDE_DIR ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/crypto)
+else()
+    find_package(OpenSSL REQUIRED)
+endif()
 #add_subdirectory(3rdparty/openssl)
 
 set(SHARED_SOURCE
@@ -47,6 +50,7 @@ set(SHARED_SOURCE
         #src/ServerResolver_nosrv.cpp
         src/ServerResolver_qt5.cpp
         src/ServerResolverRecord.cpp
+        src/ServerResolverPrivate.cpp
         src/SSL.cpp
         src/SSLCipherInfo.cpp
         src/SSLLocks.cpp
@@ -92,6 +96,7 @@ set(SHARED_HEADERS
         src/SelfSignedCertificate.h
         src/ServerAddress.h
         src/ServerResolver.h
+        src/ServerResolver_nosrv.h
         src/ServerResolverRecord.h
         src/SignalCurry.h
         src/SSLCipherInfo.h
@@ -105,12 +110,13 @@ set(SHARED_HEADERS
         ${PROTO_HEADERS}
         )
 
-add_library(RmShared ${SHARED_SOURCE} ${SHARED_HEADERS} ${SPEEX_SOURCES})
-target_link_libraries(RmShared PRIVATE Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql crypto ssl sndfile)
+add_library(RmShared SHARED ${SHARED_SOURCE} ${SPEEX_SOURCES})
+target_link_libraries(RmShared PRIVATE ${OPENSSL_LIBRARIES} PUBLIC Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES})
 target_include_directories(RmShared
         PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
         PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/
+        ${CMAKE_SOURCE_DIR}/src/ ${OPENSSL_INCLUDE_DIR}
         )
+target_compile_definitions(RmShared PRIVATE -DUSE_NO_SRV)

@@ -17,10 +17,13 @@ class ServerResolverPrivate;
 
 class ServerResolver : public QObject {
 	private:
+#ifndef MURMUR
 		Q_OBJECT
+#endif
 		Q_DISABLE_COPY(ServerResolver)
 	public:
 		ServerResolver(QObject *parent = NULL);
+		~ServerResolver() {}
 
 		QString hostname();
 		quint16 port();

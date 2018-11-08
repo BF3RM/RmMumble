@@ -1,45 +1,59 @@
-set(MURMUR_SOURCE
+set(MURMUR_SOURCES
         #src/murmur/BonjourServer.cpp
         #src/murmur/BonjourServer.h
-        src/murmur/Cert.cpp
         #        src/murmur/DBus.cpp
         #        src/murmur/DBus.h
+        src/murmur/Cert.cpp
         src/murmur/main.cpp
         src/murmur/Messages.cpp
         src/murmur/Meta.cpp
-        src/murmur/Meta.h
-        src/murmur/murmur_pch.h
-        #        src/murmur/MurmurGRPCImpl.cpp
-        #        src/murmur/MurmurGRPCImpl.h
-        src/murmur/MurmurI.h
-        #        src/murmur/MurmurIce.cpp
-        #        src/murmur/MurmurIce.h
-        #        src/murmur/MurmurIceWrapper.cpp
         src/murmur/PBKDF2.cpp
-        src/murmur/PBKDF2.h
         src/murmur/Register.cpp
         src/murmur/RPC.cpp
         src/murmur/Server.cpp
-        src/murmur/Server.h
         src/murmur/ServerDB.cpp
-        src/murmur/ServerDB.h
         src/murmur/ServerUser.cpp
-        src/murmur/ServerUser.h
-        src/murmur/UnixMurmur.cpp
-        src/murmur/UnixMurmur.h
+        src/ServerResolver_qt5.cpp
+
+        #        src/murmur/MurmurGRPCImpl.cpp
+        #        src/murmur/MurmurGRPCImpl.h
+        #        src/murmur/MurmurIce.cpp
+        #        src/murmur/MurmurIce.h
+        #        src/murmur/MurmurIceWrapper.cpp
         #        src/murmur_grpcwrapper_protoc_plugin/main.cpp
         )
 
+set(MURMUR_HEADERS
+        src/murmur/PBKDF2.h
+        src/murmur/Server.h
+        src/murmur/ServerDB.h
+        src/murmur/UnixMurmur.h
+        src/murmur/Meta.h
+        src/murmur/murmur_pch.h
+        src/murmur/MurmurI.h
+        )
+
 if(WIN32)
-    list(APPEND MURMUR_SOURCE src/murmur/About.cpp src/murmur/About.h src/murmur/Tray.cpp src/murmur/Tray.h)
+    list(APPEND MURMUR_SOURCES src/murmur/About.cpp src/murmur/About.h src/murmur/Tray.cpp)
+    list(APPEND MURMUR_HEADERS src/murmur/Tray.h)
+else()
+    list(APPEND MURMUR_HEADERS src/murmur/UnixMurmur.cpp)
 endif()
 
-add_executable(RmMurmur ${SHARED_SOURCE} ${SHARED_HEADERS} ${SPEEX_SOURCES})
-target_link_libraries(RmShared PRIVATE Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql crypto ssl sndfile)
-target_include_directories(RmShared
+set(ADDITIONAL_LIBS "")
+if(UNIX)
+    list(APPEND ADDITIONAL_LIBS cap)
+endif()
+
+add_executable(RmMurmur ${MURMUR_SOURCES} ${MURMUR_HEADERS})
+target_link_libraries(RmMurmur PRIVATE RmShared ${ADDITIONAL_LIBS} ${OPENSSL_LIBRARIES} speex)
+target_include_directories(RmMurmur
         PUBLIC
-        $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
+        $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/murmur
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/murmur>
         PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/
+        ${CMAKE_SOURCE_DIR}/src/murmur
         )
+target_compile_definitions(RmMurmur PRIVATE -DMURMUR -DUSE_NO_SRV)
+target_compile_definitions(RmShared PRIVATE -DMURMUR)
+

@@ -1,12 +1,27 @@
-find_package(Qt5 REQUIRED Gui Network Widgets DBus Xml Sql)
+#Qt5_DIR
+find_package(Qt5 COMPONENTS Gui Network Widgets DBus Xml Sql REQUIRED)
+#BOOST_ROOT https://kent.dl.sourceforge.net/project/boost/boost/1.66.0/boost_1_66_0.7z
 find_package(Boost REQUIRED)
-find_package(OpenSSL REQUIRED)
+#find_package(OpenSSL REQUIRED)
+
+add_subdirectory(3rdparty/libsndfile)
+#include_directories(${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src)
 
 include(cmake/celt/celt.cmake)
+include(cmake/speex/speex.cmake)
 
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/)
+include_directories(${CMAKE_SOURCE_DIR}/src/)
+include_directories(${CMAKE_SOURCE_DIR}/src/mumble)
+
+include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto)
+include_directories(${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/)
+
+add_subdirectory(3rdparty/openssl)
 
 set(SHARED_SOURCE
         src/ACL.cpp
@@ -40,7 +55,7 @@ set(SHARED_SOURCE
         src/User.cpp
         src/Version.cpp
 #        ${CELT_SOURCES}
-        ${PROTO_SRCS}
+        ${PROTO_SOURCES}
         ${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/arc4random_uniform.cpp
         #        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceBrowser.cpp
         #        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceResolver.cpp
@@ -87,11 +102,11 @@ set(SHARED_HEADERS
         src/User.h
         src/Version.h
         src/UnresolvedServerAddress.h
-        ${PROTO_HDRS}
+        ${PROTO_HEADERS}
         )
 
-add_library(RmShared ${SHARED_SOURCE} ${SHARED_HEADERS})
-target_link_libraries(RmShared PRIVATE Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${OPENSSL_LIBRARIES} ${Protobuf_LIBRARIES})
+add_library(RmShared ${SHARED_SOURCE} ${SHARED_HEADERS} ${SPEEX_SOURCES})
+target_link_libraries(RmShared PRIVATE Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql crypto ssl sndfile)
 target_include_directories(RmShared
         PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/>

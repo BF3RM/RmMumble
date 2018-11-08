@@ -16,6 +16,7 @@ include(cmake/mumble/shared.cmake)
 include(cmake/mumble/client.cmake)
 include(cmake/mumble/server.cmake)
 
+#[[
 
 include_directories(plugins)
 include_directories(src)
@@ -342,3 +343,4 @@ target_include_directories(RealityMurmur PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/ce
 target_link_libraries(RealityMurmur Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${OPENSSL_LIBRARIES} ${Protobuf_LIBRARIES} ${MURMUR_ADDITIONAL_LIBS})
 target_compile_definitions(RealityMurmur PRIVATE MURMUR=1)
 
+]]

@@ -28,3 +28,15 @@
 [submodule "themes/Mumble"]
 	path = themes/Mumble
 	url = https://github.com/mumble-voip/mumble-theme.git
+[submodule "3rdparty/protobuf"]
+	path = 3rdparty/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
+[submodule "3rdparty/zlib"]
+	path = 3rdparty/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "3rdparty/openssl"]
+	path = 3rdparty/openssl
+	url = https://github.com/pol51/OpenSSL-CMake.git
+[submodule "3rdparty/libsndfile"]
+	path = 3rdparty/libsndfile
+	url = https://github.com/erikd/libsndfile.git

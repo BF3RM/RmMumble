@@ -10,95 +10,22 @@ set(CMAKE_AUTOMOC ON)
 # Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 
-add_subdirectory(3rdparty)
+include(cmake/protobuf/protobuf.cmake)
+
+include(cmake/mumble/shared.cmake)
+include(cmake/mumble/client.cmake)
+include(cmake/mumble/server.cmake)
+
 
 include_directories(plugins)
 include_directories(src)
 include_directories(src/mumble)
 include_directories(src/mumble/widgets)
-include_directories(src/mumble_proto)
+#include_directories(src/mumble_proto)
 include_directories(src/murmur)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/)
 
-find_package(Protobuf REQUIRED)
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${CMAKE_SOURCE_DIR}/src/Mumble.proto)
-
-set(SHARED_SOURCE     src/ACL.cpp
-        src/ACL.h
-        src/Ban.cpp
-        src/Ban.h
-        src/ByteSwap.h
-        src/Channel.cpp
-        src/Channel.h
-        src/Connection.cpp
-        src/Connection.h
-        src/CryptographicHash.cpp
-        src/CryptographicHash.h
-        src/CryptographicRandom.cpp
-        src/CryptographicRandom.h
-        src/CryptState.cpp
-        src/CryptState.h
-        src/EnvUtils.cpp
-        src/EnvUtils.h
-        src/FFDHE.cpp
-        src/FFDHE.h
-        src/FFDHETable.h
-        src/Group.cpp
-        src/Group.h
-        src/HostAddress.cpp
-        src/HostAddress.h
-        src/HTMLFilter.cpp
-        src/HTMLFilter.h
-        src/License.cpp
-        src/License.h
-        src/licenses.h
-        src/LogEmitter.cpp
-        src/LogEmitter.h
-        src/Message.h
-#        src/Net.cpp
-        src/Net.h
-        src/OSInfo.cpp
-        src/OSInfo.h
-        src/PacketDataStream.h
-        src/PasswordGenerator.cpp
-        src/PasswordGenerator.h
-        src/PlatformCheck.cpp
-        src/PlatformCheck.h
-        src/QAtomicIntCompat.h
-        src/qos2_mingw.h
-        src/Qt4Compat.h
-        src/SelfSignedCertificate.cpp
-        src/SelfSignedCertificate.h
-        src/ServerAddress.cpp
-        src/ServerAddress.h
-        src/ServerResolver.h
-        #src/ServerResolver_nosrv.cpp
-        src/ServerResolver_qt5.cpp
-        src/ServerResolverRecord.cpp
-        src/ServerResolverRecord.h
-        src/SignalCurry.h
-        src/SSL.cpp
-        src/SSL.h
-        src/SSLCipherInfo.cpp
-        src/SSLCipherInfo.h
-        src/SSLCipherInfoTable.h
-        src/SSLLocks.cpp
-        src/SSLLocks.h
-        src/Timer.cpp
-        src/Timer.h
-        src/UnresolvedServerAddress.cpp
-        src/UnresolvedServerAddress.h
-        src/User.cpp
-        src/User.h
-        src/Version.cpp
-        src/Version.h
-        ${PROTO_SRCS} ${PROTO_HDRS}
-        ${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/arc4random_uniform.cpp
-#        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceBrowser.cpp
-#        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceResolver.cpp
-#        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceRegister.cpp
-        )
 
 set(MUMBLE_SOURCE
         src/mumble/release/qrc_mumble.cpp
@@ -319,8 +246,6 @@ set(MUMBLE_SOURCE
         src/mumble/XMLTools.h
         src/mumble_exe/mumble_exe.cpp
         src/mumble_exe/Overlay.cpp
-        src/mumble_proto/Mumble.pb.cc
-        src/mumble_proto/Mumble.pb.h
         )
 
 set(MURMUR_SOURCE

@@ -17,14 +17,9 @@ include_directories(${CMAKE_SOURCE_DIR}/src/mumble)
 include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/ ${CMAKE_SOURCE_DIR}/src/murmur)
 
-if (WIN32)
-    add_subdirectory(3rdparty/openssl)
-    set(OPENSSL_LIBRARIES ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/)
-    set(OPENSSL_INCLUDE_DIR ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/crypto)
-else()
-    find_package(OpenSSL REQUIRED)
-endif()
-#add_subdirectory(3rdparty/openssl)
+add_subdirectory(3rdparty/openssl)
+set(OPENSSL_LIBRARIES ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/)
+set(OPENSSL_INCLUDE_DIR ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/crypto)
 
 set(SHARED_SOURCE
         src/ACL.cpp
@@ -110,13 +105,21 @@ set(SHARED_HEADERS
         ${PROTO_HEADERS}
         )
 
-add_library(RmShared SHARED ${SHARED_SOURCE} ${SPEEX_SOURCES})
-target_link_libraries(RmShared PRIVATE ${OPENSSL_LIBRARIES} PUBLIC Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES})
+set(SHARED_SOURCES ${SHARED_SOURCE}
+        #${SPEEX_SOURCES}
+        )
+set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl speex)
+set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl )
+set(SHARED_DEFS -DUSE_NO_SRV)
+#[[
+add_library(RmShared STATIC ${SHARED_SOURCE} ${SPEEX_SOURCES})
+target_link_libraries(RmShared PUBLIC Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl)
 target_include_directories(RmShared
         PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl>
         PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/ ${OPENSSL_INCLUDE_DIR}
+        ${CMAKE_SOURCE_DIR}/src/
         )
 target_compile_definitions(RmShared PRIVATE -DUSE_NO_SRV)
+]]

@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
 	{
 		QDir d(a.applicationVersionRootPath());
 		QString helper = d.absoluteFilePath(QString::fromLatin1("sbcelt-helper"));
-		EnvUtils::setenv(QLatin1String("SBCELT_HELPER_BINARY"), helper.toUtf8().constData());
+		EnvUtils::setenv(QLatin1String("SBCELT_HELPER_BINARY"), helper);
 	}
 #endif
 

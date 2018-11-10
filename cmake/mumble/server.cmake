@@ -45,8 +45,23 @@ if(UNIX)
     list(APPEND ADDITIONAL_LIBS cap)
 endif()
 
+qt5_wrap_cpp(QT5_SRC src/ServerResolver.h)
+
+add_executable(RmMurmur ${MURMUR_SOURCES} ${MURMUR_HEADERS} ${SHARED_SOURCES} ${QT5_SRC})
+target_link_libraries(RmMurmur PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} speex)
+target_include_directories(RmMurmur
+        PUBLIC
+        $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/murmur
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/murmur>
+        PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/murmur ${SHARED_INCLUDES}
+        )
+target_compile_definitions(RmMurmur PRIVATE -DMURMUR -DUSE_NO_SRV ${SHARED_DEFS})
+
+
+#[[
 add_executable(RmMurmur ${MURMUR_SOURCES} ${MURMUR_HEADERS})
-target_link_libraries(RmMurmur PRIVATE RmShared ${ADDITIONAL_LIBS} ${OPENSSL_LIBRARIES} speex)
+target_link_libraries(RmMurmur PRIVATE RmShared ${ADDITIONAL_LIBS} speex)
 target_include_directories(RmMurmur
         PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/murmur
@@ -57,3 +72,4 @@ target_include_directories(RmMurmur
 target_compile_definitions(RmMurmur PRIVATE -DMURMUR -DUSE_NO_SRV)
 target_compile_definitions(RmShared PRIVATE -DMURMUR)
 
+]]

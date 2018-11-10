@@ -17,10 +17,8 @@ class ServerResolverPrivate;
 
 class ServerResolver : public QObject {
 	private:
-#ifndef MURMUR
 		Q_OBJECT
-#endif
-		Q_DISABLE_COPY(ServerResolver)
+		//Q_DISABLE_COPY(ServerResolver)
 	public:
 		ServerResolver(QObject *parent = NULL);
 		~ServerResolver() {}

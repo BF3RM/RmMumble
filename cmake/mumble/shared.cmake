@@ -1,5 +1,7 @@
 #Qt5_DIR
 find_package(Qt5 COMPONENTS Gui Network Widgets DBus Xml Sql REQUIRED)
+
+include_directories(E:\\Qt\\5.11.2\\msvc2017_64\\include )
 #BOOST_ROOT https://kent.dl.sourceforge.net/project/boost/boost/1.66.0/boost_1_66_0.7z
 find_package(Boost REQUIRED)
 #find_package(OpenSSL REQUIRED)
@@ -108,9 +110,17 @@ set(SHARED_HEADERS
 set(SHARED_SOURCES ${SHARED_SOURCE}
         #${SPEEX_SOURCES}
         )
-set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl speex)
-set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl )
+set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl speex crypt32 ws2_32)
+set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto
+        ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src ${CELT_INCLUDES} ${Protobuf_INCLUDE_DIR})
 set(SHARED_DEFS -DUSE_NO_SRV)
+
+if(WIN32)
+    set(SHARED_DEFS ${SHARED_DEFS} -DUNICODE -DRESTRICT=__restrict)
+    set(SHARED_LIBS ${SHARED_LIBS} Qwave)
+else()
+    set(SHARED_DEFS ${SHARED_DEFS} -DRESTRICT=__restrict__)
+endif()
 #[[
 add_library(RmShared STATIC ${SHARED_SOURCE} ${SPEEX_SOURCES})
 target_link_libraries(RmShared PUBLIC Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl)

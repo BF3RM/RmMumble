@@ -131,7 +131,7 @@ static const std::wstring GetAbsoluteMumbleAppDllPath(std::wstring suggested_bas
 		return std::wstring();
 	}
 
-	return base_dir + L"\\mumble_app.dll";
+	return base_dir + L"\\rmmumble_app.dll";
 }
 
 #ifdef DEBUG

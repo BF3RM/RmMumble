@@ -43,3 +43,6 @@
 [submodule "3rdparty/opus-cmake"]
 	path = 3rdparty/opus-cmake
 	url = https://github.com/eppixx/opus-cmake.git
+[submodule "3rdparty/ogg"]
+	path = 3rdparty/ogg
+	url = https://github.com/xiph/ogg.git

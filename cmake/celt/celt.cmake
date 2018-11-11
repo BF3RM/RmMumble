@@ -61,9 +61,7 @@ SET(CELT_SOURCES ${CELT_SOURCES}
         ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/vq.c
         )
 
-include_directories(${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt)
-include_directories(${CMAKE_SOURCE_DIR}/cmake/celt)
-include_directories(${CMAKE_SOURCE_DIR}/3rdparty/sbcelt-src/lib ${CMAKE_SOURCE_DIR}/3rdparty/sbcelt-src/)
+set(CELT_INCLUDES ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt ${CMAKE_SOURCE_DIR}/cmake/celt ${CMAKE_SOURCE_DIR}/3rdparty/sbcelt-src/lib ${CMAKE_SOURCE_DIR}/3rdparty/sbcelt-src/)
 
 #add_definitions(-DSBCELT_PREFIX_API -DSBCELT_COMPAT_API -DUSE_SBCELT)
 #add_library(celt ${CELT_HEADERS} ${CELT_SRCS})

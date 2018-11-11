@@ -27,7 +27,7 @@ set(MURMUR_HEADERS
         src/murmur/PBKDF2.h
         src/murmur/Server.h
         src/murmur/ServerDB.h
-        src/murmur/UnixMurmur.h
+#        src/murmur/UnixMurmur.h
         src/murmur/Meta.h
         src/murmur/murmur_pch.h
         src/murmur/MurmurI.h
@@ -37,7 +37,8 @@ if(WIN32)
     list(APPEND MURMUR_SOURCES src/murmur/About.cpp src/murmur/About.h src/murmur/Tray.cpp)
     list(APPEND MURMUR_HEADERS src/murmur/Tray.h)
 else()
-    list(APPEND MURMUR_HEADERS src/murmur/UnixMurmur.cpp)
+    list(APPEND MURMUR_SOURCES src/murmur/UnixMurmur.cpp)
+    list(APPEND MURMUR_HEADERS src/murmur/UnixMurmur.h)
 endif()
 
 set(ADDITIONAL_LIBS "")

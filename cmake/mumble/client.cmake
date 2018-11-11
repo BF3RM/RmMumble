@@ -2,6 +2,12 @@ find_package(Qt5 COMPONENTS Svg TextToSpeech REQUIRED)
 
 include(cmake/celt/celt.cmake)
 
+set(MumbleExeName RmMumble)
+
+if(WIN32)
+    set(MumbleExeName RmMumbleApp)
+endif()
+
 set(MUMBLE_SOURCES
 #        src/mumble/release/qrc_mumble.cpp
 #        src/mumble/release/qrc_mumble_flags_0.cpp
@@ -13,8 +19,6 @@ set(MUMBLE_SOURCES
         src/mumble/About.h
         src/mumble/ACLEditor.cpp
         src/mumble/ACLEditor.h
-        src/mumble/ALSAAudio.cpp
-        src/mumble/ALSAAudio.h
         src/mumble/ApplicationPalette.h
 #        src/mumble/ApplicationPaletteTemplate.h
         src/mumble/AppNap.h
@@ -97,8 +101,6 @@ set(MUMBLE_SOURCES
         src/mumble/OpusCodec.cpp
         src/mumble/OpusCodec.h
 
-        src/mumble/OSS.cpp
-        src/mumble/OSS.h
         src/mumble/Overlay.cpp
         src/mumble/Overlay.h
 
@@ -126,8 +128,6 @@ set(MUMBLE_SOURCES
         src/mumble/Plugins.h
         src/mumble/PTTButtonWidget.cpp
         src/mumble/PTTButtonWidget.h
-        src/mumble/PulseAudio.cpp
-        src/mumble/PulseAudio.h
         src/mumble/RichTextEditor.cpp
         src/mumble/RichTextEditor.h
         src/mumble/RMMessage.h
@@ -190,6 +190,8 @@ set(MUMBLE_SOURCES
         3rdparty/smallft-src/smallft.h
         )
 
+set(MUMBLE_EXE_SOURCES src/mumble_exe/mumble_exe.cpp src/mumble_exe/Overlay.cpp)
+
 if(WIN32)
     list(APPEND MUMBLE_SOURCES
             src/mumble/UserLockFile_win.cpp
@@ -202,8 +204,6 @@ if(WIN32)
             src/mumble/GlobalShortcut_win.cpp
             src/mumble/GlobalShortcut_win.h
             src/mumble/os_win.cpp
-            src/mumble/ASIOInput.cpp
-            src/mumble/ASIOInput.h
             src/mumble/WinGUIDs.cpp
             src/mumble/DirectSound.cpp
             src/mumble/DirectSound.h
@@ -213,11 +213,11 @@ if(WIN32)
             src/mumble/WASAPI.h
             src/mumble/WASAPINotificationClient.cpp
             src/mumble/WASAPINotificationClient.h
-            src/mumble_exe/mumble_exe.cpp
-            src/mumble_exe/Overlay.cpp
             )
 else()
     list(APPEND MUMBLE_SOURCES
+            src/mumble/ALSAAudio.cpp
+            src/mumble/ALSAAudio.h
             src/mumble/TextToSpeech_unix.cpp
             src/mumble/SharedMemory_unix.cpp
             src/mumble/os_unix.cpp
@@ -227,27 +227,46 @@ else()
             src/mumble/GlobalShortcut_unix.cpp
             src/mumble/GlobalShortcut_unix.h
             src/mumble/Log_unix.cpp
+            src/mumble/ASIOInput.cpp
+            src/mumble/ASIOInput.h
+            src/mumble/PulseAudio.cpp
+            src/mumble/PulseAudio.h
+            src/mumble/OSS.cpp
+            src/mumble/OSS.h
+            3rdparty/xinputcheck-src/xinputcheck.cpp
             )
 endif()
 
 qt5_wrap_cpp(QT5_SRC src/ServerResolver.h src/SignalCurry.h src/mumble/TextToSpeech.h)
 
 set(ADDITIONAL_LIBS "")
+set(FLAGS "")
 if(UNIX)
     list(APPEND ADDITIONAL_LIBS cap X11 rt asound pulse)
+elseif(WIN32)
+    list(APPEND ADDITIONAL_LIBS user32 shlwapi)
+    list(APPEND FLAGS WIN32)
 endif()
 
-add_executable(RmMumble ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
-target_link_libraries(RmMumble PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} opus Qt5::Svg Qt5::TextToSpeech sndfile)
-target_include_directories(RmMumble
+if(UNIX)
+    add_executable(${MumbleExeName} ${FLAGS} ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
+else()
+    add_library(${MumbleExeName} SHARED src/mumble/main.cpp ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
+    add_executable(RmMumble ${FLAGS} ${MUMBLE_EXE_SOURCES})
+    target_link_libraries(RmMumble PRIVATE ${MumbleExeName} Shlwapi)
+    target_compile_definitions(RmMumble PRIVATE -DUNICODE)
+endif()
+
+target_link_libraries(${MumbleExeName} PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} opus Qt5::Svg Qt5::TextToSpeech sndfile)
+target_include_directories(${MumbleExeName}
         PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/mumble
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/mumble ${CMAKE_SOURCE_DIR}/src/mumble/widgets ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/mumble ${CMAKE_SOURCE_DIR}/src/mumble/widgets ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src>
         PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES}
+        ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/
         )
 
-target_compile_definitions(RmMumble PRIVATE -DRESTRICT=__restrict__ -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS})
+target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS})
 
 #[[
 set(SHARED_SOURCES ${SHARED_SOURCE} ${SPEEX_SOURCES})

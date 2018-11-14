@@ -181,13 +181,12 @@ set(MUMBLE_SOURCES
         src/mumble/WebFetch.cpp
         src/mumble/WebFetch.h
 
-        #        src/mumble/XboxInput.cpp
-#        src/mumble/XboxInput.h
         src/mumble/XMLTools.cpp
         src/mumble/XMLTools.h
 
         3rdparty/smallft-src/smallft.cpp
         3rdparty/smallft-src/smallft.h
+        3rdparty/xinputcheck-src/xinputcheck.cpp
         )
 
 set(MUMBLE_EXE_SOURCES src/mumble_exe/mumble_exe.cpp src/mumble_exe/Overlay.cpp)
@@ -213,6 +212,8 @@ if(WIN32)
             src/mumble/WASAPI.h
             src/mumble/WASAPINotificationClient.cpp
             src/mumble/WASAPINotificationClient.h
+            src/mumble/XboxInput.cpp
+            src/mumble/XboxInput.h
             )
 else()
     list(APPEND MUMBLE_SOURCES
@@ -233,7 +234,6 @@ else()
             src/mumble/PulseAudio.h
             src/mumble/OSS.cpp
             src/mumble/OSS.h
-            3rdparty/xinputcheck-src/xinputcheck.cpp
             )
 endif()
 
@@ -244,7 +244,7 @@ set(FLAGS "")
 if(UNIX)
     list(APPEND ADDITIONAL_LIBS cap X11 rt asound pulse)
 elseif(WIN32)
-    list(APPEND ADDITIONAL_LIBS user32 shlwapi)
+    list(APPEND ADDITIONAL_LIBS user32 shlwapi Avrt dsound Wintrust delayimp dinput8 uuid dxguid)
     list(APPEND FLAGS WIN32)
 endif()
 
@@ -268,6 +268,10 @@ target_include_directories(${MumbleExeName}
 
 target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS})
 
+if(WIN32)
+        set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_RELEASE "-delayload:shell32.dll")
+        set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_DEBUG "-delayload:shell32.dll")
+endif()
 #[[
 set(SHARED_SOURCES ${SHARED_SOURCE} ${SPEEX_SOURCES})
 set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl)

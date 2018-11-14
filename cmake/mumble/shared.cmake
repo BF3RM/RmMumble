@@ -1,5 +1,5 @@
 #Qt5_DIR
-find_package(Qt5 COMPONENTS Gui Network Widgets DBus Xml Sql REQUIRED)
+find_package(Qt5 COMPONENTS Gui Network Widgets DBus Xml Sql Svg REQUIRED)
 
 include_directories(E:\\Qt\\5.11.2\\msvc2017_64\\include)
 
@@ -114,7 +114,7 @@ set(SHARED_HEADERS
 set(SHARED_SOURCES ${SHARED_SOURCE}
         #${SPEEX_SOURCES}
         )
-set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl speex crypt32 ws2_32 ${Boost_LIBRARIES})
+set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql Qt5::Svg ${Protobuf_LIBRARIES} crypto ssl speex crypt32 ws2_32 ${Boost_LIBRARIES})
 set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto
         ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src ${CELT_INCLUDES} ${Protobuf_INCLUDE_DIR})
 set(SHARED_DEFS -DUSE_NO_SRV)

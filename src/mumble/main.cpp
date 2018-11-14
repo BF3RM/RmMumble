@@ -40,6 +40,7 @@
 #include "License.h"
 #include "EnvUtils.h"
 
+
 #if defined(USE_STATIC_QT_PLUGINS) && QT_VERSION < 0x050000
 Q_IMPORT_PLUGIN(qtaccessiblewidgets)
 # ifdef Q_OS_WIN

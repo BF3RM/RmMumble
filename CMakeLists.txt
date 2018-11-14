@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 project(pr_mumble)
 
-cmake_policy(SET CMP0074 NEW)
+#cmake_policy(SET CMP0074 NEW)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 99)
@@ -13,6 +13,8 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set(BUILD_OBJECT_LIBRARY_ONLY OFF CACHE BOOL "")
 
 add_subdirectory(3rdparty/libsndfile)
 include(cmake/speex/speex.cmake)
@@ -29,6 +31,8 @@ add_subdirectory(3rdparty/opus-cmake)
 
 include(cmake/mumble/server.cmake)
 include(cmake/mumble/client.cmake)
+
+if(WIN32)
 
 add_custom_target(Qt5CopyBinaries
         # todo: check if debug and release folder exist
@@ -61,3 +65,4 @@ add_custom_target(Qt5CopyBinaries
         )
 
 add_dependencies(RmMurmur Qt5CopyBinaries)
+endif()

@@ -63,8 +63,8 @@ set(MUMBLE_SOURCES
         src/mumble/CustomElements.h
         src/mumble/Database.cpp
         src/mumble/Database.h
-#        src/mumble/DBus.cpp
-#        src/mumble/DBus.h
+        src/mumble/DBus.cpp
+        src/mumble/DBus.h
         src/mumble/DeveloperConsole.cpp
         src/mumble/DeveloperConsole.h
 #        src/mumble/G15LCDEngine_helper.cpp
@@ -254,7 +254,7 @@ else()
     add_library(${MumbleExeName} SHARED src/mumble/main.cpp ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
     add_executable(RmMumble ${FLAGS} ${MUMBLE_EXE_SOURCES})
     target_link_libraries(RmMumble PRIVATE ${MumbleExeName} Shlwapi)
-    target_compile_definitions(RmMumble PRIVATE -DUNICODE)
+    target_compile_definitions(RmMumble PRIVATE -DUNICODE -DUSE_DBUS)
 endif()
 
 target_link_libraries(${MumbleExeName} PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} opus Qt5::Svg Qt5::TextToSpeech sndfile)
@@ -266,7 +266,7 @@ target_include_directories(${MumbleExeName}
         ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/
         )
 
-target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS})
+target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} -DUSE_DBUS)
 
 if(WIN32)
         set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_RELEASE "-delayload:shell32.dll")

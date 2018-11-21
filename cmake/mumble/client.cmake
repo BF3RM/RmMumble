@@ -4,10 +4,6 @@ include(cmake/celt/celt.cmake)
 
 set(MumbleExeName RmMumble)
 
-if(WIN32)
-    set(MumbleExeName RmMumbleApp)
-endif()
-
 set(MUMBLE_SOURCES
 #        src/mumble/release/qrc_mumble.cpp
 #        src/mumble/release/qrc_mumble_flags_0.cpp
@@ -189,7 +185,7 @@ set(MUMBLE_SOURCES
         3rdparty/xinputcheck-src/xinputcheck.cpp
         )
 
-set(MUMBLE_EXE_SOURCES src/mumble_exe/mumble_exe.cpp src/mumble_exe/Overlay.cpp)
+#set(MUMBLE_EXE_SOURCES src/mumble_exe/mumble_exe.cpp src/mumble_exe/Overlay.cpp)
 
 if(WIN32)
     list(APPEND MUMBLE_SOURCES
@@ -251,10 +247,10 @@ endif()
 if(UNIX)
     add_executable(${MumbleExeName} ${FLAGS} ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
 else()
-    add_library(${MumbleExeName} SHARED src/mumble/main.cpp ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
-    add_executable(RmMumble ${FLAGS} ${MUMBLE_EXE_SOURCES})
-    target_link_libraries(RmMumble PRIVATE ${MumbleExeName} Shlwapi)
-    target_compile_definitions(RmMumble PRIVATE -DUNICODE -DUSE_DBUS)
+    add_executable(${MumbleExeName} ${FLAGS} src/mumble/main.cpp ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
+    #add_executable(RmMumble ${FLAGS} ${MUMBLE_EXE_SOURCES})
+    target_link_libraries(${MumbleExeName} PRIVATE Shlwapi)
+    target_compile_definitions(${MumbleExeName} PRIVATE -DUNICODE -DUSE_DBUS)
 endif()
 
 target_link_libraries(${MumbleExeName} PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} opus Qt5::Svg Qt5::TextToSpeech sndfile)
@@ -278,7 +274,7 @@ set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql $
 set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl )
 set(SHARED_DEFS -DUSE_NO_SRV)
 
-add_executable(RmMumble ${MUMBLE_SOURCES})
+#add_executable(RmMumble ${MUMBLE_SOURCES})
 target_link_libraries(RmMumble PRIVATE RmShared ${ADDITIONAL_LIBS} speex opus Qt5::Svg Qt5::TextToSpeech)
 target_include_directories(RmMumble
         PUBLIC

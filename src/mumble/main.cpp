@@ -71,6 +71,8 @@ extern int os_early_init();
 extern HWND mumble_mw_hwnd;
 #endif // Q_OS_WIN
 
+//extern "C" __declspec(dllexport) void mumbleSelfDetection() {};
+
 #if defined(Q_OS_WIN) && !defined(QT_NO_DEBUG)
 extern "C" __declspec(dllexport) int main(int argc, char **argv) {
 #else

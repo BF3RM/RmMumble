@@ -9,6 +9,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -34,6 +35,7 @@ include(cmake/mumble/client.cmake)
 
 if(WIN32)
 
+
 add_custom_target(Qt5CopyBinaries
         # todo: check if debug and release folder exist
         # debug version
@@ -48,6 +50,7 @@ add_custom_target(Qt5CopyBinaries
         COMMAND ${CMAKE_COMMAND} -E copy ${Qt5Core_DIR}/../../../bin/Qt5Xmld.dll          ${CMAKE_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy ${Qt5Core_DIR}/../../../bin/Qt5XmlPatternsd.dll  ${CMAKE_BINARY_DIR}/
         COMMAND ${CMAKE_COMMAND} -E copy ${Qt5Core_DIR}/../../../bin/Qt5Svgd.dll          ${CMAKE_BINARY_DIR}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${Qt5Core_DIR}/../../../bin/Qt5DBusd.dll         ${CMAKE_BINARY_DIR}/
 #[[
         # release version
         COMMAND ${CMAKE_COMMAND} -E copy ${Qt5Core_DIR}/../../../bin/libEGL.dll           ${CMAKE_BINARY_DIR}/

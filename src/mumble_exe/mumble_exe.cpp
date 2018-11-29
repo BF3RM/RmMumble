@@ -6,8 +6,11 @@
 #include <windows.h>
 #include <shlwapi.h>
 #include <stdio.h>
+#include <iostream>
 
 #include <string>
+
+#define DEBUG
 
 typedef int (*DLL_MAIN)(HINSTANCE, HINSTANCE, LPSTR, int);
 #ifdef DEBUG
@@ -131,7 +134,7 @@ static const std::wstring GetAbsoluteMumbleAppDllPath(std::wstring suggested_bas
 		return std::wstring();
 	}
 
-	return base_dir + L"\\mumble_app.dll";
+	return base_dir + L"RmMumbleApp.dll";
 }
 
 #ifdef DEBUG
@@ -160,6 +163,9 @@ int main(int argc, char **argv) {
 		return -2;
 	}
 
+	std::cout << "Hello" << std::endl;
+	Alert(L"Mumble Launcher Error -3", abs_dll_path.c_str());
+
 	HMODULE dll = LoadLibraryExW(abs_dll_path.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 	if (!dll) {
 		Alert(L"Mumble Launcher Error -3", L"Failed to load mumble_app.dll.");
@@ -177,6 +183,25 @@ int main(int argc, char **argv) {
 	return rc;
 }
 #endif  // DEBUG
+
+std::string GetLastErrorAsString()
+{
+	//Get the error message, if any.
+	DWORD errorMessageID = ::GetLastError();
+	if (errorMessageID == 0)
+		return std::string(); //No error message has been recorded
+
+	LPSTR messageBuffer = nullptr;
+	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+	std::string message(messageBuffer, size);
+
+	//Free the buffer.
+	LocalFree(messageBuffer);
+
+	return message;
+}
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, wchar_t *cmdArg, int cmdShow) {
 	if (!ConfigureEnvironment()) {
@@ -205,13 +230,13 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, wchar_t *cmdAr
 
 	HMODULE dll = LoadLibraryExW(abs_dll_path.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 	if (!dll) {
-		Alert(L"Mumble Launcher Error -3", L"Failed to load mumble_app.dll.");
+		MessageBoxA(nullptr, ("Failed to load RmMumbleApp.dll. " + GetLastErrorAsString()).c_str(), "Mumble Launcher Error -3", 0);
 		return -3;
 	}
 
-	DLL_MAIN entry_point = reinterpret_cast<DLL_MAIN>(GetProcAddress(dll, "MumbleMain"));
+	DLL_MAIN entry_point = reinterpret_cast<DLL_MAIN>(GetProcAddress(dll, "main"));
 	if (!entry_point) {
-		Alert(L"Mumble Launcher Error -4", L"Unable to find expected entry point ('MumbleMain') in mumble_app.dll.");
+		Alert(L"Mumble Launcher Error -4", L"Unable to find expected entry point ('MumbleMain') in RmMumbleApp.dll.");
 		return -4;
 	}
 

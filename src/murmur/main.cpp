@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 		exit(0);
 	}
 
-	SetDllDirectory(L"");
+	SetDllDirectoryW(L"");
 
 #endif
 	int res;

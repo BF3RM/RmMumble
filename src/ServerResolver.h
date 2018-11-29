@@ -18,9 +18,10 @@ class ServerResolverPrivate;
 class ServerResolver : public QObject {
 	private:
 		Q_OBJECT
-		Q_DISABLE_COPY(ServerResolver)
+		//Q_DISABLE_COPY(ServerResolver)
 	public:
 		ServerResolver(QObject *parent = NULL);
+		~ServerResolver() {}
 
 		QString hostname();
 		quint16 port();

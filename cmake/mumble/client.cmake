@@ -234,7 +234,11 @@ else()
 endif()
 
 qt5_wrap_cpp(QT5_SRC src/ServerResolver.h src/SignalCurry.h src/mumble/TextToSpeech.h)
-
+qt5_add_resources(MUMBLE_RESOURCES 
+    ${CMAKE_SOURCE_DIR}/src/mumble/mumble.qrc 
+#    ${CMAKE_SOURCE_DIR}/src/mumble/mumble_translations.qrc
+    ${CMAKE_SOURCE_DIR}/themes/MumbleTheme.qrc
+    ${CMAKE_SOURCE_DIR}/src/mumble/flags/mumble_flags_0.qrc)
 set(ADDITIONAL_LIBS "")
 set(FLAGS "")
 if(UNIX)
@@ -245,9 +249,9 @@ elseif(WIN32)
 endif()
 
 if(UNIX)
-    add_executable(${MumbleExeName} ${FLAGS} ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
+    add_executable(${MumbleExeName} ${FLAGS} ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC} ${MUMBLE_RESOURCES})
 else()
-    add_executable(${MumbleExeName} ${FLAGS} src/mumble/main.cpp ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC})
+    add_executable(${MumbleExeName} ${FLAGS} src/mumble/main.cpp ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC} ${MUMBLE_RESOURCES})
     #add_executable(RmMumble ${FLAGS} ${MUMBLE_EXE_SOURCES})
     target_link_libraries(${MumbleExeName} PRIVATE Shlwapi)
     target_compile_definitions(${MumbleExeName} PRIVATE -DUNICODE -DUSE_DBUS)

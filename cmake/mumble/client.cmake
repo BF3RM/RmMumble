@@ -272,6 +272,12 @@ if(WIN32)
         set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_RELEASE "-delayload:shell32.dll")
         set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_DEBUG "-delayload:shell32.dll")
 endif()
+
+if(WIN32)
+	add_library(RmRadio SHARED plugins/rm/rm.cpp)
+	target_link_libraries(RmRadio PRIVATE psapi)
+	target_compile_definitions(RmRadio PRIVATE -DUNICODE -DRESTRICT=__restrict)
+endif()
 #[[
 set(SHARED_SOURCES ${SHARED_SOURCE} ${SPEEX_SOURCES})
 set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl)

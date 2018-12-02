@@ -6,22 +6,12 @@
 #include <vector>
 #include "RMMessage.h"
 
-
-enum class EMessageType : uint8_t
-{
-    StopTalking = 121,
-    Talking = 122,
-    Uuid = 123,
-    Ping = 124,
-    MuteAndDeaf = 125,
-};
-
 class RMSocket : public QThread
 {
     Q_OBJECT
 public:
     RMSocket() : Socket(nullptr) {}
-    RMMessage* NewMessage(size_t MessageSize = 64);
+    RMMessage* NewMessage(EMessageType Type);
     void AddListener(OnMessageCallback Listener, EMessageType Type);
     inline bool IsAlive() { return Socket != nullptr; };
     inline QTcpSocket* GetSocket() { return Socket; }

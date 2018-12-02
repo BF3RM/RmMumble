@@ -43,6 +43,7 @@ HEADERS *= \
   UnresolvedServerAddress.h \
   ServerAddress.h \
   ServerResolver.h \
+  ServerResolverPrivate.h \
   ServerResolverRecord.h \
   SelfSignedCertificate.h \
   SSLLocks.h \
@@ -73,6 +74,7 @@ SOURCES *= \
   UnresolvedServerAddress.cpp \
   ServerAddress.cpp \
   ServerResolver_qt5.cpp \
+  ServerResolverPrivate.cpp \
   ServerResolverRecord.cpp \
   SelfSignedCertificate.cpp \
   SSLLocks.cpp \

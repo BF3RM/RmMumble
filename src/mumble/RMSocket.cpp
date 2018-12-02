@@ -18,45 +18,47 @@ void RMSocket::run()
 
         emit OnConnected();
 
-        auto Data = (char*) malloc(64);
-        memset(Data, '\0', 64);
-        
+		uint32_t DataSize = 0;
         qint64 Status = 0;
 
         while (Socket && Socket->isValid()) {
             if(Socket->waitForReadyRead(-1)) {
                 while (Socket->bytesAvailable() > 0) {
-                    Status = Socket->read(Data, 64);
-                    if (Status == -1 || Data[0] == '\n') break;
-                    if (Status > 0) {
-                        auto Message = NewMessage(63);
-                        memcpy(Message->Data, &Data[1], 63);
-                        Message->DataSize = Status - 1; // Ignoring the 0x0 at the end
+                    Status = Socket->read((char*)&DataSize, sizeof(uint32_t));
+                    if (Status == -1) break;
+					if (Status > 0 && DataSize > 256)
+					{
+						//qDebug() << QString("Data size exceed limit (%1)").arg(DataSize);
+						DataSize = 0;
+						continue;
+					}
+                    if (Status > 0 && DataSize > 0) {
+						auto Data = (char*)malloc(DataSize);
+						Status = Socket->read(Data, DataSize);
+						if (Status > 0)
+						{
+							auto Message = NewMessage((EMessageType)Data[0]);
+							Message->AddData((void*)&Data[sizeof(EMessageType)], DataSize - sizeof(EMessageType));
 
-                        // Eventually removing 0xa
-                        if (Message->Data[Status - 2] == 0xa) {
-                            Message->Data[Status - 2] = '\0';
-                            Message->DataSize --;
-                        }
+							for (auto& Listener : MessageCallbacks[Message->GetMessageType()]) {
+								Listener(Message);
+							}
 
-                        for (auto& Listener : MessageCallbacks[(EMessageType)(uint8_t)Data[0]]) {
-                            Listener(Message);
-                        }
+							// Some stuff needs to happen in the main thread, so we use qt signals to automate this
+							switch (Message->GetMessageType()) {
+							case EMessageType::Uuid:
+								emit OnUuidReceived(QString::fromUtf8((char*)Message->GetData()));
+								break;
+							case EMessageType::MuteAndDeaf:
+								emit OnMuteAndDeaf(*(bool*)(Message->GetData()), *(bool*)(Message->GetData()));
+								break;
+							default: break;
+							}
 
-                        // Some stuff needs to happen in the main thread, so we use qt signals to automate this
-                        switch((EMessageType)Data[0]) {
-                            case EMessageType::Uuid:
-                                emit OnUuidReceived(QString::fromUtf8(Message->Data));
-                                break;
-                            case EMessageType::MuteAndDeaf:
-                                emit OnMuteAndDeaf((bool)Data[1], (bool)Data[2]);
-                                break;
-                            default: break;
-                        }
-
-                        delete Message;
+							delete Message;
+						}
+						free (Data);
                     }
-                    memset(Data, '\0', 64);
                 }
             } else break;
         }
@@ -66,9 +68,9 @@ void RMSocket::run()
     }
 }
 
-RMMessage* RMSocket::NewMessage(size_t MessageSize)
+RMMessage* RMSocket::NewMessage(EMessageType Type)
 {
-    return new RMMessage(Socket, MessageSize);
+    return new RMMessage(Socket, Type);
 }
 
 void RMSocket::AddListener(OnMessageCallback Listener, EMessageType Type)

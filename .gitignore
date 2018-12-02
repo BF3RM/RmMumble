@@ -48,3 +48,4 @@ cmake-build-debug
 murmur.sqlite
 .idea
 build
+output

@@ -11,7 +11,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 #include <QtCore/QtGlobal>

@@ -12,4 +12,4 @@ mv /tmp/ASIOSDK2.3 3rdparty/asio
 
 x86_64-w64-mingw32.static-qmake-qt5 -recursive CONFIG+="release no-g15 no-overlay no-bonjour no-elevation no-ice asio"
 make
-cp prhk.bin release/ && zip -r /output/pr-mumble-$GIT_COMMIT.zip release/ -i '*.exe' '*.dll' '*.bin'
+cp prhk.bin release/ && zip -r output/pr-mumble-`date '+%d-%m-%Y'`.zip release/ -i '*.exe' '*.dll' '*.bin'

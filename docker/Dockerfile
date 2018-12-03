@@ -22,4 +22,5 @@ RUN apt install -y mxe-x86-64-w64-mingw32.static-qtbase \
 
 RUN apt install -y zip
 
-ENTRYPOINT bash ./docker/build.sh
+CMD ["bash", "./docker/build.sh"]
+

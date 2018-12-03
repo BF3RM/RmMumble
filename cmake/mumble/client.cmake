@@ -1,7 +1,5 @@
 find_package(Qt5 COMPONENTS Svg TextToSpeech REQUIRED)
 
-include(cmake/celt/celt.cmake)
-
 set(MumbleExeName RmMumble)
 
 set(MUMBLE_SOURCES

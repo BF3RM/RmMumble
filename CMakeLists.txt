@@ -16,6 +16,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(BUILD_OBJECT_LIBRARY_ONLY OFF CACHE BOOL "")
 
+add_subdirectory(cmake/celt)
+
 add_subdirectory(3rdparty/libsndfile)
 include(cmake/speex/speex.cmake)
 
@@ -28,7 +30,6 @@ include(cmake/mumble/shared.cmake)
 add_subdirectory(3rdparty/opus-cmake)
 
 #include_directories(${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src)
-
 include(cmake/mumble/server.cmake)
 include(cmake/mumble/client.cmake)
 

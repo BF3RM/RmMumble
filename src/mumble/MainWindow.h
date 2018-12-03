@@ -166,6 +166,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		QAction *qaTransmitMode;
 		QAction *qaTransmitModeSeparator;
 
+		void UpdatePlayerContext(class RMMessage* Message);
 		void createActions();
 		void setupGui();
 		void updateWindowTitle();

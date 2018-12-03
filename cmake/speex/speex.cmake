@@ -23,16 +23,15 @@ file(GLOB SPEEXDSP_SOURCES_REMOVE ${CMAKE_SOURCE_DIR}/3rdparty/speexdsp-src/libs
 list(REMOVE_ITEM SPEEXDSP_SOURCES ${SPEEXDSP_SOURCES_REMOVE})
 
 set(SPEEX_SOURCES ${SPEEX_SOURCES_C} ${SPEEXDSP_SOURCES})
-include_directories(${CMAKE_SOURCE_DIR}/3rdparty/speex-src/include ${CMAKE_SOURCE_DIR}/3rdparty/speexdsp-src/include)
 #include_directories(${CMAKE_SOURCE_DIR}/3rdparty/speexdsp-src/include)
-include_directories(${CMAKE_SOURCE_DIR}/cmake/speex)
 if(WIN32)
     set(SPEEX_SOURCES ${SPEEX_SOURCES} 3rdparty/speex-build/mumble_speex_init.c)
 endif()
 
 add_library(speex ${SPEEX_SOURCES})
+
+target_include_directories(speex PUBLIC ${CMAKE_SOURCE_DIR}/cmake/speex ${CMAKE_SOURCE_DIR}/3rdparty/smallft-src/ ${CMAKE_SOURCE_DIR}/3rdparty/speex-src/include ${CMAKE_SOURCE_DIR}/3rdparty/speexdsp-src/include)
 target_compile_definitions(speex PRIVATE -DHAVE_CONFIG_H -DUSE_SMALLFT)
-target_include_directories(speex PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/smallft-src/)
 if(WIN32)
     target_include_directories(speex PRIVATE 3rdparty/speex-build/win32 3rdparty/ogg/include)
     #target_link_libraries(speex PRIVATE ogg crypto ssl)

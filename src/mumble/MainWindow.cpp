@@ -228,6 +228,8 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		}
 	}, EMessageType::Ping);
 
+	RmSocket->AddListener([this](RMMessage* Message) { UpdatePlayerContext(Message); }, EMessageType::UpdateData);
+
 	connect(RmSocket, &RMSocket::OnUuidReceived, this, [this](QString Uuid) {
 		//QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
 
@@ -339,6 +341,32 @@ void MainWindow::CreatePrShortcuts()
         GlobalShortcutEngine::engine->bNeedRemap = true;
         GlobalShortcutEngine::engine->needRemap();
     }
+}
+
+void MainWindow::UpdatePlayerContext(class RMMessage* Message)
+{
+	if (!Message)
+	{
+		return;
+	}
+
+	if (Message->GetSize() == 1 + 1 + 1 + sizeof(float) * 3)
+	{
+		float PositionVector[3];
+		memcpy(PositionVector, Message->m_Data, sizeof(float) * 3);
+
+		const int ContextSize = Message->GetSize() - sizeof(float) * 3;
+		auto Context = new char[ContextSize];
+		memcpy(Context, Message->m_Data, sizeof(float) * 3);
+
+		MumbleProto::UserState UserState;
+		UserState.set_session(g.uiSession);
+		UserState.set_plugin_context(Context);
+		if (g.sh)
+		{
+			g.sh->sendMessage(UserState);
+		}
+	}
 }
 
 void MainWindow::createActions() {

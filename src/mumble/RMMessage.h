@@ -6,6 +6,7 @@
 enum class EMessageType : uint8_t
 {
 	Default = 100,
+	UpdateData = 120,
 	StopTalking = 121,
 	Talking = 122,
 	Uuid = 123,

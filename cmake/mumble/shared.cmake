@@ -12,8 +12,6 @@ link_directories(${Boost_LIBRARY_DIRS})
 
 #include_directories(${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src)
 
-include(cmake/celt/celt.cmake)
-
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -59,7 +57,6 @@ set(SHARED_SOURCE
         src/UnresolvedServerAddress.cpp
         src/User.cpp
         src/Version.cpp
-#        ${CELT_SOURCES}
         ${PROTO_SOURCES}
         ${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/arc4random_uniform.cpp
         #        ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src/BonjourServiceBrowser.cpp
@@ -121,7 +118,7 @@ set(SHARED_DEFS -DUSE_NO_SRV)
 
 if(WIN32)
     set(SHARED_DEFS ${SHARED_DEFS} -DUNICODE -DRESTRICT=__restrict)
-    set(SHARED_LIBS ${SHARED_LIBS} Qwave)
+    set(SHARED_LIBS ${SHARED_LIBS} Qwave celt)
 else()
     set(SHARED_DEFS ${SHARED_DEFS} -DRESTRICT=__restrict__)
 endif()

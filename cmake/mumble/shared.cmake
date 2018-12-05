@@ -111,14 +111,14 @@ set(SHARED_HEADERS
 set(SHARED_SOURCES ${SHARED_SOURCE}
         #${SPEEX_SOURCES}
         )
-set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql Qt5::Svg ${Protobuf_LIBRARIES} crypto ssl speex crypt32 ws2_32 ${Boost_LIBRARIES})
+set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql Qt5::Svg ${Protobuf_LIBRARIES} crypto ssl speex crypt32 ws2_32 ${Boost_LIBRARIES} opus)
 set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto
-        ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src ${CELT_INCLUDES} ${Protobuf_INCLUDE_DIR})
-set(SHARED_DEFS -DUSE_NO_SRV)
+        ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src ${Protobuf_INCLUDE_DIR})
+set(SHARED_DEFS -DUSE_NO_SRV -DUSE_OPUS)
 
 if(WIN32)
     set(SHARED_DEFS ${SHARED_DEFS} -DUNICODE -DRESTRICT=__restrict)
-    set(SHARED_LIBS ${SHARED_LIBS} Qwave celt0.7.0)
+    set(SHARED_LIBS ${SHARED_LIBS} Qwave celt0.0.7.0 celt0.0.11.0)
 else()
     set(SHARED_DEFS ${SHARED_DEFS} -DRESTRICT=__restrict__)
 endif()

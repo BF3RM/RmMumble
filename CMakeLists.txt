@@ -14,11 +14,12 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_definitions(-DUSE_OPUS)
+#add_definitions(-DUSE_OPUS)
 
 set(BUILD_OBJECT_LIBRARY_ONLY OFF CACHE BOOL "")
 
 add_subdirectory(cmake/celt)
+add_subdirectory(cmake/opus)
 
 add_subdirectory(3rdparty/libsndfile)
 include(cmake/speex/speex.cmake)
@@ -28,8 +29,6 @@ include_directories(cmake/general)
 include(cmake/protobuf/protobuf.cmake)
 
 include(cmake/mumble/shared.cmake)
-
-add_subdirectory(3rdparty/opus-cmake)
 
 #include_directories(${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src)
 include(cmake/mumble/server.cmake)

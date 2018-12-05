@@ -83,11 +83,11 @@ set(MUMBLE_SOURCES
         src/mumble/main.cpp
         src/mumble/MainWindow.cpp
         src/mumble/MainWindow.h
-        src/mumble/ManualPlugin.cpp
-        src/mumble/ManualPlugin.h
         src/mumble/Messages.cpp
         src/mumble/mumble_pch.hpp
         src/mumble/mumble_pch.hpp.cpp
+        src/mumble/ManualPlugin.cpp
+        src/mumble/ManualPlugin.h
         src/mumble/MumbleApplication.cpp
         src/mumble/MumbleApplication.h
         src/mumble/NetworkConfig.cpp
@@ -264,7 +264,7 @@ target_include_directories(${MumbleExeName}
         ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/
         )
 
-target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} -DUSE_DBUS)
+target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} -DUSE_DBUS -DUSE_MANUAL_PLUGIN)
 
 if(WIN32)
         set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_RELEASE "-delayload:shell32.dll")

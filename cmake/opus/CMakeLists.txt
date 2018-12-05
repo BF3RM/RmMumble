@@ -1,0 +1,167 @@
+project(opus)
+
+set(OPUS_SOURCES
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/bands.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/celt.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/celt_encoder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/celt_decoder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/cwrs.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/entcode.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/entdec.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/entenc.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/kiss_fft.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/laplace.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/mathops.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/mdct.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/modes.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/pitch.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/celt_lpc.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/quant_bands.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/rate.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/vq.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/x86/x86cpu.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/x86/x86_celt_map.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/x86/pitch_sse.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/x86/pitch_sse2.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/x86/vq_sse2.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/x86/celt_lpc_sse.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/x86/pitch_sse4_1.c
+
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/CNG.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/code_signs.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/init_decoder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/decode_core.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/decode_frame.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/decode_parameters.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/decode_indices.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/decode_pulses.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/decoder_set_fs.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/dec_API.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/enc_API.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/encode_indices.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/encode_pulses.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/gain_quant.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/interpolate.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/LP_variable_cutoff.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NLSF_decode.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NSQ.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NSQ_del_dec.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/PLC.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/shell_coder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/tables_gain.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/tables_LTP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/tables_NLSF_CB_NB_MB.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/tables_NLSF_CB_WB.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/tables_other.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/tables_pitch_lag.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/tables_pulses_per_block.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/VAD.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/control_audio_bandwidth.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/quant_LTP_gains.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/VQ_WMat_EC.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/HP_variable_cutoff.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NLSF_encode.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NLSF_VQ.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NLSF_unpack.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NLSF_del_dec_quant.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/process_NLSFs.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/stereo_LR_to_MS.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/stereo_MS_to_LR.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/check_control_input.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/control_SNR.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/init_encoder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/control_codec.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/A2NLSF.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/ana_filt_bank_1.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/biquad_alt.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/bwexpander_32.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/bwexpander.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/debug.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/decode_pitch.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/inner_prod_aligned.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/lin2log.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/log2lin.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/LPC_analysis_filter.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/LPC_inv_pred_gain.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/table_LSF_cos.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NLSF2A.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NLSF_stabilize.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/NLSF_VQ_weights_laroia.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/pitch_est_tables.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/resampler.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/resampler_down2_3.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/resampler_down2.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/resampler_private_AR2.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/resampler_private_down_FIR.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/resampler_private_IIR_FIR.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/resampler_private_up2_HQ.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/resampler_rom.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/sigm_Q15.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/sort.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/sum_sqr_shift.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/stereo_decode_pred.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/stereo_encode_pred.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/stereo_find_predictor.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/stereo_quant_pred.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/LPC_fit.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/apply_sine_window_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/corrMatrix_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/encode_frame_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/find_LPC_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/find_LTP_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/find_pitch_lags_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/find_pred_coefs_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/LPC_analysis_filter_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/LTP_analysis_filter_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/LTP_scale_ctrl_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/noise_shape_analysis_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/process_gains_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/regularize_correlations_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/residual_energy_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/warped_autocorrelation_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/wrappers_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/autocorrelation_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/burg_modified_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/bwexpander_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/energy_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/inner_product_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/k2a_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/LPC_inv_pred_gain_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/pitch_analysis_core_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/scale_copy_vector_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/scale_vector_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/schur_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float/sort_FLP.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/x86/NSQ_sse.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/x86/NSQ_del_dec_sse.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/x86/x86_silk_map.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/x86/VAD_sse.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/x86/VQ_WMat_EC_sse.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/opus.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/opus_decoder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/opus_encoder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/opus_multistream.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/opus_multistream_encoder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/opus_multistream_decoder.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/repacketizer.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/analysis.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/mlp.c
+${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/mlp_data.c
+)
+
+
+ add_library(opus SHARED ${OPUS_SOURCES})
+ target_compile_definitions(opus PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
+ target_include_directories(opus PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/opus-src/include>
+    $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/opus-src>
+    PRIVATE 
+	${CMAKE_SOURCE_DIR}/3rdparty/opus-src
+	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt
+	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/celt/x86
+	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/include
+	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk
+	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/x86
+	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float
+	${CMAKE_SOURCE_DIR}/3rdparty/opus-build/win32
+	)

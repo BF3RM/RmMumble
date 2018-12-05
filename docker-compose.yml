@@ -1,0 +1,7 @@
+version: "3"
+services:
+  rm:
+    build: ./docker/
+    image: rm
+    volumes:
+      - ./:/app

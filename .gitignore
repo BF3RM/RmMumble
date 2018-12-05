@@ -44,3 +44,8 @@ doxygen/
 .DS_Store
 .directory
 .vscode
+cmake-build-debug
+murmur.sqlite
+.idea
+build
+output

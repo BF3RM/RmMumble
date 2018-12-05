@@ -40,6 +40,7 @@
 #include "License.h"
 #include "EnvUtils.h"
 
+
 #if defined(USE_STATIC_QT_PLUGINS) && QT_VERSION < 0x050000
 Q_IMPORT_PLUGIN(qtaccessiblewidgets)
 # ifdef Q_OS_WIN
@@ -69,6 +70,8 @@ extern int os_early_init();
 // from os_win.cpp
 extern HWND mumble_mw_hwnd;
 #endif // Q_OS_WIN
+
+//extern "C" __declspec(dllexport) void mumbleSelfDetection() {};
 
 #if defined(Q_OS_WIN) && !defined(QT_NO_DEBUG)
 extern "C" __declspec(dllexport) int main(int argc, char **argv) {
@@ -115,7 +118,7 @@ int main(int argc, char **argv) {
 	{
 		QDir d(a.applicationVersionRootPath());
 		QString helper = d.absoluteFilePath(QString::fromLatin1("sbcelt-helper"));
-		EnvUtils::setenv(QLatin1String("SBCELT_HELPER_BINARY"), helper.toUtf8().constData());
+		EnvUtils::setenv(QLatin1String("SBCELT_HELPER_BINARY"), helper);
 	}
 #endif
 
@@ -261,7 +264,7 @@ int main(int argc, char **argv) {
 
 	{
 		size_t reqSize;
-		if (_wgetenv_s(&reqSize, NULL, 0, L"PATH") != 0)) {
+		if (_wgetenv_s(&reqSize, NULL, 0, L"PATH") != 0) {
 			qWarning() << "Failed to get PATH. Not adding application directory to PATH. DBus bindings may not work.";
 		} else if (reqSize > 0) {
 			STACKVAR(wchar_t, buff, reqSize+1);

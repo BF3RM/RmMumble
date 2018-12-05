@@ -627,7 +627,7 @@ Meta::Meta() {
 
 	hQoS = NULL;
 
-	HMODULE hLib = LoadLibrary(L"qWave.dll");
+	HMODULE hLib = LoadLibraryW(L"qWave.dll");
 	if (hLib == NULL) {
 		qWarning("Meta: Failed to load qWave.dll, no QoS available");
 	} else {

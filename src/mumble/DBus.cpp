@@ -13,6 +13,7 @@
 #include "MainWindow.h"
 #include "ServerHandler.h"
 
+#include <QDBusConnection>
 
 MumbleDBus::MumbleDBus(QObject *mw) : QDBusAbstractAdaptor(mw) {
 }

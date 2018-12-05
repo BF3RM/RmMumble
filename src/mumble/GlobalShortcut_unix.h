@@ -20,7 +20,9 @@
 #ifdef Q_OS_LINUX
 #include <linux/input.h>
 #include <fcntl.h>
+#undef Bool
 #endif
+
 
 #define NUM_BUTTONS 0x2ff
 

@@ -6,6 +6,14 @@
 #ifndef MUMBLE_MURMUR_ABOUT_H_
 #define MUMBLE_MURMUR_ABOUT_H_
 
+#ifdef WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include <windows.h>
+#endif
+
 #include <QtCore/QtGlobal>
 #include <QtCore/QObject>
 #if QT_VERSION >= 0x050000

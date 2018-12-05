@@ -73,8 +73,8 @@ class GlobalShortcutWin : public GlobalShortcutEngine {
 		/// nxboxinput holds the number of XInput devices
 		/// available on the system. It is filled out by
 		/// our EnumDevices callback.
-		int nxboxinput;
 #endif
+		int nxboxinput;
 
 		static BOOL CALLBACK EnumSuitableDevicesCB(LPCDIDEVICEINSTANCE, LPDIRECTINPUTDEVICE8, DWORD, DWORD, LPVOID);
 		static BOOL CALLBACK EnumDevicesCB(LPCDIDEVICEINSTANCE, LPVOID);

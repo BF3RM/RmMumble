@@ -64,7 +64,8 @@ void ServerResolverPrivate::hostResolved(QHostInfo hostInfo) {
 }
 
 ServerResolver::ServerResolver(QObject *parent)
-	: QObject(parent) {
+	: QObject(parent)
+	{
 
 	d = new ServerResolverPrivate(this);
 }

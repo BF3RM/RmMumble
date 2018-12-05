@@ -39,7 +39,7 @@ CONFIG(sbcelt) {
   CONFIG += warn_off
 }
 
-QMAKE_CFLAGS -= -fPIE -pie
+QMAKE_CFLAGS -= -fPIE -pie 
 
 win32 {
   DEFINES += WIN32 _WIN32

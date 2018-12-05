@@ -118,7 +118,7 @@ set(SHARED_DEFS -DUSE_NO_SRV)
 
 if(WIN32)
     set(SHARED_DEFS ${SHARED_DEFS} -DUNICODE -DRESTRICT=__restrict)
-    set(SHARED_LIBS ${SHARED_LIBS} Qwave celt)
+    set(SHARED_LIBS ${SHARED_LIBS} Qwave celt0.7.0)
 else()
     set(SHARED_DEFS ${SHARED_DEFS} -DRESTRICT=__restrict__)
 endif()

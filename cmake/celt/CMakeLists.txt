@@ -24,9 +24,9 @@ ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/vq.c
 )
 
 
-add_library(celt STATIC ${CELT_C})
-target_include_directories(celt PUBLIC
+add_library(celt0.7.0 SHARED ${CELT_C})
+target_include_directories(celt0.7.0 PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt>
     $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt>
     PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-build/win32)
-target_compile_definitions(celt PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
+target_compile_definitions(celt0.7.0 PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)

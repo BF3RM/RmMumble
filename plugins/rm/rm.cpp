@@ -9,9 +9,9 @@
 #include <thread>
 #include <chrono>
 
-//#define PR_DEBUG
+//#define RM_DEBUG
 
-#ifdef PR_DEBUG
+#ifdef RM_DEBUG
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <winsock2.h>
@@ -202,7 +202,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
     }
 
     //    send(server, buffer, sizeof(buffer), 0);
-#ifdef PR_DEBUG
+#ifdef RM_DEBUG
     if (UdpSocket != nullptr) {
         //Username~~Server~~Faction~~Squad~~IsSquadLeader
         memset(DebugString, '\0', sizeof(DebugString));
@@ -229,7 +229,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 
 static void InitSocket()
 {
-#ifdef PR_DEBUG
+#ifdef RM_DEBUG
     if (UdpSocket == nullptr) {
         WSADATA WSAData;
         WSAStartup(MAKEWORD(2,0), &WSAData);

@@ -112,9 +112,11 @@ bool Themes::apply() {
 		applyFallback();
 	}
 	
+#ifdef RM_DEBUG
 	if (g.mw != NULL) {
 		g.mw->qteLog->document()->setDefaultStyleSheet(qApp->styleSheet());
 	}
+#endif
 	return result;
 }
 

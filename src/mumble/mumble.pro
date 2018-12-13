@@ -41,7 +41,7 @@ CONFIG(static) {
   # means building the main app into a DLL.
   win32 {
     TEMPLATE = lib
-    TARGET = mumble_app
+    TARGET = RmMumbleApp
     VERSION =
 
     CONFIG -= static

@@ -214,7 +214,8 @@ SOURCES *= BanEditor.cpp \
     PathListWidget.cpp \
     XMLTools.cpp \
     SvgIcon.cpp \
-    RMSocket.cpp
+    RMSocket.cpp \
+	RMMessage.cpp
 
 CONFIG(qtspeech) {
   SOURCES *= TextToSpeech.cpp

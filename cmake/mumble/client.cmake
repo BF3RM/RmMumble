@@ -124,6 +124,7 @@ set(MUMBLE_SOURCES
         src/mumble/PTTButtonWidget.h
         src/mumble/RichTextEditor.cpp
         src/mumble/RichTextEditor.h
+        src/mumble/RMMessage.cpp
         src/mumble/RMMessage.h
         src/mumble/RMSocket.cpp
         src/mumble/RMSocket.h
@@ -273,7 +274,7 @@ endif()
 
 if(WIN32)
 	add_library(RmRadio SHARED plugins/rm/rm.cpp)
-	target_link_libraries(RmRadio PRIVATE psapi)
+	target_link_libraries(RmRadio PRIVATE psapi ws2_32)
 	target_compile_definitions(RmRadio PRIVATE -DUNICODE -DRESTRICT=__restrict)
 endif()
 #[[

@@ -4,6 +4,7 @@
 #include <QThread>
 #include <map>
 #include <vector>
+
 #include "RMMessage.h"
 
 class RMSocket : public QThread
@@ -13,11 +14,13 @@ public:
     RMSocket() : Socket(nullptr) {}
     RMMessage* NewMessage(EMessageType Type);
     void AddListener(OnMessageCallback Listener, EMessageType Type);
-    inline bool IsAlive() { return Socket != nullptr; };
-    inline QTcpSocket* GetSocket() { return Socket; }
+    inline bool IsAlive() { return Socket != nullptr; }
+    inline class QTcpSocket* GetSocket() { return Socket; }
+	void AddMessageToPoll(class RMMessage* Message);
 protected:
     void run() override;
 protected:
+	class RMMessage* GetPoolMessage();
     class QTcpSocket* Socket;
     std::map<EMessageType, std::vector<OnMessageCallback>> MessageCallbacks;
 signals:
@@ -25,6 +28,10 @@ signals:
     void OnMuteAndDeaf(bool Mute, bool Deaf);
     void OnDisconnected();
     void OnConnected();
+
+protected:
+	std::vector<class RMMessage*> MessagePool;
+	std::mutex MessagePoolLock;
 };
 
 #endif

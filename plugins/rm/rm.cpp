@@ -10,13 +10,21 @@
 #include <chrono>
 
 //#define RM_DEBUG
-
-#ifdef RM_DEBUG
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
-static SOCKET* UdpSocket = nullptr;
+
+#define BUFLEN sizeof(float) * 3 * 3
+#define PORT 55778
+
+static SOCKET UdpSocket;
+static std::thread* UdpThread = nullptr;
+float PawnPosition[3];
+float PawnFrontVector[3];
+float PawnTopVector[3];
+
+#ifdef RM_DEBUG
 static unsigned char DebugString[64] = {'\0'};
 #endif
 
@@ -112,7 +120,11 @@ std::wstring StringToWString(const std::string& str)
 }
 
 static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, float *camera_pos, float *camera_front, float *camera_top, std::string &context, std::wstring &identity) {
-    procptr_t SquadState = ResolveChain();
+	avatar_pos = camera_pos = PawnPosition;
+	avatar_front = camera_front = PawnFrontVector;
+	avatar_top = camera_top = PawnTopVector;
+	return true;
+	procptr_t SquadState = ResolveChain();
 
     if (!SquadState) {
         return false;
@@ -261,6 +273,76 @@ static void InitSocket()
 #endif
 }
 
+bool RealityModInitServer()
+{
+	if (UdpSocket)
+	{
+		return true;
+	}
+
+	struct sockaddr_in server;
+	WSADATA wsa;
+
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+	{
+		printf("Failed. Error Code : %d", WSAGetLastError());
+		return false;
+	}
+
+	//Create a socket
+	if ((UdpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
+	{
+		printf("Could not create socket : %d", WSAGetLastError());
+		return false;
+	}
+
+	//Prepare the sockaddr_in structure
+	server.sin_family = AF_INET;
+	server.sin_addr.s_addr = INADDR_ANY;
+	server.sin_port = htons(PORT);
+
+	//Bind
+	if (bind(UdpSocket, (struct sockaddr *)&server, sizeof(server)) == SOCKET_ERROR)
+	{
+		printf("Bind failed with error code : %d", WSAGetLastError());
+		return false;
+	}
+
+	return true;
+}
+
+void RealityMod3dPositionHandler()
+{
+	char buf[BUFLEN];
+	int slen, ReceivedLength;
+	struct sockaddr_in si_other;
+	slen = sizeof(si_other);
+	while (1)
+	{
+		printf("Waiting for data...");
+		fflush(stdout);
+
+		//clear the buffer by filling null, it might have previously received data
+		memset(buf, '\0', BUFLEN);
+
+		//try to receive some data, this is a blocking call
+		if ((ReceivedLength = recvfrom(UdpSocket, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == SOCKET_ERROR)
+		{
+			printf("recvfrom() failed with error code : %d", WSAGetLastError());
+			continue;
+			//exit(EXIT_FAILURE);
+		}
+
+		constexpr auto Offset = sizeof(float) * 3;
+		memcpy(PawnPosition, buf, Offset);
+		memcpy(PawnFrontVector, buf + Offset, Offset);
+		memcpy(PawnTopVector, buf + Offset * 2, Offset);
+	}
+
+	closesocket(UdpSocket);
+	WSACleanup();
+}
+
 static int trylock(const std::multimap<std::wstring, unsigned long long int> &pids) {
     if (!initialize(pids, L"vu.exe")) { // Retrieve game executable's memory address
         return false;
@@ -271,13 +353,23 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
     std::wstring sidentity;
     std::string scontext;
 
-    if (fetch(apos, afront, atop, cpos, cfront, ctop, scontext, sidentity)) {
-        InitSocket();
-        return true;
-    } else {
-        generic_unlock();
-        return false;
-    }
+	if (RealityModInitServer())
+	{
+		float* PawnPosition = nullptr;
+		float* PawnFrontVector = nullptr;
+		float* PawnTopVector = nullptr;
+
+		if (!UdpThread)
+		{
+			UdpThread = new std::thread(RealityMod3dPositionHandler);
+		}
+		return true;
+	}
+	else
+	{
+		generic_unlock();
+		return false;
+	}
 }
 
 static const std::wstring longdesc() {

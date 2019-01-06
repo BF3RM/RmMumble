@@ -185,6 +185,8 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		g.sh->wait();
 	});
 
+	RmPingTimeout->moveToThread(RmSocket);
+
 	RmPositionTimer = new QTimer(this);
 	connect(RmPositionTimer, &QTimer::timeout, this, [this]() {
 		if (g.p && g.sh && g.p->fetch()) {
@@ -223,13 +225,13 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		if (Message->GetMessageType() == EMessageType::Ping)
 		{
 			auto Pong = RmSocket->NewMessage(EMessageType::Ping);
-			auto PongMessage = "Pong";
-			Pong->AddData(&PongMessage, 4);
+			const char* PongMessage = "Pong";
+			Pong->AddData((void*)PongMessage, strlen(PongMessage));
 			Pong->Send();
 		}
 	}, EMessageType::Ping);
 
-	RmSocket->AddListener([this](RMMessage* Message) { UpdatePlayerContext(Message); }, EMessageType::UpdateData);
+	RmSocket->AddListener([this](RMMessage* Message) { UpdatePlayerIdentity(Message); }, EMessageType::UpdateData);
 
 	connect(RmSocket, &RMSocket::OnUuidReceived, this, [this](QString Uuid) {
 		//QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
@@ -295,6 +297,11 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 		g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((Host).toHtmlEscaped(), Log::Server)));
 		g.sh->setConnectionInfo(Host, Port, User, Pw);
 		g.sh->start(QThread::TimeCriticalPriority);
+		QObject::connect(g.sh.get(), &ServerHandler::connected, this, [this]() 
+		{
+			auto IdentityRequest = RmSocket->NewMessage(EMessageType::IdentityRequest);
+			IdentityRequest->Send();
+		});
 	} else {
 		QObject::connect(g.sh.get(), &ServerHandler::disconnected, this, [this, Host, Port, User, Pw](QAbstractSocket::SocketError, QString) {
 			recreateServerHandler();
@@ -348,25 +355,24 @@ void MainWindow::CreatePrShortcuts()
     }
 }
 
-void MainWindow::UpdatePlayerContext(class RMMessage* Message)
+void MainWindow::UpdatePlayerIdentity(class RMMessage* Message)
 {
 	if (!Message)
 	{
 		return;
 	}
 
-	if (Message->GetSize() == 1 + 1 + 1 + sizeof(float) * 3)
+	if (Message->GetSize() >= strlen("0~~0~~0"))
 	{
-		float PositionVector[3];
-		memcpy(PositionVector, Message->m_Data, sizeof(float) * 3);
+//		float PositionVector[3];
+//		memcpy(PositionVector, Message->m_Data, sizeof(float) * 3);
 
-		const int ContextSize = Message->GetSize() - sizeof(float) * 3;
-		auto Context = new char[ContextSize];
-		memcpy(Context, Message->m_Data, sizeof(float) * 3);
+		auto Identity = new char[Message->GetSize()];
+		memcpy(Identity, Message->GetData(), Message->GetSize());
 
 		MumbleProto::UserState UserState;
 		UserState.set_session(g.uiSession);
-		UserState.set_plugin_context(Context);
+		UserState.set_plugin_identity(Identity);
 		if (g.sh)
 		{
 			g.sh->sendMessage(UserState);

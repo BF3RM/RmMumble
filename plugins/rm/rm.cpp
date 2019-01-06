@@ -4,22 +4,23 @@
 */
 
 #define _WINSOCKAPI_    // stops windows.h including winsock.h
+
+#define WIN32_LEAN_AND_MEAN
+#include <winsock2.h>
+
 #include "../mumble_plugin_win32.h"
 #include <fstream>
-#include <thread>
 #include <chrono>
 
 //#define RM_DEBUG
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <winsock2.h>
-#include <Ws2tcpip.h>
+#include <ws2tcpip.h>
 
 #define BUFLEN sizeof(float) * 3 * 3
 #define PORT 55778
 
 static SOCKET UdpSocket;
-static std::thread* UdpThread = nullptr;
+static HANDLE UdpThread = nullptr;
 float PawnPosition[3];
 float PawnFrontVector[3];
 float PawnTopVector[3];
@@ -349,10 +350,6 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
     }
 
     // Check if we can get meaningful data from i
-    float apos[3], afront[3], atop[3], cpos[3], cfront[3], ctop[3];
-    std::wstring sidentity;
-    std::string scontext;
-
 	if (RealityModInitServer())
 	{
 		float* PawnPosition = nullptr;
@@ -361,7 +358,7 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
 
 		if (!UdpThread)
 		{
-			UdpThread = new std::thread(RealityMod3dPositionHandler);
+			UdpThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)RealityMod3dPositionHandler, nullptr, 0, nullptr);
 		}
 		return true;
 	}

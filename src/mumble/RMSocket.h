@@ -4,6 +4,7 @@
 #include <QThread>
 #include <map>
 #include <vector>
+#include <QMutex>
 
 #include "RMMessage.h"
 
@@ -31,7 +32,7 @@ signals:
 
 protected:
 	std::vector<class RMMessage*> MessagePool;
-	std::mutex MessagePoolLock;
+	QMutex MessagePoolLock;
 };
 
 #endif

@@ -10,7 +10,7 @@ wget http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip -P /tmp/
 unzip /tmp/asiosdk2.3.zip -d /tmp/
 mv /tmp/ASIOSDK2.3 3rdparty/asio
 
-x86_64-w64-mingw32.static-qmake-qt5 -recursive CONFIG+="release no-g15 no-overlay no-bonjour no-elevation no-ice asio"
+x86_64-w64-mingw32.static-qmake-qt5 -recursive CONFIG+="release no-g15 no-overlay no-bonjour no-elevation no-ice asio" DEFINES+="QT_NO_DEBUG"
 make clean
 make
 mkdir output > /dev/null

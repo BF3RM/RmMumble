@@ -10,5 +10,5 @@ TARGET = rm
 SOURCES = rm.cpp
 
 win32 {
-	LIBS += -lpsapi
+	LIBS += -lpsapi -lws2_32
 }

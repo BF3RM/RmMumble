@@ -37,9 +37,12 @@
 [submodule "3rdparty/libsndfile"]
 	path = 3rdparty/libsndfile
 	url = https://github.com/erikd/libsndfile.git
-[submodule "3rdparty/opus-cmake"]
-	path = 3rdparty/opus-cmake
-	url = https://github.com/eppixx/opus-cmake.git
 [submodule "3rdparty/ogg"]
 	path = 3rdparty/ogg
 	url = https://github.com/xiph/ogg.git
+[submodule "plugins/positional-audio-debug/websocketpp"]
+	path = plugins/positional-audio-debug/websocketpp
+	url = https://github.com/zaphoyd/websocketpp.git
+[submodule "plugins/positional-audio-debug/asio"]
+	path = plugins/positional-audio-debug/asio
+	url = https://github.com/chriskohlhoff/asio.git

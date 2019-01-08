@@ -31,20 +31,20 @@ static HANDLE hProcess;
 static procptr_t pModule;
 
 static inline DWORD getProcess(const wchar_t *exename) {
-	PROCESSENTRY32 pe;
+	PROCESSENTRY32W pe;
 	DWORD pid = 0;
 
 	pe.dwSize = sizeof(pe);
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (hSnap != INVALID_HANDLE_VALUE) {
-		BOOL ok = Process32First(hSnap, &pe);
+		BOOL ok = Process32FirstW(hSnap, &pe);
 
 		while (ok) {
 			if (wcscmp(pe.szExeFile, exename)==0) {
 				pid = pe.th32ProcessID;
 				break;
 			}
-			ok = Process32Next(hSnap, &pe);
+			ok = Process32NextW(hSnap, &pe);
 		}
 		CloseHandle(hSnap);
 	}
@@ -78,12 +78,12 @@ static inline int checkProcessIs64Bit(const DWORD pid)
 }
 
 static inline procptr_t getModuleAddr(DWORD pid, const wchar_t *modname) {
-	MODULEENTRY32 me;
+	MODULEENTRY32W me;
 	procptr_t ret = 0;
 	me.dwSize = sizeof(me);
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE|TH32CS_SNAPMODULE32, pid);
 	if (hSnap != INVALID_HANDLE_VALUE) {
-		BOOL ok = Module32First(hSnap, &me);
+		BOOL ok = Module32FirstW(hSnap, &me);
 
 		while (ok) {
 			if (wcscmp(me.szModule, modname)==0) {
@@ -91,7 +91,7 @@ static inline procptr_t getModuleAddr(DWORD pid, const wchar_t *modname) {
 				ret = static_cast<procptr_t>(addr);
 				break;
 			}
-			ok = Module32Next(hSnap, &me);
+			ok = Module32NextW(hSnap, &me);
 		}
 		CloseHandle(hSnap);
 	}

@@ -1,11 +1,13 @@
 #ifndef RMMESSAGE_H
 #define RMMESSAGE_H
 
-#include <QTcpSocket> 
+#include <cstdint>
+#include <functional>
 
 enum class EMessageType : uint8_t
 {
 	Default = 100,
+	IdentityRequest = 119,
 	UpdateData = 120,
 	StopTalking = 121,
 	Talking = 122,
@@ -14,62 +16,31 @@ enum class EMessageType : uint8_t
 	MuteAndDeaf = 125,
 };
 
+class RMSocket;
 typedef std::function<void(class RMMessage*)> OnMessageCallback;
 
 class RMMessage
 {
 public:
-	RMMessage(QTcpSocket* Socket, EMessageType Type) : m_Socket(Socket), m_MessageType(Type)
-	{
-		m_Data = (char*)malloc(sizeof(uint32_t));
-		AddData(&m_DataSize, sizeof(uint32_t));
-		AddData(&m_MessageType, sizeof(EMessageType));
-	}
+	RMMessage(RMSocket* Socket, EMessageType Type);
 
-    ~RMMessage()
-    {
-        free(m_Data);
-    }
+	~RMMessage();
 
-    void Send()
-    {
-        if (!m_Socket) return;
-		auto Size = GetSize();
-		memcpy(&m_Data[0], &Size, sizeof(uint32_t));
-        m_Socket->write(&m_Data[0], m_DataSize);
-    }
+	void Send();
 
-	void AddData(void* Source, uint32_t Size)
-	{
-		m_DataSize += Size;
-		m_Data = (char*)realloc((void*)m_Data, m_DataSize);
-		memcpy((void*)(m_Data + m_Offset), Source, Size);
-		m_Offset += Size;
-	}
+	void AddData(void* Source, uint32_t Size);
 
-	void* GetData()
-	{
-		return &m_Data[sizeof(uint32_t) + sizeof(EMessageType)];
-	}
+	inline void* GetData() const { return &m_Data[sizeof(uint32_t) + sizeof(EMessageType)]; }
 
-	EMessageType GetMessageType()
-	{
-		return (EMessageType)m_Data[sizeof(uint32_t)];
-	}
+	inline EMessageType GetMessageType() const { return (EMessageType)m_Data[sizeof(uint32_t)]; }
 
-	uint32_t GetRealSize()
-	{
-		return m_DataSize;
-	}
+	inline uint32_t GetRealSize() const { return m_DataSize; }
 
-	uint32_t GetSize()
-	{
-		return m_DataSize - sizeof(uint32_t);
-	}
+	inline uint32_t GetSize() const { return m_DataSize - sizeof(uint32_t); }
 public:
     char* m_Data = nullptr;
 protected:
-	QTcpSocket* m_Socket = nullptr;
+	RMSocket* m_Socket = nullptr;
 	uint32_t m_DataSize = 0;
 	uint32_t m_Offset = 0;
 	EMessageType m_MessageType = EMessageType::Default;

@@ -73,11 +73,11 @@ extern HWND mumble_mw_hwnd;
 
 //extern "C" __declspec(dllexport) void mumbleSelfDetection() {};
 
-#if defined(Q_OS_WIN) && !defined(QT_NO_DEBUG)
+//#if defined(Q_OS_WIN) && !defined(QT_NO_DEBUG)
 extern "C" __declspec(dllexport) int main(int argc, char **argv) {
-#else
-int main(int argc, char **argv) {
-#endif
+//#else
+//int main(int argc, char **argv) {
+//#endif
 	int res = 0;
 
 #if defined(Q_OS_WIN)

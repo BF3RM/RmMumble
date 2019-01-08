@@ -2,6 +2,7 @@
 #include "RMMessage.h"
 #include <QTcpServer> 
 #include <iostream>
+#include <QTcpSocket>
 
 void RMSocket::run()
 {
@@ -22,17 +23,18 @@ void RMSocket::run()
         qint64 Status = 0;
 
         while (Socket && Socket->isValid()) {
-            if(Socket->waitForReadyRead(-1)) {
-                while (Socket->bytesAvailable() > 0) {
-                    Status = Socket->read((char*)&DataSize, sizeof(uint32_t));
-                    if (Status == -1) break;
+			if (Socket->waitForReadyRead(1) && Socket->bytesAvailable() > 0)
+			{
+				while (Socket->bytesAvailable() > 0) {
+					Status = Socket->read((char*)&DataSize, sizeof(uint32_t));
+					if (Status == -1) break;
 					if (Status > 0 && DataSize > 256)
 					{
 						//qDebug() << QString("Data size exceed limit (%1)").arg(DataSize);
 						DataSize = 0;
 						continue;
 					}
-                    if (Status > 0 && DataSize > 0) {
+					if (Status > 0 && DataSize > 0) {
 						auto Data = (char*)malloc(DataSize);
 						Status = Socket->read(Data, DataSize);
 						if (Status > 0)
@@ -57,10 +59,18 @@ void RMSocket::run()
 
 							delete Message;
 						}
-						free (Data);
-                    }
-                }
-            } else break;
+						free(Data);
+					}
+				}
+			}
+			if (MessagePool.size() > 0)
+			{
+				if (auto Message = GetPoolMessage())
+				{
+					Socket->write(Message->m_Data, Message->GetRealSize());
+					Socket->waitForBytesWritten(-1);
+				}
+			}
         }
 
         if (Socket) Socket->deleteLater();
@@ -68,12 +78,34 @@ void RMSocket::run()
     }
 }
 
+class RMMessage* RMSocket::GetPoolMessage()
+{
+	MessagePoolLock.lock();
+	if (MessagePool.empty())
+	{
+		return nullptr;
+	}
+
+	auto Message = *MessagePool.begin();
+	MessagePool.erase(MessagePool.begin());
+
+	MessagePoolLock.unlock();
+	return Message;
+}
+
 RMMessage* RMSocket::NewMessage(EMessageType Type)
 {
-    return new RMMessage(Socket, Type);
+    return new RMMessage(this, Type);
 }
 
 void RMSocket::AddListener(OnMessageCallback Listener, EMessageType Type)
 {
     MessageCallbacks[Type].push_back(Listener);
+}
+
+void RMSocket::AddMessageToPoll(class RMMessage* Message)
+{
+	MessagePoolLock.lock();
+	MessagePool.push_back(Message);
+	MessagePoolLock.unlock();
 }

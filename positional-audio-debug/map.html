@@ -1,0 +1,82 @@
+<html>
+<body>
+	<canvas id="canvas" width=512 height=512/>
+</body>
+<script>
+const socket = new WebSocket('ws://localhost:8080');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const width = canvas.width;
+const height = canvas.height;
+const gridStep = 100.0;
+
+let scale = {x: 1.0, y: 1.0};
+let points = []
+
+scaleMap(2048, 2048)
+points.push({x: 0, y: 0, id: 'hello', color: {r: 255, g: 0, b: 0}})
+render();
+
+socket.addEventListener('open', function (event) {
+	console.log('connected');
+});
+
+socket.addEventListener('message', function (event) {
+    console.log('Message from server ', event.data);
+});
+
+canvas.onmousemove  = function(e)
+{
+	console.log(e.clientX / scale.x, e.clientY / scale.y);
+};
+
+function scaleMap(newMapX, newMapY)
+{
+	scale = {x: width / newMapX, y: height / newMapY};
+}
+
+function getScaledSize()
+{
+	return {x: width / scale.x, y: height / scale.y};
+}
+
+function drawGrid()
+{
+	ctx.beginPath();
+	for (let i = 0; i <= getScaledSize().x / gridStep; i++)
+	{
+		ctx.moveTo(i * gridStep * scale.x, 0);
+		ctx.lineTo(i * gridStep * scale.x, getScaledSize().y / scale.y);
+	}
+
+	for (let i = 0; i <= getScaledSize().y / gridStep; i++)
+	{
+		ctx.moveTo(0, i * gridStep * scale.y);
+		ctx.lineTo(getScaledSize().x / scale.x, i * gridStep * scale.y);
+	}
+	ctx.stroke();          
+
+	ctx.strokeRect(0, 0, width, height);
+}
+
+function drawPoints()
+{
+	points.forEach(item => {
+		const color = `rgb(${item.color.r}, ${item.color.g}, ${item.color.b})`;
+		ctx.fillStyle = color; 
+		ctx.beginPath();
+		ctx.arc(item.x * scale.x + width / 2, item.y * scale.y + height / 2, 5, 0, 2 * Math.PI, false);
+		ctx.stroke();
+		ctx.fill();
+	});
+}
+
+function render()
+{
+	ctx.clearRect(0, 0, width, height);
+	drawGrid();
+	drawPoints();
+}
+
+</script>
+</html>

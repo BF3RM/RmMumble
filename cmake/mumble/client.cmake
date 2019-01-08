@@ -276,6 +276,12 @@ if(WIN32)
 	add_library(RmRadio SHARED plugins/rm/rm.cpp)
 	target_link_libraries(RmRadio PRIVATE psapi ws2_32)
 	target_compile_definitions(RmRadio PRIVATE -DUNICODE -DRESTRICT=__restrict)
+	target_compile_definitions(RmRadio PRIVATE -DRMDEBUG)
+
+	add_library(PositionalAudioDebug SHARED plugins/positional-audio-debug/positional-audio-debug.cpp)
+	target_include_directories(PositionalAudioDebug PRIVATE ${CMAKE_SOURCE_DIR}/plugins/positional-audio-debug/websocketpp ${CMAKE_SOURCE_DIR}/plugins/positional-audio-debug/asio/asio/include)
+	target_link_libraries(RmRadio PRIVATE psapi ws2_32)
+	target_compile_definitions(RmRadio PRIVATE -DRESTRICT=__restrict)
 endif()
 #[[
 set(SHARED_SOURCES ${SHARED_SOURCE} ${SPEEX_SOURCES})

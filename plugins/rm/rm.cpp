@@ -274,6 +274,25 @@ static void InitSocket()
 #endif
 }
 
+#ifdef RMDEBUG
+SOCKET RmDebugClient;
+sockaddr_in RmDebugServer;
+
+void InitPositionDebugSocket()
+{
+	RmDebugClient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+}
+
+void SendPositionDebug(const char* Data, size_t Len)
+{
+	if (sendto(RmDebugClient, Data, Len, 0, (struct sockaddr *) &RmDebugServer, sizeof(sockaddr_in)) == SOCKET_ERROR)
+	{
+		printf("sendto() failed with error code : %d", WSAGetLastError());
+		exit(EXIT_FAILURE);
+	}
+}
+#endif
+
 bool RealityModInitServer()
 {
 	if (UdpSocket)
@@ -338,6 +357,11 @@ void RealityMod3dPositionHandler()
 		memcpy(PawnPosition, buf, Offset);
 		memcpy(PawnFrontVector, buf + Offset, Offset);
 		memcpy(PawnTopVector, buf + Offset * 2, Offset);
+
+#ifdef RMDEBUG
+		auto Payload = std::string(buf);
+		SendPositionDebug(Payload.c_str(), Payload.size());
+#endif
 	}
 
 	closesocket(UdpSocket);
@@ -355,6 +379,10 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
 		float* PawnPosition = nullptr;
 		float* PawnFrontVector = nullptr;
 		float* PawnTopVector = nullptr;
+
+#ifdef RMDEBUG
+		InitPositionDebugSocket();
+#endif
 
 		if (!UdpThread)
 		{

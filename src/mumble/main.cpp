@@ -553,7 +553,9 @@ extern "C" __declspec(dllexport) int main(int argc, char **argv) {
 		qApp->postEvent(g.mw, oue);
 #endif
 	} else {
+#ifdef RM_DEBUG
 		g.mw->on_qaServerConnect_triggered(true);
+#endif
 	}
 
 	if (! g.bQuit)

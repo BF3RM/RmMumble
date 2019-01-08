@@ -265,7 +265,7 @@ target_include_directories(${MumbleExeName}
         ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/
         )
 
-target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} -DUSE_DBUS -DUSE_MANUAL_PLUGIN)
+target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} -DRM_POSITIONAL_DEBUG -DUSE_DBUS -DUSE_MANUAL_PLUGIN)
 
 if(WIN32)
         set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_RELEASE "-delayload:shell32.dll")
@@ -276,12 +276,12 @@ if(WIN32)
 	add_library(RmRadio SHARED plugins/rm/rm.cpp)
 	target_link_libraries(RmRadio PRIVATE psapi ws2_32)
 	target_compile_definitions(RmRadio PRIVATE -DUNICODE -DRESTRICT=__restrict)
-	target_compile_definitions(RmRadio PRIVATE -DRMDEBUG)
+	target_compile_definitions(RmRadio PRIVATE -DRM_POSITIONAL_DEBUG)
 
 	add_library(PositionalAudioDebug SHARED plugins/positional-audio-debug/positional-audio-debug.cpp)
 	target_include_directories(PositionalAudioDebug PRIVATE ${CMAKE_SOURCE_DIR}/plugins/positional-audio-debug/websocketpp ${CMAKE_SOURCE_DIR}/plugins/positional-audio-debug/asio/asio/include)
-	target_link_libraries(RmRadio PRIVATE psapi ws2_32)
-	target_compile_definitions(RmRadio PRIVATE -DRESTRICT=__restrict)
+	target_link_libraries(PositionalAudioDebug PRIVATE psapi ws2_32)
+	target_compile_definitions(PositionalAudioDebug PRIVATE -DRESTRICT=__restrict)
 endif()
 #[[
 set(SHARED_SOURCES ${SHARED_SOURCE} ${SPEEX_SOURCES})

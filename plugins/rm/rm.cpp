@@ -274,12 +274,16 @@ static void InitSocket()
 #endif
 }
 
-#ifdef RMDEBUG
+#ifdef RM_POSITIONAL_DEBUG
 SOCKET RmDebugClient;
 sockaddr_in RmDebugServer;
 
 void InitPositionDebugSocket()
 {
+	memset((char *)&RmDebugServer, 0, sizeof(RmDebugServer));
+	RmDebugServer.sin_family = AF_INET;
+	RmDebugServer.sin_port = htons(PORT);
+	RmDebugServer.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 	RmDebugClient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 }
 
@@ -358,7 +362,7 @@ void RealityMod3dPositionHandler()
 		memcpy(PawnFrontVector, buf + Offset, Offset);
 		memcpy(PawnTopVector, buf + Offset * 2, Offset);
 
-#ifdef RMDEBUG
+#ifdef RM_POSITIONAL_DEBUG
 		auto Payload = std::string(buf);
 		SendPositionDebug(Payload.c_str(), Payload.size());
 #endif
@@ -380,7 +384,7 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
 		float* PawnFrontVector = nullptr;
 		float* PawnTopVector = nullptr;
 
-#ifdef RMDEBUG
+#ifdef RM_POSITIONAL_DEBUG
 		InitPositionDebugSocket();
 #endif
 

@@ -19,6 +19,12 @@
 #include "Timer.h"
 #include "VoiceRecorder.h"
 
+#ifdef RM_POSITIONAL_DEBUG
+struct sockaddr_in RmPositionalServer;
+WSADATA RmPositionalWsa;
+SOCKET RmDebugClient;
+#endif
+
 // Remember that we cannot use static member classes that are not pointers, as the constructor
 // for AudioOutputRegistrar() might be called before they are initialized, as the constructor
 // is called from global initialization.
@@ -92,6 +98,16 @@ AudioOutput::AudioOutput()
     , qrwlOutputs()
     , qmOutputs() {
 	
+#ifdef RM_POSITIONAL_DEBUG
+	WSAStartup(MAKEWORD(2, 2), &RmPositionalWsa);
+
+	memset((char *)&RmPositionalServer, 0, sizeof(RmPositionalServer));
+	RmPositionalServer.sin_family = AF_INET;
+	RmPositionalServer.sin_port = htons(55779);
+	RmPositionalServer.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+
+	RmDebugClient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+#endif
 	// Nothing
 }
 
@@ -516,6 +532,15 @@ bool AudioOutput::mix(void *outbuff, unsigned int nsamp) {
 			}
 
 			if (validListener && ((aop->fPos[0] != 0.0f) || (aop->fPos[1] != 0.0f) || (aop->fPos[2] != 0.0f))) {
+#ifdef RM_POSITIONAL_DEBUG
+/**
+ * x y z id 
+ */
+				auto Message = (char*)malloc(sizeof(float) * 3 + aop->qsName.size());
+				memcpy(Message, aop->fPos, sizeof(float) * 3);
+				memcpy(Message + sizeof(float) * 3, aop->qsName.constData(), aop->qsName.size());
+				sendto(RmDebugClient, Message, sizeof(float) * 3 + aop->qsName.size(), 0, (sockaddr*)&RmPositionalServer, sizeof(sockaddr_in));
+#endif
 				float dir[3] = { aop->fPos[0] - g.p->fCameraPosition[0], aop->fPos[1] - g.p->fCameraPosition[1], aop->fPos[2] - g.p->fCameraPosition[2] };
 				float len = sqrtf(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]);
 				if (len > 0.0f) {

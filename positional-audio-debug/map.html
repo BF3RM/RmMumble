@@ -1,20 +1,45 @@
 <html>
+<head>
+	<style>
+		#players
+		{
+			display:inline-block;
+			height: 100%;
+		}
+
+		.wrapper
+		{
+			position: relative;
+			display: inline-block;
+		}
+	</style>
+</head>	
 <body>
-	<canvas id="canvas" width=512 height=512/>
+	<div id="container">
+		<div class="wrapper">
+			<canvas id="canvas" width=512 height=512></canvas>
+		</div>
+		<div class="wrapper">
+			<ul id="players">
+			</ul>
+		</div>
+	</div>
 </body>
 <script>
-const socket = new WebSocket('ws://localhost:8080');
+const socket = new WebSocket('ws://localhost:55780');
+socket.binaryType = 'arraybuffer';
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const width = canvas.width;
 const height = canvas.height;
 const gridStep = 100.0;
-
+const colors = ['red', 'green', 'blue', 'orange', 'yellow'];
 let scale = {x: 1.0, y: 1.0};
 let points = []
 
-scaleMap(2048, 2048)
-points.push({x: 0, y: 0, id: 'hello', color: {r: 255, g: 0, b: 0}})
+addPoint({x: 0, y: 0, name: 'jury'})
+
+scaleMap(1024, 1024)
 render();
 
 socket.addEventListener('open', function (event) {
@@ -22,13 +47,40 @@ socket.addEventListener('open', function (event) {
 });
 
 socket.addEventListener('message', function (event) {
-    console.log('Message from server ', event.data);
+	const data = new Float32Array(event.data);
+	const coords = {
+		x: data[0],
+		y: -data[2],
+		name: String.fromCharCode.apply(null, new Uint8Array(event.data.slice(4 * 3))).trim().replace(/\0/g, '')
+	};
+
+	addPoint(coords);
 });
 
-canvas.onmousemove  = function(e)
+function addPoint(coords)
 {
-	console.log(e.clientX / scale.x, e.clientY / scale.y);
-};
+	let updated = false;
+	points.forEach(point => {
+		if (point.name == coords.name)
+		{
+			point.x = coords.x;
+			point.y = coords.y;
+			updated = true;
+		}
+	});
+
+	if (!updated)
+	{
+		let point = {...coords, color: colors[Math.floor(Math.random() * colors.length)]};
+		point.element = document.createElement('li');
+		point.element.style['color'] = point.color;
+		point.element.innerHTML = point.name;
+		document.getElementById('players').appendChild(point.element);
+		points.push(point);
+	}
+
+	render();
+}
 
 function scaleMap(newMapX, newMapY)
 {
@@ -62,8 +114,7 @@ function drawGrid()
 function drawPoints()
 {
 	points.forEach(item => {
-		const color = `rgb(${item.color.r}, ${item.color.g}, ${item.color.b})`;
-		ctx.fillStyle = color; 
+		ctx.fillStyle = item.color; 
 		ctx.beginPath();
 		ctx.arc(item.x * scale.x + width / 2, item.y * scale.y + height / 2, 5, 0, 2 * Math.PI, false);
 		ctx.stroke();

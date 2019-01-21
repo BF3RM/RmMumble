@@ -130,6 +130,13 @@ bool InitWebsocketServer()
 	return true;
 }
 
+static inline void RightTrim(std::string &s)
+{
+	s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+		return !std::isspace(ch);
+	}).base(), s.end());
+}
+
 void PositionHandler()
 {
 	char buf[BUFLEN];
@@ -152,13 +159,19 @@ void PositionHandler()
 			//exit(EXIT_FAILURE);
 		}
 
-		constexpr auto Offset = sizeof(float) * 3;
-
-		auto Payload = std::string(buf);
 		ClientsMutex.lock();
+		auto Payload = std::string(buf, BUFLEN);
+		RightTrim(Payload);
 		for (auto& Connection : Clients)
 		{
-			WebSocketServer.send(Connection, Payload, websocketpp::frame::opcode::text);
+			try
+			{
+				WebSocketServer.send(Connection, Payload, websocketpp::frame::opcode::binary);
+			}
+			catch (websocketpp::exception& e)
+			{
+				std::cout << e.m_msg << std::endl << e.what() << std::endl;
+			}
 		}
 		ClientsMutex.unlock();
 	}
@@ -185,10 +198,6 @@ static int trylock(const std::multimap<std::wstring, unsigned long long int> &pi
 
 static void unlock()
 {
-	ClientsMutex.lock();
-	WebSocketServer.stop();
-	ClientsMutex.unlock();
-	closesocket(UdpSocket);
 }
 
 static const std::wstring longdesc() {

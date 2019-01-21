@@ -369,17 +369,17 @@ bool Plugins::fetch() {
 			fCameraTop[i] = fTop[i];
 		}
 
-		bValid = true;
-		return true;
+bValid = true;
+return true;
 	}
 
-	if (! locked) {
+	if (!locked) {
 		bValid = false;
 		return bValid;
 	}
 
 	QReadLocker lock(&qrwlPlugins);
-	if (! locked) {
+	if (!locked) {
 		bValid = false;
 		return bValid;
 	}
@@ -392,7 +392,7 @@ bool Plugins::fetch() {
 		QMutexLocker mlock(&qmPluginStrings);
 		ok = locked->p->fetch(fPosition, fFront, fTop, fCameraPosition, fCameraFront, fCameraTop, ssContext, swsIdentity);
 	}
-	if (! ok || bUnlink) {
+	if (!ok || bUnlink) {
 		lock.unlock();
 		QWriteLocker wlock(&qrwlPlugins);
 
@@ -401,8 +401,8 @@ bool Plugins::fetch() {
 			locked->locked = false;
 			prevlocked = locked;
 			locked = NULL;
-			for (int i=0;i<3;i++)
-				fPosition[i]=fFront[i]=fTop[i]=fCameraPosition[i]=fCameraFront[i]=fCameraTop[i] = 0.0f;
+			for (int i = 0; i < 3; i++)
+				fPosition[i] = fFront[i] = fTop[i] = fCameraPosition[i] = fCameraFront[i] = fCameraTop[i] = 0.0f;
 		}
 	}
 	bValid = ok;
@@ -423,7 +423,7 @@ void Plugins::on_Timer_timeout() {
 	{
 		QMutexLocker mlock(&qmPluginStrings);
 
-		if (! locked) {
+		if (!locked) {
 			ssContext.clear();
 			swsIdentity.clear();
 		}
@@ -432,10 +432,11 @@ void Plugins::on_Timer_timeout() {
 		if (locked)
 			context.assign(u8(QString::fromStdWString(locked->p->shortname)) + static_cast<char>(0) + ssContext);
 
-		if (! g.uiSession) {
+		if (!g.uiSession) {
 			ssContextSent.clear();
 			swsIdentitySent.clear();
-		} else if ((context != ssContextSent) || (swsIdentity != swsIdentitySent)) {
+		}
+		else if ((context != ssContextSent) || (swsIdentity != swsIdentitySent)) {
 			MumbleProto::UserState mpus;
 			mpus.set_session(g.uiSession);
 			if (context != ssContextSent) {
@@ -455,7 +456,7 @@ void Plugins::on_Timer_timeout() {
 		return;
 	}
 
-	if (! g.s.bTransmitPosition)
+	if (!g.s.bTransmitPosition)
 		return;
 
 	lock.unlock();
@@ -463,6 +464,31 @@ void Plugins::on_Timer_timeout() {
 
 	if (qlPlugins.isEmpty())
 		return;
+
+#ifdef RM_POSITIONAL_DEBUG
+	static bool PositionalDebugLinked = false;
+	if (!PositionalDebugLinked)
+	{
+		for (auto& Plugin : qlPlugins)
+		{
+			if (Plugin->shortname == L"PositionalDebug")
+			{
+				if (Plugin->p2)
+				{
+					Plugin->p2->trylock(std::multimap<std::wstring, unsigned long long int>());
+				}
+				else
+				{
+					Plugin->p->trylock();
+				}
+
+				qlPlugins.removeOne(Plugin);
+				PositionalDebugLinked = true;
+			}
+		}
+	}
+#endif
+
 
 	++iPluginTry;
 	if (iPluginTry >= qlPlugins.count())

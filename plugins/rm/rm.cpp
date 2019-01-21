@@ -282,7 +282,7 @@ void InitPositionDebugSocket()
 {
 	memset((char *)&RmDebugServer, 0, sizeof(RmDebugServer));
 	RmDebugServer.sin_family = AF_INET;
-	RmDebugServer.sin_port = htons(PORT);
+	RmDebugServer.sin_port = htons(55779);
 	RmDebugServer.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 	RmDebugClient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 }
@@ -363,8 +363,11 @@ void RealityMod3dPositionHandler()
 		memcpy(PawnTopVector, buf + Offset * 2, Offset);
 
 #ifdef RM_POSITIONAL_DEBUG
-		auto Payload = std::string(buf);
-		SendPositionDebug(Payload.c_str(), Payload.size());
+		char Position[sizeof(float) * 3 + 4] = { '\0' };
+		memcpy(Position, buf, Offset);
+		const char* Name = "self";
+		memcpy(Position + Offset, Name, 4);
+		SendPositionDebug(Position, sizeof(Position));
 #endif
 	}
 

@@ -96,7 +96,7 @@ extern "C" __declspec(dllexport) int main(int argc, char **argv) {
 	EnvUtils::setenv(QLatin1String("AVAHI_COMPAT_NOWARN"), QLatin1String("1"));
 #endif
 #endif
-
+	QCoreApplication::addLibraryPath(QLatin1String("./"));
 	// Initialize application object.
 	MumbleApplication a(argc, argv);
 	a.setApplicationName(QLatin1String("Mumble"));

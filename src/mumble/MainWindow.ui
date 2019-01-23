@@ -387,7 +387,6 @@
     <string>Sends a text message to another user.</string>
    </property>
   </action>
--->
   <action name="qaChannelAdd">
    <property name="text">
     <string>&amp;Add...</string>
@@ -454,6 +453,7 @@
     <string>This unlinks your current channel (not the selected one) from all linked channels.</string>
    </property>
   </action>
+-->
   <action name="qaAudioReset">
    <property name="text">
     <string>&amp;Reset</string>
@@ -847,7 +847,6 @@ the channel's context menu.</string>
     <string>&amp;Join Channel</string>
    </property>
   </action>
--->
   <action name="qaChannelFilter">
    <property name="checkable">
     <bool>true</bool>
@@ -856,6 +855,7 @@ the channel's context menu.</string>
     <string>&amp;Hide Channel when Filtering</string>
    </property>
   </action>
+-->
   <action name="qaUserCommentView">
    <property name="text">
     <string>View Comment...</string>

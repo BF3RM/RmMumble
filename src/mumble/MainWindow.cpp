@@ -1379,6 +1379,7 @@ void MainWindow::setupView(bool toggle_minimize) {
 	}
 }
 
+#ifdef RM_DEBUG
 void MainWindow::on_qaServerConnect_triggered(bool autoconnect) {
 	ConnectDialog *cd = new ConnectDialog(this, autoconnect);
 	int res = cd->exec();
@@ -1400,6 +1401,7 @@ void MainWindow::on_qaServerConnect_triggered(bool autoconnect) {
 	}
 	delete cd;
 }
+#endif
 
 void MainWindow::on_Reconnect_timeout() {
 	if (g.sh->isRunning())
@@ -2213,6 +2215,7 @@ void MainWindow::qmChannel_aboutToShow() {
 		qmChannel->addSeparator();
 	}
 
+#ifdef RM_DEBUG
 	qmChannel->addAction(qaChannelAdd);
 	qmChannel->addAction(qaChannelACL);
 	qmChannel->addAction(qaChannelRemove);
@@ -2223,11 +2226,14 @@ void MainWindow::qmChannel_aboutToShow() {
 	qmChannel->addSeparator();
 	qmChannel->addAction(qaChannelCopyURL);
 	qmChannel->addAction(qaChannelSendMessage);
+#endif
 
 	// hiding the root is nonsense
 	if(c && c->cParent) {
 		qmChannel->addSeparator();
+#ifdef RM_DEBUG 
 		qmChannel->addAction(qaChannelFilter);
+#endif
 	}
 
 #ifndef Q_OS_MAC
@@ -2269,10 +2275,9 @@ void MainWindow::qmChannel_aboutToShow() {
 				link = true;
 		}
 	}
-
+#ifdef RM_DEBUG 
 	if(c)
 		qaChannelFilter->setChecked(c->bFiltered);
-
 	qaChannelAdd->setEnabled(add);
 	qaChannelRemove->setEnabled(remove);
 	qaChannelACL->setEnabled(acl);
@@ -2280,6 +2285,7 @@ void MainWindow::qmChannel_aboutToShow() {
 	qaChannelUnlink->setEnabled(unlink);
 	qaChannelUnlinkAll->setEnabled(unlinkall);
 	qaChannelSendMessage->setEnabled(msg);
+#endif
 	updateMenuPermissions();
 }
 
@@ -2511,7 +2517,6 @@ void MainWindow::updateMenuPermissions() {
 
 #if RM_DEBUG
 	qaChannelJoin->setEnabled(p & (ChanACL::Write | ChanACL::Enter));
-#endif
 
 	qaChannelAdd->setEnabled(p & (ChanACL::Write | ChanACL::MakeChannel | ChanACL::MakeTempChannel));
 	qaChannelRemove->setEnabled(p & ChanACL::Write);
@@ -2523,8 +2528,8 @@ void MainWindow::updateMenuPermissions() {
 
 	qaChannelCopyURL->setEnabled(c);
 	qaChannelSendMessage->setEnabled(p & (ChanACL::Write | ChanACL::TextMessage));
+
 	qaChannelFilter->setEnabled(true);
-#ifdef RM_DEBUG
 	qteChat->setEnabled(p & (ChanACL::Write | ChanACL::TextMessage));
 #endif
 }

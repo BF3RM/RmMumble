@@ -16,6 +16,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 #add_definitions(-DUSE_OPUS)
 
+if (UNIX)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
+endif()
+
 set(BUILD_OBJECT_LIBRARY_ONLY OFF CACHE BOOL "")
 
 add_subdirectory(cmake/celt)

@@ -25,11 +25,19 @@ ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/vq.c
 
 
 add_library(celt0.0.7.0 SHARED ${CELT_C})
+
+if(WIN32)
+target_compile_definitions(celt0.0.7.0 PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
+set(CONFIG_INCLUDE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-build/win32)
+else()
+target_compile_definitions(celt0.0.7.0 PRIVATE -DHAVE_CONFIG_H)
+set(CONFIG_INCLUDE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-build/)
+endif()
+
 target_include_directories(celt0.0.7.0 PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt>
     $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt>
-    PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-build/win32)
-target_compile_definitions(celt0.0.7.0 PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
+    PRIVATE ${CONFIG_INCLUDE})
 
 
 set (celt0.11.0_SOURCES 
@@ -53,8 +61,16 @@ set (celt0.11.0_SOURCES
  )
 
  add_library(celt0.0.11.0 SHARED ${celt0.11.0_SOURCES})
+
+ if(WIN32)
  target_compile_definitions(celt0.0.11.0 PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
- target_include_directories(celt0.0.11.0 PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-src/libcelt>
-    $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-src/libcelt>
-    PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-build/win32)
+ set(CONFIG_INCLUDE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-build/win32)
+else()
+ target_compile_definitions(celt0.0.11.0 PRIVATE -DHAVE_CONFIG_H)
+ set(CONFIG_INCLUDE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-build/)
+endif()
+target_compile_definitions(celt0.0.11.0 PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
+target_include_directories(celt0.0.11.0 PUBLIC
+$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-src/libcelt>
+$<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-src/libcelt>
+PRIVATE ${CONFIG_INCLUDE})

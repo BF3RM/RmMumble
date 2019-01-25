@@ -49,6 +49,7 @@ endif()
 qt5_wrap_cpp(QT5_SRC src/ServerResolver.h)
 
 add_executable(RmMurmur ${MURMUR_SOURCES} ${MURMUR_HEADERS} ${SHARED_SOURCES} ${QT5_SRC})
+set_target_properties(RmMurmur PROPERTIES ENABLE_EXPORTS 1)
 target_link_libraries(RmMurmur PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} speex)
 target_include_directories(RmMurmur
         PUBLIC

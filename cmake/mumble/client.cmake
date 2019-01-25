@@ -256,6 +256,8 @@ else()
     target_compile_definitions(${MumbleExeName} PRIVATE -DUNICODE -DUSE_DBUS)
 endif()
 
+set_target_properties(${MumbleExeName} PROPERTIES ENABLE_EXPORTS 1)
+
 target_link_libraries(${MumbleExeName} PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} opus Qt5::Svg Qt5::TextToSpeech sndfile)
 target_include_directories(${MumbleExeName}
         PUBLIC

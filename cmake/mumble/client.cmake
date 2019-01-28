@@ -270,7 +270,7 @@ target_include_directories(${MumbleExeName}
         $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/mumble
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/mumble ${CMAKE_SOURCE_DIR}/src/mumble/widgets ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src>
         PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/
+        ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/ 3rdparty/asio/common 3rdparty/asio/host 3rdparty/asio/host/pc
         )
 
 target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} ${DEFINITIONS} -DUSE_DBUS -DUSE_MANUAL_PLUGIN)

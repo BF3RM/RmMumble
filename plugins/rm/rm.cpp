@@ -121,15 +121,20 @@ std::wstring StringToWString(const std::string& str)
 }
 
 static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, float *camera_pos, float *camera_front, float *camera_top, std::string &context, std::wstring &identity) {
-	avatar_top[0] = camera_top[0] = PawnTopVector[0];
-	avatar_top[1] = camera_top[1] = PawnTopVector[1];
-	avatar_top[2] = camera_top[2] = PawnTopVector[2];
-	avatar_front[0] = camera_front[0] = PawnFrontVector[0];
-	avatar_front[1] = camera_front[1] = PawnFrontVector[1];
-	avatar_front[2] = camera_front[2] = PawnFrontVector[2];
-	avatar_pos[0] = camera_pos[0] = PawnPosition[0];
-	avatar_pos[1] = camera_pos[1] = PawnPosition[1];
-	avatar_pos[2] = camera_pos[2] = PawnPosition[2];
+	for (int I = 0; I < 3; I++)
+	{
+		avatar_top[I] = camera_top[I] = PawnTopVector[I];
+		avatar_front[I] = camera_front[I] = PawnFrontVector[I];
+		avatar_pos[I] = camera_pos[I] = PawnPosition[I];
+
+		// Flip our front vector
+		avatar_front[I] = -avatar_front[I];
+	}
+
+	avatar_top[0] = -avatar_top[0];
+	avatar_front[0] = -avatar_front[0];
+	avatar_pos[0] = -avatar_pos[0];
+
 	return true;
 	procptr_t SquadState = ResolveChain();
 
@@ -364,12 +369,15 @@ void RealityMod3dPositionHandler()
 		}
 
 		constexpr auto Offset = sizeof(float) * 3;
-		memcpy(PawnPosition, buf, Offset);
-		memcpy(PawnFrontVector, buf + Offset, Offset);
-		memcpy(PawnTopVector, buf + Offset * 2, Offset);
+		if (ReceivedLength >= Offset)
+		{
+			memcpy(PawnPosition, buf, Offset);
+			memcpy(PawnFrontVector, buf + Offset, Offset);
+			memcpy(PawnTopVector, buf + Offset * 2, Offset);
+		}
 
 #ifdef RM_POSITIONAL_DEBUG
-		char Position[sizeof(float) * 3 + 4] = { '\0' };
+		char Position[Offset + 4] = { '\0' };
 		memcpy(Position, buf, Offset);
 		const char* Name = "self";
 		memcpy(Position + Offset, Name, 4);

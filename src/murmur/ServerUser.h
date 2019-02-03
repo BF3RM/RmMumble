@@ -1,4 +1,4 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
+// Copyright 2005-2019 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -89,7 +89,7 @@ class LeakyBucket {
 		// Returns true if packets should be dropped
 		bool ratelimit(int tokens);
 
-		LeakyBucket();
+		LeakyBucket(unsigned int tokensPerSec, unsigned int maxTokens);
 };
 
 class ServerUser : public Connection, public User {

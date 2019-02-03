@@ -1,4 +1,4 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
+// Copyright 2005-2019 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -287,10 +287,6 @@ void MainWindow::msgUserState(const MumbleProto::UserState &msg) {
 			pmModel->moveUser(pDst, channel);
 		}
 
-		if (msg.has_user_id()) {
-			pmModel->setUserId(pDst, msg.user_id());
-		}
-
 		if (msg.has_hash()) {
 			pmModel->setHash(pDst, u8(msg.hash()));
 		}
@@ -302,6 +298,10 @@ void MainWindow::msgUserState(const MumbleProto::UserState &msg) {
 				g.l->log(Log::UserJoin, tr("%1 connected.").arg(Log::formatClientUser(pDst, Log::Source)));
 			}
 		}
+	}
+
+	if (msg.has_user_id()) {
+		pmModel->setUserId(pDst, msg.user_id());
 	}
 
 	if (channel) {
@@ -882,7 +882,13 @@ void MainWindow::msgCodecVersion(const MumbleProto::CodecVersion &msg) {
 	bool pref = msg.prefer_alpha();
 
 #ifdef USE_OPUS
+	static bool warnedOpus = false;
 	g.bOpus = msg.opus();
+
+	if (!g.oCodec && !warnedOpus) {
+		g.l->log(Log::CriticalError, tr("Failed to load Opus, it will not be available for audio encoding/decoding."));
+		warnedOpus = true;
+	}
 #endif
 
 	// Workaround for broken 1.2.2 servers
@@ -907,15 +913,15 @@ void MainWindow::msgCodecVersion(const MumbleProto::CodecVersion &msg) {
 
 	int willuse = pref ? g.iCodecAlpha : g.iCodecBeta;
 
-	static bool warned = false;
+	static bool warnedCELT = false;
 
 	if (! g.qmCodecs.contains(willuse)) {
-		if (! warned) {
+		if (! warnedCELT) {
 			g.l->log(Log::CriticalError, tr("Unable to find matching CELT codecs with other clients. You will not be able to talk to all users."));
-			warned = true;
+			warnedCELT = true;
 		}
 	} else {
-		warned = false;
+		warnedCELT = false;
 	}
 }
 

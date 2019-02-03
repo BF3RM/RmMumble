@@ -1,4 +1,4 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
+// Copyright 2005-2019 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -10,7 +10,7 @@
 #include "Meta.h"
 #include "Channel.h"
 
-ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), User(), s(p) {
+ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), User(), s(NULL), leakyBucket(p->iMessageLimit, p->iMessageBurst) {
 	sState = ServerUser::Connected;
 	sUdpSocket = INVALID_SOCKET;
 
@@ -202,7 +202,7 @@ unsigned long millisecondsBetween(time_point start, time_point end) {
 #endif
 
 // Rate limiting: burst up to 5, 1 message per sec limit over longer time
-LeakyBucket::LeakyBucket() : tokensPerSec(1), maxTokens(5), currentTokens(0) {
+LeakyBucket::LeakyBucket(unsigned int tokensPerSec, unsigned int maxTokens) : tokensPerSec(tokensPerSec), maxTokens(maxTokens), currentTokens(0) {
 	lastUpdate = now();
 }
 

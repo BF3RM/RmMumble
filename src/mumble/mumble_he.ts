@@ -1100,7 +1100,7 @@ This value allows you to set the maximum number of users allowed in the channel.
         <translation>פרק הזמן שבו המיקרופון נשאר פתוח לאחר שמקש הדיבור נעזב</translation>
     </message>
     <message>
-        <location filename="AudioInput.cpp" line="+597"/>
+        <location filename="AudioInput.cpp" line="+599"/>
         <source>Server maximum network bandwidth is only %1 kbit/s. Audio quality auto-adjusted to %2 kbit/s (%3 ms)</source>
         <translation>רוחב הפס של תעבורת הרשת של השרת הוא רק %1 קב&quot;ש. איכות הקול כוונה אוטומטית ל-%2 קב&quot;ש (%3 מ&quot;ש)</translation>
     </message>
@@ -3146,7 +3146,7 @@ Are you sure you wish to replace your certificate?
 <context>
     <name>ConnectDialog</name>
     <message>
-        <location filename="ConnectDialog.cpp" line="+1134"/>
+        <location filename="ConnectDialog.cpp" line="+1142"/>
         <source>Connecting to %1</source>
         <translation>מתחבר כעת אל %1</translation>
     </message>
@@ -3234,8 +3234,13 @@ Are you sure you wish to replace your certificate?
         <translation>מ&amp;סננים</translation>
     </message>
     <message>
+        <location line="+740"/>
+        <source>Unknown</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="ConnectDialog.ui"/>
-        <location filename="ConnectDialog.cpp" line="-505"/>
+        <location filename="ConnectDialog.cpp" line="-1245"/>
         <source>Users</source>
         <translation>משתמשים</translation>
     </message>
@@ -4184,7 +4189,7 @@ This field describes the size of an LCD device. The size is given either in pixe
 </translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+77"/>
         <source>link to %1</source>
         <translation>קישור אל %1</translation>
     </message>
@@ -4212,7 +4217,7 @@ This field describes the size of an LCD device. The size is given either in pixe
 <context>
     <name>LogConfig</name>
     <message>
-        <location line="-499"/>
+        <location line="-502"/>
         <source>Toggle console for %1 events</source>
         <translation>הפעל/בטל פלט טקסט עבור אירועי %1</translation>
     </message>
@@ -4733,12 +4738,12 @@ This field describes the size of an LCD device. The size is given either in pixe
     <name>MainWindow</name>
     <message>
         <location filename="MainWindow.cpp" line="+107"/>
-        <location line="+2701"/>
+        <location line="+2702"/>
         <source>Root</source>
         <translation>שורש</translation>
     </message>
     <message>
-        <location line="-2644"/>
+        <location line="-2645"/>
         <source>Push-to-Talk</source>
         <comment>Global Shortcut</comment>
         <translation>לחץ-כדי-לדבר</translation>
@@ -4817,12 +4822,12 @@ This field describes the size of an LCD device. The size is given either in pixe
     <message>
         <location filename="MainWindow.cpp" line="+4"/>
         <location line="+159"/>
-        <location line="+2638"/>
+        <location line="+2639"/>
         <source>Mumble -- %1</source>
         <translation>Mumble -- %1</translation>
     </message>
     <message>
-        <location line="-2766"/>
+        <location line="-2767"/>
         <source>&amp;Window</source>
         <translation>&amp;חלון</translation>
     </message>
@@ -4891,13 +4896,13 @@ This field describes the size of an LCD device. The size is given either in pixe
     </message>
     <message>
         <location line="+79"/>
-        <location line="+2797"/>
+        <location line="+2798"/>
         <source>&lt;center&gt;Not connected&lt;/center&gt;</source>
         <oldsource>Not connected</oldsource>
         <translation>&lt;center&gt;לא מחובר&lt;/center&gt;</translation>
     </message>
     <message>
-        <location line="-2349"/>
+        <location line="-2350"/>
         <source>Clear</source>
         <translation>טהר</translation>
     </message>
@@ -4954,7 +4959,7 @@ This field describes the size of an LCD device. The size is given either in pixe
     </message>
     <message>
         <location line="+76"/>
-        <location line="+1497"/>
+        <location line="+1498"/>
         <source>Transmit Mode set to Continuous</source>
         <translation type="unfinished"/>
     </message>
@@ -4969,14 +4974,14 @@ This field describes the size of an LCD device. The size is given either in pixe
         <translation>&lt;h2&gt;ערוץ קול&lt;/h2&gt;&lt;p&gt;מוצפן עם 128 bit OCB-AES128&lt;br /&gt;אחזור ממוצע של %1 מ&quot;ש (סטייה של %4)&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="-179"/>
-        <location line="+448"/>
+        <location line="-180"/>
+        <location line="+449"/>
         <source>Register yourself as %1</source>
         <translation>רשום את עצמך בשם %1</translation>
     </message>
     <message>
-        <location line="-448"/>
-        <location line="+448"/>
+        <location line="-449"/>
+        <location line="+449"/>
         <source>&lt;p&gt;You are about to register yourself on this server. This action cannot be undone, and your username cannot be changed once this is done. You will forever be known as &apos;%1&apos; on this server.&lt;/p&gt;&lt;p&gt;Are you sure you want to register yourself?&lt;/p&gt;</source>
         <translation>&lt;p dir=&quot;RTL&quot;&gt;אתם עומדים לרשום את עצמכם לשרת. אין אפשרות לבטל פעולה זו, ואין אפשרות לשנות את שם המשתמש מרגע שנרשמתם. אתם תמיד תוצגו תחת השם &apos;%1&apos; בשרת הזה, גם אם תשנו אותו בעת ההתחברות. &lt;/p&gt;&lt;p dir=&quot;RTL&quot;&gt;האם אתם בטוחים שברצונכם להרשם?&lt;/p&gt;</translation>
     </message>
@@ -5123,7 +5128,7 @@ This field describes the size of an LCD device. The size is given either in pixe
         <translation>פורמט תמונה לא מזוהה.</translation>
     </message>
     <message>
-        <location line="-3103"/>
+        <location line="-3104"/>
         <source>&amp;User</source>
         <translation>&amp;משתמש</translation>
     </message>
@@ -5222,13 +5227,13 @@ This field describes the size of an LCD device. The size is given either in pixe
     </message>
     <message>
         <location line="+41"/>
-        <location line="+1484"/>
+        <location line="+1485"/>
         <source>Transmit Mode set to Voice Activity</source>
         <translation>מצב שידור הוחלף למצב פעילות קול</translation>
     </message>
     <message>
-        <location line="-1479"/>
-        <location line="+1483"/>
+        <location line="-1480"/>
+        <location line="+1484"/>
         <source>Transmit Mode set to Push-to-Talk</source>
         <translation>מצב שידור הוחלף למצב לחץ-כדי-לדבר</translation>
     </message>
@@ -5468,8 +5473,8 @@ Otherwise abort and check your certificate and username.</source>
         <translation>&lt;p dir=&quot;RTL&quot;&gt;הסיסמה שהזנתם אינה נכונה, אנא נסו שנית.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="-2238"/>
-        <location line="+2450"/>
+        <location line="-2239"/>
+        <location line="+2451"/>
         <source>Images (*.png *.jpg *.jpeg)</source>
         <translation>תמונות (‎*.png *.jpg *.jpeg)</translation>
     </message>
@@ -5966,7 +5971,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation>אפשרות זו מפעילה או מכבה את התצוגה המינימלית, שבה התפריט וחלונות הצ&apos;אט והיומן מוסתרים.</translation>
     </message>
     <message>
-        <location filename="Messages.cpp" line="+408"/>
+        <location filename="Messages.cpp" line="+416"/>
         <source>You muted and deafened %1.</source>
         <translation>השתקת והחרשת את %1.</translation>
     </message>
@@ -6006,7 +6011,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation>%1 שותק על ידי %2.</translation>
     </message>
     <message>
-        <location line="-218"/>
+        <location line="-214"/>
         <source>%1 moved to %2.</source>
         <translation>&lt;p dir=&quot;RTL&quot;&gt;%1 הועבר ל %2.&lt;/p&gt;</translation>
     </message>
@@ -6021,12 +6026,12 @@ Otherwise abort and check your certificate and username.</source>
         <translation>&lt;p dir=&quot;RTL&quot;&gt;%1 הועבר לחדר זה מ %2 על ידי %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+48"/>
         <source>%1 is now muted and deafened.</source>
         <translation>%1 מושתק ומוחרש כעת.</translation>
     </message>
     <message>
-        <location line="-296"/>
+        <location line="-304"/>
         <source>Your account information can not be verified currently. Please try again later</source>
         <translation>&lt;p dir=&quot;RTL&quot;&gt;אנו לא יכולים לאמת את חשבונך. נסה שנית מאוחר יותר&lt;/p&gt;</translation>
     </message>
@@ -6112,7 +6117,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation>הרשאה נדחתה.</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+42"/>
         <source>%1 connected and entered channel.</source>
         <translation type="unfinished"/>
     </message>
@@ -6122,7 +6127,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation>%1 התחבר.</translation>
     </message>
     <message>
-        <location line="+93"/>
+        <location line="+91"/>
         <source>%1 is now muted.</source>
         <translation>%1 הושתק.</translation>
     </message>
@@ -6233,7 +6238,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation>%1 ביטל את שיתוקך.</translation>
     </message>
     <message>
-        <location line="-173"/>
+        <location line="-169"/>
         <source>You joined %1.</source>
         <translation type="unfinished"/>
     </message>
@@ -6254,7 +6259,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+236"/>
         <source>%1 disconnected.</source>
         <translation>%1 התנתק.</translation>
     </message>
@@ -6286,7 +6291,12 @@ Otherwise abort and check your certificate and username.</source>
         <translation>%2%1: %3</translation>
     </message>
     <message>
-        <location line="+201"/>
+        <location line="+149"/>
+        <source>Failed to load Opus, it will not be available for audio encoding/decoding.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+58"/>
         <source>The server requests minimum client version %1</source>
         <translation>השרת הנוכחי דורש גרסאת לקוח מינימאלית %1</translation>
     </message>
@@ -6311,7 +6321,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation>שרת זה אוסר על שימוש בתכונת לחץ-כדי-לדבר.</translation>
     </message>
     <message>
-        <location line="-464"/>
+        <location line="-470"/>
         <source>You were unmuted by %1.</source>
         <translation>השתקתך בוטלה על ידי %1.</translation>
     </message>
@@ -6346,12 +6356,12 @@ Otherwise abort and check your certificate and username.</source>
         <translation>%2 ביטל את השתקתו של %1.</translation>
     </message>
     <message>
-        <location line="+367"/>
+        <location line="+373"/>
         <source>Unable to find matching CELT codecs with other clients. You will not be able to talk to all users.</source>
         <translation>לא ניתן למצוא קידודי CELT תואמים עבור משתמשים אחרים. ייתכן ולא תוכלו לדבר לכל המשתמשים.</translation>
     </message>
     <message>
-        <location line="-433"/>
+        <location line="-439"/>
         <source>You were muted and deafened by %1.</source>
         <oldsource>You were deafened by %1.</oldsource>
         <translation>הושתקת והוחרשת על ידי %1.</translation>
@@ -6377,7 +6387,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation>&lt;p dir=&quot;RTL&quot;&gt;%3 הועף והושעה מהשרת על ידי %1: %2.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="-270"/>
+        <location line="-266"/>
         <source>You were moved to %1 by %2.</source>
         <translation>&lt;p dir=&quot;RTL&quot;&gt;הועברת אל  %1 על ידי %2.&lt;/p&gt;</translation>
     </message>
@@ -6387,7 +6397,7 @@ Otherwise abort and check your certificate and username.</source>
         <translation>&lt;p dir=&quot;RTL&quot;&gt;%1 נכנס לערוץ.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="-225"/>
+        <location line="-237"/>
         <source>Server connection rejected: %1.</source>
         <translation>התקשרות שרת נדחתה: %1.</translation>
     </message>
@@ -6397,12 +6407,12 @@ Otherwise abort and check your certificate and username.</source>
         <translation>נדחה: %1.</translation>
     </message>
     <message>
-        <location line="+98"/>
+        <location line="+110"/>
         <source>%1 renamed to %2.</source>
         <translation>%1 שינה שם אל %2.</translation>
     </message>
     <message>
-        <location line="+235"/>
+        <location line="+231"/>
         <source>%1 left channel and disconnected.</source>
         <translation>%1 עזב ערוץ והתנתק</translation>
     </message>
@@ -6687,7 +6697,7 @@ the channel&apos;s context menu.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="-3067"/>
+        <location filename="MainWindow.cpp" line="-3068"/>
         <source>&amp;Developer</source>
         <translation type="unfinished"/>
     </message>
@@ -8108,7 +8118,7 @@ To upgrade these files to their latest versions, click the button below.</source
 <context>
     <name>ServerView</name>
     <message>
-        <location filename="ConnectDialog.cpp" line="-753"/>
+        <location filename="ConnectDialog.cpp" line="-761"/>
         <source>Favorite</source>
         <translation>מועדף</translation>
     </message>
@@ -8124,6 +8134,11 @@ To upgrade these files to their latest versions, click the button below.</source
     </message>
     <message>
         <location line="+7"/>
+        <source>Unknown</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Africa</source>
         <translation>אפריקה</translation>
     </message>
@@ -9141,9 +9156,17 @@ Please contact your server administrator for further information.</source>
     </message>
 </context>
 <context>
+    <name>WASAPIInput</name>
+    <message>
+        <location filename="WASAPI.cpp" line="+461"/>
+        <source>Access to the microphone was denied. Please check that your operating system&apos;s microphone settings allow Mumble to use the microphone.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>WASAPISystem</name>
     <message>
-        <location filename="WASAPI.cpp" line="+241"/>
+        <location line="-219"/>
         <source>Default Device</source>
         <translation>התקן ברירת מחדל</translation>
     </message>

@@ -245,7 +245,6 @@ bool AudioOutputSpeech::needSamples(unsigned int snum) {
 						pds >> fPos[0];
 						pds >> fPos[1];
 						pds >> fPos[2];
-						qDebug() << "Received " << fPos[0] << " " << fPos[1] << " " << fPos[2];
 					} else {
 						fPos[0] = fPos[1] = fPos[2] = 0.0f;
 					}

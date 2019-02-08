@@ -189,7 +189,6 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 	RmPositionTimer = new QTimer(this);
 	connect(RmPositionTimer, &QTimer::timeout, this, [this]() {
-		return;
 		if (g.p && g.sh && g.p->fetch()) {
 			MumbleProto::RmUpdatePlayerPosition PositionUpdate;
 			PositionUpdate.set_x(g.p->fPosition[0]);

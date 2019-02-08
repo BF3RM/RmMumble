@@ -1076,15 +1076,10 @@ void AudioInput::flushCheck(const QByteArray &frame, bool terminator) {
 		}
 	}
 
-	auto Plugin = g.p;
-	auto hasFetched = g.p ? g.p->fetch() : false;
-
 	if (g.s.bTransmitPosition && g.p && ! g.bCenterPosition && g.p->fetch()) {
 		pds << g.p->fPosition[0];
 		pds << g.p->fPosition[1];
 		pds << g.p->fPosition[2];
-
-		qDebug() << g.p->fPosition[0] << " " << g.p->fPosition[1] << " " << g.p->fPosition[2];
 	}
 
 	sendAudioFrame(data, pds);

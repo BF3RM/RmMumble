@@ -95,7 +95,6 @@
    <addaction name="qmConfig"/>
    <addaction name="qmHelp"/>
   </widget>
-<!-- RM_DEBUG
   <widget class="QDockWidget" name="qdwLog">
    <property name="minimumSize">
     <size>
@@ -124,8 +123,6 @@
     </property>
    </widget>
   </widget>
--->
-<!-- RM_DEBUG
   <widget class="QDockWidget" name="qdwChat">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -166,7 +163,6 @@
     </property>
    </widget>
   </widget>
--->
   <widget class="QToolBar" name="qtIconToolbar">
    <property name="windowTitle">
     <string>Icon Toolbar</string>
@@ -177,9 +173,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-<!-- RM_DEBUG
    <addaction name="qaServerConnect"/>
--->
    <addaction name="qaServerInformation"/>
    <addaction name="separator"/>
    <addaction name="qaAudioMute"/>
@@ -217,7 +211,6 @@
     <string>Hides the main Mumble window. Restore by clicking on the tray icon or starting Mumble again.</string>
    </property>
   </action>
-<!-- RM_DEBUG
   <action name="qaServerConnect">
    <property name="icon">
     <iconset>
@@ -250,7 +243,6 @@
     <string>Disconnects you from the server.</string>
    </property>
   </action>
--->
   <action name="qaServerBanList">
    <property name="enabled">
     <bool>false</bool>
@@ -375,7 +367,6 @@
     <string>Mute or unmute user locally. Use this on other users in the same room.</string>
    </property>
   </action>
-<!-- RM_DEBUG
   <action name="qaUserTextMessage">
    <property name="text">
     <string>Send &amp;Message...</string>
@@ -453,7 +444,6 @@
     <string>This unlinks your current channel (not the selected one) from all linked channels.</string>
    </property>
   </action>
--->
   <action name="qaAudioReset">
    <property name="text">
     <string>&amp;Reset</string>
@@ -511,7 +501,6 @@
     <bool>false</bool>
    </property>
   </action>
-<!-- RM_DEBUG
   <action name="qaAudioTTS">
    <property name="checkable">
     <bool>true</bool>
@@ -526,7 +515,6 @@
     <string>Enable or disable the text-to-speech engine. Only messages enabled for TTS in the Configuration dialog will actually be spoken.</string>
    </property>
   </action>
--->
   <action name="qaAudioStats">
    <property name="text">
     <string>Audio S&amp;tatistics...</string>
@@ -841,7 +829,6 @@ the channel's context menu.</string>
     <string>Reset the avatar of the selected user.</string>
    </property>
   </action>
-<!-- RM_DEBUG
   <action name="qaChannelJoin">
    <property name="text">
     <string>&amp;Join Channel</string>
@@ -855,7 +842,6 @@ the channel's context menu.</string>
     <string>&amp;Hide Channel when Filtering</string>
    </property>
   </action>
--->
   <action name="qaUserCommentView">
    <property name="text">
     <string>View Comment...</string>

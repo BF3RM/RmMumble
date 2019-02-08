@@ -273,7 +273,7 @@ target_include_directories(${MumbleExeName}
         ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/ 3rdparty/asio/common 3rdparty/asio/host 3rdparty/asio/host/pc
         )
 
-target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} ${DEFINITIONS} -DUSE_DBUS -DUSE_MANUAL_PLUGIN)
+target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} ${DEFINITIONS} -DUSE_DBUS -DUSE_MANUAL_PLUGIN -DUSE_ASIO)
 
 if(WIN32)
         set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_RELEASE "-delayload:shell32.dll")

@@ -14,7 +14,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-#add_definitions(-DUSE_OPUS)
+add_definitions(-DRM_DEBUG)
 include_directories(cmake/general ${CMAKE_BINARY_DIR}/3rdparty ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto)
 
 if (UNIX)
@@ -71,6 +71,6 @@ add_custom_target(Qt5CopyBinaries
         COMMENT "Copying Qt binaries from '${Qt5Core_DIR}/../../bin/' to '${CMAKE_BINARY_DIR}'" VERBATIM
         )
 
-add_dependencies(RmMurmur Qt5CopyBinaries)
+#add_dependencies(RmMurmur Qt5CopyBinaries)
 add_dependencies(RmMumble Qt5CopyBinaries)
 endif()

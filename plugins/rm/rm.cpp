@@ -135,6 +135,9 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 	avatar_front[0] = -avatar_front[0];
 	avatar_pos[0] = -avatar_pos[0];
 
+	identity = L"1~~1~~1";
+	context = "context";
+
 	return true;
 	procptr_t SquadState = ResolveChain();
 
@@ -227,7 +230,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 
     //    send(server, buffer, sizeof(buffer), 0);
 #ifdef RM_DEBUG
-    if (UdpSocket != nullptr) {
+    if (UdpSocket != NULL) {
         //Username~~Server~~Faction~~Squad~~IsSquadLeader
         memset(DebugString, '\0', sizeof(DebugString));
 
@@ -244,7 +247,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 #undef SPACER
 #undef COPY
 
-        send(*UdpSocket, (const char*)&DebugString[0], sizeof(DebugString), 0);
+        send(UdpSocket, (const char*)&DebugString[0], sizeof(DebugString), 0);
     }
 #endif
 
@@ -254,7 +257,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 static void InitSocket()
 {
 #ifdef RM_DEBUG
-    if (UdpSocket == nullptr) {
+    if (UdpSocket == NULL) {
         WSADATA WSAData;
         WSAStartup(MAKEWORD(2,0), &WSAData);
         struct addrinfo* Result = nullptr, hints;
@@ -269,15 +272,15 @@ static void InitSocket()
         for (auto ptr = Result; ptr != NULL; ptr = ptr->ai_next) {
 
             // Create a SOCKET for connecting to server
-            UdpSocket = new SOCKET(socket(ptr->ai_family, ptr->ai_socktype,
+            UdpSocket = SOCKET(socket(ptr->ai_family, ptr->ai_socktype,
                 ptr->ai_protocol));
-            if (*UdpSocket == INVALID_SOCKET) {
+            if (UdpSocket == INVALID_SOCKET) {
                 printf("socket failed with error: %ld\n", WSAGetLastError());
                 WSACleanup();
                 return;
             }
 
-            connect(*UdpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+            connect(UdpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 
             break;
         }

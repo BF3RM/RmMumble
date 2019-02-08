@@ -22,7 +22,7 @@ static ConfigWidget *PluginConfigDialogNew(Settings &st) {
 	return new PluginConfig(st);
 }
 
-//static ConfigRegistrar registrar(5000, PluginConfigDialogNew);
+static ConfigRegistrar registrar(5000, PluginConfigDialogNew);
 
 struct PluginInfo {
 	bool locked;

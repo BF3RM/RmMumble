@@ -999,7 +999,7 @@ void Server::sendMessage(ServerUser *u, const char *data, int len, QByteArray &c
 
 #define SENDTO \
 		if ((!pDst->bDeaf) && (!pDst->bSelfDeaf) && (pDst != u)) { \
-			if (poslen > 0)) \
+			if (poslen > 0) \
 				sendMessage(pDst, buffer, len, qba); \
 			else \
 				sendMessage(pDst, buffer, len - poslen, qba_npos); \

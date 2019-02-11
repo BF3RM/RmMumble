@@ -234,7 +234,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, wchar_t *cmdAr
 		return -3;
 	}
 
-	DLL_MAIN entry_point = reinterpret_cast<DLL_MAIN>(GetProcAddress(dll, "main"));
+	DLL_MAIN entry_point = reinterpret_cast<DLL_MAIN>(GetProcAddress(dll, "MumbleMain"));
 	if (!entry_point) {
 		Alert(L"Mumble Launcher Error -4", L"Unable to find expected entry point ('MumbleMain') in RmMumbleApp.dll.");
 		return -4;

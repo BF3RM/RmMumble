@@ -1,4 +1,4 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
+// Copyright 2005-2019 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -73,6 +73,9 @@ MetaParams::MetaParams() {
 
 	qrUserName = QRegExp(QLatin1String("[-=\\w\\[\\]\\{\\}\\(\\)\\@\\|\\.]+"));
 	qrChannelName = QRegExp(QLatin1String("[ \\-=\\w\\#\\[\\]\\{\\}\\(\\)\\@\\|]+"));
+
+	iMessageLimit = 1;
+	iMessageBurst = 5;
 
 	qsCiphers = MumbleSSL::defaultOpenSSLCipherString();
 
@@ -368,6 +371,9 @@ void MetaParams::read(QString fname) {
 
 	qrUserName = QRegExp(typeCheckedFromSettings("username", qrUserName.pattern()));
 	qrChannelName = QRegExp(typeCheckedFromSettings("channelname", qrChannelName.pattern()));
+
+	iMessageLimit = typeCheckedFromSettings("messagelimit", 1);
+	iMessageBurst = typeCheckedFromSettings("messageburst", 5);
 
 	bool bObfuscate = typeCheckedFromSettings("obfuscate", false);
 	if (bObfuscate) {

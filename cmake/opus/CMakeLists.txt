@@ -151,7 +151,13 @@ ${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/mlp_data.c
 
 
  add_library(opus SHARED ${OPUS_SOURCES})
- target_compile_definitions(opus PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
+ if(WIN32)
+	target_compile_definitions(opus PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
+	set(CONFIG_INCLUDE ${CMAKE_SOURCE_DIR}/3rdparty/opus-build/win32)
+ else()
+	target_compile_definitions(opus PRIVATE -DHAVE_CONFIG_H)
+	set(CONFIG_INCLUDE ${CMAKE_SOURCE_DIR}/3rdparty/opus-build/)
+ endif()
  target_include_directories(opus PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/opus-src/include>
     $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/3rdparty/opus-src>
@@ -163,5 +169,5 @@ ${CMAKE_SOURCE_DIR}/3rdparty/opus-src/src/mlp_data.c
 	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk
 	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/x86
 	${CMAKE_SOURCE_DIR}/3rdparty/opus-src/silk/float
-	${CMAKE_SOURCE_DIR}/3rdparty/opus-build/win32
+	${CONFIG_INCLUDE}
 	)

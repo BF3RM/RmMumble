@@ -1,4 +1,4 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
+// Copyright 2005-2019 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -438,31 +438,6 @@ ServerDB::ServerDB() {
 				foreach(const qsp &key, qlForeignKeys) {
 					if (key.first.startsWith(Meta::mp.qsDBPrefix))
 						ServerDB::exec(query, QString::fromLatin1("ALTER TABLE `%1` DROP FOREIGN KEY `%2`").arg(key.first).arg(key.second), true);
-				}
-
-
-				SQLPREP("SELECT TABLE_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA=? AND CONSTRAINT_TYPE='UNIQUE'");
-				query.addBindValue(Meta::mp.qsDatabase);
-				SQLEXEC();
-				while (query.next())
-					qlIndexes << qsp(query.value(0).toString(), query.value(1).toString());
-
-				foreach(const qsp &key, qlIndexes) {
-					if (key.first.startsWith(Meta::mp.qsDBPrefix))
-						ServerDB::exec(query, QString::fromLatin1("ALTER TABLE `%1` DROP INDEX `%2`").arg(key.first).arg(key.second), true);
-				}
-
-				qlIndexes.clear();
-
-				SQLPREP("SELECT DISTINCT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA=? AND INDEX_NAME != 'PRIMARY';");
-				query.addBindValue(Meta::mp.qsDatabase);
-				SQLEXEC();
-				while (query.next())
-					qlIndexes << qsp(query.value(0).toString(), query.value(1).toString());
-
-				foreach(const qsp &key, qlIndexes) {
-					if (key.first.startsWith(Meta::mp.qsDBPrefix))
-						ServerDB::exec(query, QString::fromLatin1("ALTER TABLE `%1` DROP INDEX `%2`").arg(key.first).arg(key.second), true);
 				}
 			}
 			SQLDO("CREATE TABLE `%1servers`(`server_id` INTEGER PRIMARY KEY AUTO_INCREMENT) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin");

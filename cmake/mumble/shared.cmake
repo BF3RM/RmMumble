@@ -8,8 +8,19 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost REQUIRED COMPONENTS thread)
 link_directories(${Boost_LIBRARY_DIRS})
-#find_package(OpenSSL REQUIRED)
 
+set(RM_OPENSSL_LIBS)
+set(RM_OPENSSL_INCLUDE ${CMAKE_BINARY_DIR}/3rdparty)
+
+if(UNIX)
+        find_package(OpenSSL REQUIRED)
+        set(RM_OPENSSL_LIBS ${OPENSSL_LIBRARIES})
+        set(RM_OPENSSL_INCLUDE ${RM_OPENSSL_INCLUDE} ${OPENSSL_INCLUDE_DIR})
+else()
+        add_subdirectory(3rdparty/openssl)
+        set(RM_OPENSSL_LIBS ssl crypto)
+        set(RM_OPENSSL_INCLUDE ${RM_OPENSSL_INCLUDE} ${CMAKE_SOURCE_DIR}/3rdparty/openssl/)
+endif()
 #include_directories(${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src)
 
 include_directories(${Boost_INCLUDE_DIRS})
@@ -18,12 +29,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/)
 include_directories(${CMAKE_SOURCE_DIR}/src/)
 include_directories(${CMAKE_SOURCE_DIR}/src/mumble)
-include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/ ${CMAKE_SOURCE_DIR}/src/murmur)
 
-add_subdirectory(3rdparty/openssl)
-set(OPENSSL_LIBRARIES ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/)
-set(OPENSSL_INCLUDE_DIR ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto/crypto)
 
 set(SHARED_SOURCE
         src/ACL.cpp
@@ -111,14 +118,15 @@ set(SHARED_HEADERS
 set(SHARED_SOURCES ${SHARED_SOURCE}
         #${SPEEX_SOURCES}
         )
-set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql Qt5::Svg ${Protobuf_LIBRARIES} crypto ssl speex crypt32 ws2_32 ${Boost_LIBRARIES} opus)
+
+set(SHARED_LIBS celt0.0.7.0 celt0.0.11.0 Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql Qt5::Svg ${Protobuf_LIBRARIES} ${RM_OPENSSL_LIBS} speex ${Boost_LIBRARIES} opus)
 set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto
-        ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src ${Protobuf_INCLUDE_DIR})
+        ${RM_OPENSSL_INCLUDE} ${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src ${Protobuf_INCLUDE_DIR})
 set(SHARED_DEFS -DUSE_NO_SRV -DUSE_OPUS)
 
 if(WIN32)
     set(SHARED_DEFS ${SHARED_DEFS} -DUNICODE -DRESTRICT=__restrict)
-    set(SHARED_LIBS ${SHARED_LIBS} Qwave celt0.0.7.0 celt0.0.11.0)
+    set(SHARED_LIBS ${SHARED_LIBS} crypt32 ws2_32 Qwave celt0.0.7.0 celt0.0.11.0)
 else()
     set(SHARED_DEFS ${SHARED_DEFS} -DRESTRICT=__restrict__)
 endif()

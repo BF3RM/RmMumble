@@ -8,9 +8,10 @@ local/
 indent.sh
 .vs
 *.pdb
-*.sln
 *.sdf
+*.sln
 *.suo
+*.swp
 *.aps
 *.vcxproj
 *.vcxproj.*

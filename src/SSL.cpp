@@ -1,4 +1,4 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
+// Copyright 2005-2019 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -29,8 +29,7 @@ void MumbleSSL::initialize() {
 	// If we detect that no locking callback is configured, we
 	// have to set it up ourselves to allow multi-threaded use
 	// of OpenSSL.
-	void *lockcb = reinterpret_cast<void *>(CRYPTO_get_locking_callback());
-	if (lockcb == NULL) {
+	if (CRYPTO_get_locking_callback() == NULL) {
 		SSLLocks::initialize();
 	}
 }

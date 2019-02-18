@@ -1,4 +1,4 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
+// Copyright 2005-2019 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -73,11 +73,11 @@ extern HWND mumble_mw_hwnd;
 
 //extern "C" __declspec(dllexport) void mumbleSelfDetection() {};
 
-//#if defined(Q_OS_WIN) && !defined(QT_NO_DEBUG)
+#if defined(Q_OS_WIN) && !defined(QT_NO_DEBUG)
 extern "C" __declspec(dllexport) int main(int argc, char **argv) {
-//#else
-//int main(int argc, char **argv) {
-//#endif
+#else
+int main(int argc, char **argv) {
+#endif
 	int res = 0;
 
 #if defined(Q_OS_WIN)

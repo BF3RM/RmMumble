@@ -1,4 +1,4 @@
-// Copyright 2005-2018 The Mumble Developers. All rights reserved.
+// Copyright 2005-2019 The Mumble Developers. All rights reserved.
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file at the root of the
 // Mumble source tree or at <https://www.mumble.info/LICENSE>.
@@ -392,6 +392,8 @@ void Server::readParams() {
 	bForceExternalAuth = Meta::mp.bForceExternalAuth;
 	qrUserName = Meta::mp.qrUserName;
 	qrChannelName = Meta::mp.qrChannelName;
+	iMessageLimit = Meta::mp.iMessageLimit;
+	iMessageBurst = Meta::mp.iMessageBurst;
 	qvSuggestVersion = Meta::mp.qvSuggestVersion;
 	qvSuggestPositional = Meta::mp.qvSuggestPositional;
 	qvSuggestPushToTalk = Meta::mp.qvSuggestPushToTalk;
@@ -468,6 +470,15 @@ void Server::readParams() {
 
 	qrUserName=QRegExp(getConf("username", qrUserName.pattern()).toString());
 	qrChannelName=QRegExp(getConf("channelname", qrChannelName.pattern()).toString());
+
+	iMessageLimit=getConf("messagelimit", iMessageLimit).toUInt();
+	if (iMessageLimit < 1) { // Prevent disabling messages entirely
+		iMessageLimit = 1;
+	}
+	iMessageBurst=getConf("messageburst", iMessageBurst).toUInt();
+	if (iMessageBurst < 1) { // Prevent disabling messages entirely
+		iMessageBurst = 1;
+	}
 }
 
 void Server::setLiveConf(const QString &key, const QString &value) {
@@ -586,6 +597,17 @@ void Server::setLiveConf(const QString &key, const QString &value) {
 		iChannelNestingLimit = (i >= 0 && !v.isNull()) ? i : Meta::mp.iChannelNestingLimit;
 	else if (key == "channelcountlimit")
 		iChannelCountLimit = (i >= 0 && !v.isNull()) ? i : Meta::mp.iChannelCountLimit;
+	else if (key == "messagelimit") {
+		iMessageLimit = (!v.isNull()) ? v.toUInt() : Meta::mp.iMessageLimit;
+		if (iMessageLimit < 1) {
+			iMessageLimit = 1;
+		}
+	} else if (key == "messageburst") {
+		iMessageBurst = (!v.isNull()) ? v.toUInt() : Meta::mp.iMessageBurst;
+		if (iMessageBurst < 1) {
+			iMessageBurst = 1;
+		}
+	}
 }
 
 #ifdef USE_BONJOUR
@@ -977,7 +999,7 @@ void Server::sendMessage(ServerUser *u, const char *data, int len, QByteArray &c
 
 #define SENDTO \
 		if ((!pDst->bDeaf) && (!pDst->bSelfDeaf) && (pDst != u)) { \
-			if ((poslen > 0) && (pDst->ssContext == u->ssContext)) \
+			if (poslen > 0) \
 				sendMessage(pDst, buffer, len, qba); \
 			else \
 				sendMessage(pDst, buffer, len - poslen, qba_npos); \

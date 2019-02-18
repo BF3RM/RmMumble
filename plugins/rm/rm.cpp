@@ -121,15 +121,23 @@ std::wstring StringToWString(const std::string& str)
 }
 
 static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, float *camera_pos, float *camera_front, float *camera_top, std::string &context, std::wstring &identity) {
-	avatar_top[0] = camera_top[0] = PawnTopVector[0];
-	avatar_top[1] = camera_top[1] = PawnTopVector[1];
-	avatar_top[2] = camera_top[2] = PawnTopVector[2];
-	avatar_front[0] = camera_front[0] = PawnFrontVector[0];
-	avatar_front[1] = camera_front[1] = PawnFrontVector[1];
-	avatar_front[2] = camera_front[2] = PawnFrontVector[2];
-	avatar_pos[0] = camera_pos[0] = PawnPosition[0];
-	avatar_pos[1] = camera_pos[1] = PawnPosition[1];
-	avatar_pos[2] = camera_pos[2] = PawnPosition[2];
+	for (int I = 0; I < 3; I++)
+	{
+		avatar_top[I] = camera_top[I] = PawnTopVector[I];
+		avatar_front[I] = camera_front[I] = PawnFrontVector[I];
+		avatar_pos[I] = camera_pos[I] = PawnPosition[I];
+
+		// Flip our front vector
+		avatar_front[I] = -avatar_front[I];
+	}
+
+	avatar_top[0] = -avatar_top[0];
+	avatar_front[0] = -avatar_front[0];
+	avatar_pos[0] = -avatar_pos[0];
+
+	identity = L"1~~1~~1";
+	context = "context";
+
 	return true;
 	procptr_t SquadState = ResolveChain();
 
@@ -222,7 +230,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 
     //    send(server, buffer, sizeof(buffer), 0);
 #ifdef RM_DEBUG
-    if (UdpSocket != nullptr) {
+    if (UdpSocket != NULL) {
         //Username~~Server~~Faction~~Squad~~IsSquadLeader
         memset(DebugString, '\0', sizeof(DebugString));
 
@@ -239,7 +247,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 #undef SPACER
 #undef COPY
 
-        send(*UdpSocket, (const char*)&DebugString[0], sizeof(DebugString), 0);
+        send(UdpSocket, (const char*)&DebugString[0], sizeof(DebugString), 0);
     }
 #endif
 
@@ -249,7 +257,7 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 static void InitSocket()
 {
 #ifdef RM_DEBUG
-    if (UdpSocket == nullptr) {
+    if (UdpSocket == NULL) {
         WSADATA WSAData;
         WSAStartup(MAKEWORD(2,0), &WSAData);
         struct addrinfo* Result = nullptr, hints;
@@ -264,15 +272,15 @@ static void InitSocket()
         for (auto ptr = Result; ptr != NULL; ptr = ptr->ai_next) {
 
             // Create a SOCKET for connecting to server
-            UdpSocket = new SOCKET(socket(ptr->ai_family, ptr->ai_socktype,
+            UdpSocket = SOCKET(socket(ptr->ai_family, ptr->ai_socktype,
                 ptr->ai_protocol));
-            if (*UdpSocket == INVALID_SOCKET) {
+            if (UdpSocket == INVALID_SOCKET) {
                 printf("socket failed with error: %ld\n", WSAGetLastError());
                 WSACleanup();
                 return;
             }
 
-            connect(*UdpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+            connect(UdpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 
             break;
         }
@@ -364,12 +372,15 @@ void RealityMod3dPositionHandler()
 		}
 
 		constexpr auto Offset = sizeof(float) * 3;
-		memcpy(PawnPosition, buf, Offset);
-		memcpy(PawnFrontVector, buf + Offset, Offset);
-		memcpy(PawnTopVector, buf + Offset * 2, Offset);
+		if (ReceivedLength >= Offset)
+		{
+			memcpy(PawnPosition, buf, Offset);
+			memcpy(PawnFrontVector, buf + Offset, Offset);
+			memcpy(PawnTopVector, buf + Offset * 2, Offset);
+		}
 
 #ifdef RM_POSITIONAL_DEBUG
-		char Position[sizeof(float) * 3 + 4] = { '\0' };
+		char Position[Offset + 4] = { '\0' };
 		memcpy(Position, buf, Offset);
 		const char* Name = "self";
 		memcpy(Position + Offset, Name, 4);

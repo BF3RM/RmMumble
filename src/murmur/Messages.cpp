@@ -234,6 +234,8 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 		sendTextMessage(NULL, uSource, false, QLatin1String("<strong>WARNING:</strong> Your client doesn't support the CELT codec, you won't be able to talk to or hear most clients. Please make sure your client was built with CELT support."));
 	}
 
+	std::cout << "Transmitting channel tree\n";
+
 	// Transmit channel tree
 	QQueue<Channel *> q;
 	QSet<Channel *> chans;
@@ -268,6 +270,8 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 			q.enqueue(c);
 	}
 
+	std::cout << "Transmitting links\n";
+
 	// Transmit links
 	foreach(c, chans) {
 		if (c->qhLinks.count() > 0) {
@@ -279,6 +283,8 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 			sendMessage(uSource, mpcs);
 		}
 	}
+
+	std::cout << "Transmitting user profile\n";
 
 	// Transmit user profile
 	MumbleProto::UserState mpus;
@@ -323,6 +329,8 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 	if (! uSource->qsComment.isEmpty())
 		mpus.set_comment(u8(uSource->qsComment));
 	sendAll(mpus, ~ 0x010202);
+
+	std::cout << "Transmitting other users profile\n";
 
 	// Transmit other users profiles
 	foreach(ServerUser *u, qhUsers) {
@@ -370,6 +378,8 @@ void Server::msgAuthenticate(ServerUser *uSource, MumbleProto::Authenticate &msg
 
 		sendMessage(uSource, mpus);
 	}
+
+	std::cout << "Sending synch packets\n";
 
 	// Send syncronisation packet
 	MumbleProto::ServerSync mpss;

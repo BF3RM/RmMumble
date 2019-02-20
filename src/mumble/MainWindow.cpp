@@ -178,26 +178,11 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 #ifdef NO_UPDATE_CHECK
 	delete qaHelpVersionCheck;
 #endif
-	RmPingTimeout = new QTimer(this);
+	RmPingTimeout = new QTimer();
 	connect(RmPingTimeout, &QTimer::timeout, this, [this](){
 		g.l->log(Log::Information, tr("Connection with RM timed-out. Disconnecting."));
 		g.sh->disconnect();
 		g.sh->wait();
-	});
-
-	RmPingTimeout->moveToThread(RmSocket);
-
-	RmPositionTimer = new QTimer(this);
-	connect(RmPositionTimer, &QTimer::timeout, this, [this]() {
-		if (g.p && g.sh && g.p->fetch()) {
-			MumbleProto::RmUpdatePlayerPosition PositionUpdate;
-			PositionUpdate.set_x(g.p->fPosition[0]);
-			PositionUpdate.set_y(g.p->fPosition[1]);
-			PositionUpdate.set_z(g.p->fPosition[2]);
-			g.sh->sendMessage(PositionUpdate);
-		}
-
-		RmPositionTimer->start(1000);
 	});
 
 	RmSocket = new RMSocket;
@@ -207,16 +192,12 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		g.l->log(Log::Information, tr("Disconnected from RM."));
 		g.sh->disconnect();
 		g.sh->wait();
-
-		RmPositionTimer->stop();
 	});
 
 	connect(RmSocket, &RMSocket::OnConnected, this, [this]() {
 		g.l->log(Log::Information, tr("Connected to RM."));
 		auto Message = RmSocket->NewMessage(EMessageType::Uuid);
 		Message->Send();
-	
-		RmPositionTimer->start();
 	});
 
 	RmSocket->AddListener([this](RMMessage* Message) {
@@ -260,6 +241,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	});
 
     RmSocket->start();
+	RmPingTimeout->moveToThread(RmSocket);
 }
 
 void MainWindow::OnUuidReceived(QNetworkReply* Reply)
@@ -273,9 +255,6 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 
 	auto Json = LoadDoc.object();
 
-	//g.sh->start(QThread::TimeCriticalPriority);
-
-
 	QString Host = Json[QString::fromUtf8("mumbleHost")].toString();
 	int Port = Json[QString::fromUtf8("mumblePort")].toInt();
 	RmLastConnectedUuid = RmConnectingUuid;
@@ -285,7 +264,6 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 	QString Pw = tr("");
 	
 	if (g.uiSession == 0) {
-		//QMessageBox(QMessageBox::Icon::Information, tr("ServerInfo"), tr("Starting new server")).exec();
 		recreateServerHandler();
 
 		g.s.qsLastServer = tr("test");

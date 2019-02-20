@@ -12,14 +12,14 @@ class RMSocket : public QThread
 {
     Q_OBJECT
 public:
-    RMSocket() : Socket(nullptr) {}
-    RMMessage* NewMessage(EMessageType Type);
+	RMSocket() : Socket(nullptr) {}
+	RMMessage* NewMessage(EMessageType Type);
     void AddListener(OnMessageCallback Listener, EMessageType Type);
     inline bool IsAlive() { return Socket != nullptr; }
     inline class QTcpSocket* GetSocket() { return Socket; }
 	void AddMessageToPoll(class RMMessage* Message);
 protected:
-    void run() override;
+	void run() override;
 protected:
 	class RMMessage* GetPoolMessage();
     class QTcpSocket* Socket;

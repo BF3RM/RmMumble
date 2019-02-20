@@ -10,7 +10,7 @@
 #include "Meta.h"
 #include "Channel.h"
 
-ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), User(), s(NULL), leakyBucket(p->iMessageLimit, p->iMessageBurst) {
+ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), User(), s(p), leakyBucket(p->iMessageLimit, p->iMessageBurst) {
 	sState = ServerUser::Connected;
 	sUdpSocket = INVALID_SOCKET;
 

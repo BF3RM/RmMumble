@@ -121,27 +121,12 @@ std::wstring StringToWString(const std::string& str)
 }
 
 static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, float *camera_pos, float *camera_front, float *camera_top, std::string &context, std::wstring &identity) {
-/*	PawnTopVector[0] = -0.f;
-	PawnTopVector[1] = 1.f;
-	PawnTopVector[2] = -0.f;
-
-	PawnFrontVector[0] = 0.f;
-	PawnFrontVector[1] = 0.f;
-	PawnFrontVector[2] = 1.f;
-	*/
 	for (int I = 0; I < 3; I++)
 	{
 		avatar_top[I] = camera_top[I] = PawnTopVector[I];
-		avatar_front[I] = camera_front[I] = -PawnFrontVector[I];
+		avatar_front[I] = camera_front[I] = PawnFrontVector[I];
 		avatar_pos[I] = camera_pos[I] = PawnPosition[I];
-
-		// Flip our front vector
-//		avatar_front[I] = -avatar_front[I];
 	}
-
-	avatar_top[0] = -avatar_top[0];
-	avatar_front[0] = -avatar_front[0];
-	avatar_pos[0] = -avatar_pos[0];
 
 	identity = L"1~~1~~0";
 	context = "";

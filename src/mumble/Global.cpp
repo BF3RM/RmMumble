@@ -126,7 +126,7 @@ Global::Global() {
 		appdata = QDir::fromNativeSeparators(QString::fromWCharArray(appData));
 
 		if (!appdata.isEmpty()) {
-			appdata.append(QLatin1String("/Mumble"));
+			appdata.append(QLatin1String("/RmMumble"));
 			qsl << appdata;
 		}
 	}

@@ -446,7 +446,7 @@ Settings::Settings() {
 	
 	// Default theme
 	themeName = QLatin1String("Mumble");
-	themeStyleName = QLatin1String("Lite");
+	themeStyleName = QLatin1String("Dark");
 }
 
 bool Settings::doEcho() const {

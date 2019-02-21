@@ -121,137 +121,32 @@ std::wstring StringToWString(const std::string& str)
 }
 
 static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, float *camera_pos, float *camera_front, float *camera_top, std::string &context, std::wstring &identity) {
+/*	PawnTopVector[0] = -0.f;
+	PawnTopVector[1] = 1.f;
+	PawnTopVector[2] = -0.f;
+
+	PawnFrontVector[0] = 0.f;
+	PawnFrontVector[1] = 0.f;
+	PawnFrontVector[2] = 1.f;
+	*/
 	for (int I = 0; I < 3; I++)
 	{
 		avatar_top[I] = camera_top[I] = PawnTopVector[I];
-		avatar_front[I] = camera_front[I] = PawnFrontVector[I];
+		avatar_front[I] = camera_front[I] = -PawnFrontVector[I];
 		avatar_pos[I] = camera_pos[I] = PawnPosition[I];
 
 		// Flip our front vector
-		avatar_front[I] = -avatar_front[I];
+//		avatar_front[I] = -avatar_front[I];
 	}
 
 	avatar_top[0] = -avatar_top[0];
 	avatar_front[0] = -avatar_front[0];
 	avatar_pos[0] = -avatar_pos[0];
 
-	identity = L"1~~1~~1";
-	context = "context";
+	identity = L"1~~1~~0";
+	context = "";
 
 	return true;
-	procptr_t SquadState = ResolveChain();
-
-    if (!SquadState) {
-        return false;
-    }
-
-    procptr_t SquadLeaderState = SquadState + 0x4;
-
-    procptr_t FactionState = SquadState - 0x150;
-
-    unsigned char IsSquadLeader = 0;
-    unsigned char SquadId = 0;
-    unsigned char FactionId = 0;
-
-    peekProc(SquadState, &SquadId, sizeof(char));
-    peekProc(SquadLeaderState, &IsSquadLeader, sizeof(char));
-    peekProc(FactionState, &FactionId, sizeof(char));
-
-    for (int i=0;i<3;i++) {
-        avatar_pos[i] = avatar_front[i] = avatar_top[i] = camera_pos[i] = camera_front[i] = camera_top[i] = -1.0f;
-    }
-
-    // Boolean values to check if game addresses retrieval is successful and if the player is in-game
-    bool ok;
-    uint8_t state = 0;
-    // Create containers to stuff our raw data into, so we can convert it to Mumble's coordinate system
-    float avatar_pos_corrector[3], avatar_front_corrector[3], avatar_top_corrector[3];
-    // Peekproc and assign game addresses to our containers, so we can retrieve positional data
-    ok = peekProc(StatePtr, &state, 1) && // Magical state value: 1 when in-game and 0 when in main menu.
-        peekProc(AvatarPosPtr, avatar_pos_corrector, 12) && // Avatar Position values (X, Z and Y, respectively).
-        peekProc(AvatarFrontPtr, avatar_front_corrector, 12) && // Avatar Front Vector values (X, Z and Y, respectively).
-        peekProc(AvatarTopPtr, avatar_top_corrector, 12); // Avatar Top Vector values (X, Z and Y, respectively).
-
-    context = ((int)FactionId == 1 ? "US" : "RU");
-
-    auto FactionString = std::to_string(FactionId);
-    auto SquadString = std::to_string(SquadId);
-    auto IsSquadLeaderString = std::to_string(IsSquadLeader);
-
-    // Identity: Faction~~Squad~~SquadLeader
-    std::stringstream IdentityStream;
-    IdentityStream << FactionString << "~~"
-                   << SquadString << "~~"
-                   << IsSquadLeaderString;
-
-    identity = StringToWString(IdentityStream.str());
-
-    // This prevents the plugin from linking to the game in case something goes wrong during values retrieval from memory addresses.
-    if (!ok) {
-        return false;
-    }
-
-    if (state != STATE_IN_GAME && state != STATE_IN_MENU) { // If not in-game
-        context.clear(); // Clear context
-        identity.clear(); // Clear identity
-        // Set vectors values to 0.
-        for (int i=0;i<3;i++)
-            avatar_pos[i] = avatar_front[i] = avatar_top[i] = camera_pos[i] =  camera_front[i] = camera_top[i] = 0.0f;
-        return true; // This tells Mumble to ignore all vectors.
-    }
-
-    avatar_pos[0] = avatar_pos_corrector[0];
-    avatar_pos[1] = avatar_pos_corrector[1];
-    avatar_pos[2] = avatar_pos_corrector[2];
-
-    avatar_front[0] = avatar_front_corrector[0];
-    avatar_front[1] = avatar_front_corrector[1];
-    avatar_front[2] = avatar_front_corrector[2];
-
-    avatar_top[0] = avatar_top_corrector[0];
-    avatar_top[1] = avatar_top_corrector[1];
-    avatar_top[2] = avatar_top_corrector[2];
-
-    // Flip our front vector
-    for (int i=0;i<3;i++) {
-        avatar_front[i] = -avatar_front[i];
-    }
-
-    // Convert from right to left handed
-    avatar_pos[0] = -avatar_pos[0];
-    avatar_front[0] = -avatar_front[0];
-    avatar_top[0] = -avatar_top[0];
-
-    for (int i=0;i<3;i++) {
-        camera_pos[i] = avatar_pos[i];
-        camera_front[i] = avatar_front[i];
-        camera_top[i] = avatar_top[i];
-    }
-
-    //    send(server, buffer, sizeof(buffer), 0);
-#ifdef RM_DEBUG
-    if (UdpSocket != NULL) {
-        //Username~~Server~~Faction~~Squad~~IsSquadLeader
-        memset(DebugString, '\0', sizeof(DebugString));
-
-        int Offset = 0;
-#define CPY(TEXT, SIZE) memcpy (&DebugString[Offset], TEXT, SIZE); Offset += SIZE;
-#define SPACER() CPY("~~", 2)
-#define COPY(TEXT, SIZE) CPY(TEXT, SIZE) SPACER()
-        COPY("FetchMe", 7);
-        COPY("FetchMe", 7);
-        COPY(FactionString.c_str(), (int)FactionString.size());
-        COPY(SquadString.c_str(), (int)SquadString.size());
-        COPY(IsSquadLeaderString.c_str(), (int)IsSquadLeaderString.size());
-#undef CPY
-#undef SPACER
-#undef COPY
-
-        send(UdpSocket, (const char*)&DebugString[0], sizeof(DebugString), 0);
-    }
-#endif
-
-    return true;
 }
 
 static void InitSocket()

@@ -18,6 +18,7 @@ public:
     inline bool IsAlive() { return Socket != nullptr; }
     inline class QTcpSocket* GetSocket() { return Socket; }
 	void AddMessageToPoll(class RMMessage* Message);
+	void Stop();
 protected:
 	void run() override;
 protected:

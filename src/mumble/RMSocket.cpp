@@ -109,3 +109,11 @@ void RMSocket::AddMessageToPoll(class RMMessage* Message)
 	MessagePool.push_back(Message);
 	MessagePoolLock.unlock();
 }
+
+void RMSocket::Stop()
+{
+	MessagePoolLock.lock();
+	Socket->disconnect();
+	Socket->close();
+	MessagePoolLock.unlock();
+}

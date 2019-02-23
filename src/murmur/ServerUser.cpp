@@ -74,6 +74,7 @@ void ServerUser::UpdateIdentity(QString NewIdentity)
         qsIdentity = NewIdentity;
 		qmTargets.clear();
 		qmTargetCache.clear();
+		s->clearACLCache(this);
         MoveToContextualChannel();
     }
 }

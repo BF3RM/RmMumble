@@ -61,6 +61,7 @@ class OpenURLEvent : public QEvent {
 class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWindow {
 		friend class UserModel;
 	private:
+		char* Identity = nullptr;
 		Q_OBJECT
 		Q_DISABLE_COPY(MainWindow)
 	public:
@@ -313,6 +314,9 @@ protected:
 		/// Updates the user's image directory to the given path (any included
 		/// filename is discarded).
 		void updateImagePath(QString filepath) const;
+
+	signals:
+		void OnIdentityUpdated(const char* NewIdentity);
 
 	public:
 		MainWindow(QWidget *parent);

@@ -183,6 +183,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		g.l->log(Log::Information, tr("Connection with RM timed-out. Disconnecting."));
 		g.sh->disconnect();
 		g.sh->wait();
+		RmSocket->Stop();
 	});
 
 	RmSocket = new RMSocket;
@@ -192,6 +193,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		g.l->log(Log::Information, tr("Disconnected from RM."));
 		g.sh->disconnect();
 		g.sh->wait();
+		RmSocket->Stop();
 	});
 
 	connect(RmSocket, &RMSocket::OnConnected, this, [this]() {
@@ -211,6 +213,12 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 			Pong->Send();
 		}
 	}, EMessageType::Ping);
+
+	RmSocket->AddListener([this](RMMessage* Message) {
+		g.sh->disconnect();
+		g.sh->wait();
+		RmSocket->Stop();
+	}, EMessageType::Shutdown);
 
 	RmSocket->AddListener([this](RMMessage* Message) { UpdatePlayerIdentity(Message); }, EMessageType::UpdateData);
 
@@ -238,6 +246,17 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 	connect(RmSocket, &RMSocket::OnMuteAndDeaf, this, [this](bool Mute, bool Deaf) {
 		g.sh->setSelfMuteDeafState(Mute, Deaf);
+	});
+
+	connect(this, &MainWindow::OnIdentityUpdated, this, [this](const char* NewIdentity) {
+		MumbleProto::UserState UserState;
+		UserState.set_session(g.uiSession);
+		UserState.set_plugin_identity(Identity);
+		UserState.set_plugin_context("context");
+		if (g.sh)
+		{
+			g.sh->sendMessage(UserState);
+		}
 	});
 
     RmSocket->start();
@@ -345,17 +364,16 @@ void MainWindow::UpdatePlayerIdentity(class RMMessage* Message)
 //		float PositionVector[3];
 //		memcpy(PositionVector, Message->m_Data, sizeof(float) * 3);
 
-		auto Identity = new char[Message->GetSize()];
+		if (Identity != nullptr)
+		{
+			delete Identity;
+			Identity = nullptr;
+		}
+
+		Identity = (char*)malloc(Message->GetSize());
 		memcpy(Identity, Message->GetData(), Message->GetSize());
 
-		MumbleProto::UserState UserState;
-		UserState.set_session(g.uiSession);
-		UserState.set_plugin_identity(Identity);
-		UserState.set_plugin_context("context");
-		if (g.sh)
-		{
-			g.sh->sendMessage(UserState);
-		}
+		emit OnIdentityUpdated(Identity);
 	}
 }
 

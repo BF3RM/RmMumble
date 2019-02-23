@@ -516,6 +516,12 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 		RATELIMIT(uSource);
 	}
 
+	if (msg.has_plugin_identity()) {
+		uSource->UpdateIdentity(u8(msg.plugin_identity()));
+		// Make sure to clear this from the packet so we don't broadcast it
+		msg.clear_plugin_identity();
+	}
+
 	if (msg.has_channel_id()) {
 		Channel *c = qhChannels.value(msg.channel_id());
 		if (!c || (c == pDstServerUser->cChannel))
@@ -659,12 +665,6 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 			// Make sure to clear this from the packet so we don't broadcast it
 			msg.clear_plugin_context();
 		}
-	}
-
-	if (msg.has_plugin_identity()) {
-        uSource->UpdateIdentity(u8(msg.plugin_identity()));
-		// Make sure to clear this from the packet so we don't broadcast it
-		msg.clear_plugin_identity();
 	}
 
 	if (! comment.isNull()) {

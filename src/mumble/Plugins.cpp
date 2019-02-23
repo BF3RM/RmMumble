@@ -432,7 +432,7 @@ void Plugins::on_Timer_timeout() {
 		if (locked)
 			context.assign(u8(QString::fromStdWString(locked->p->shortname)) + static_cast<char>(0) + ssContext);
 
-		if (!g.uiSession) {
+		if (!g.uiSession || (locked->p && locked->p->shortname == L"RealityMod")) {
 			ssContextSent.clear();
 			swsIdentitySent.clear();
 		}

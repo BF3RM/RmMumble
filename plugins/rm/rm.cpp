@@ -128,9 +128,6 @@ static int fetch(float *avatar_pos, float *avatar_front, float *avatar_top, floa
 		avatar_pos[I] = camera_pos[I] = PawnPosition[I];
 	}
 
-	identity = L"1~~1~~0";
-	context = "";
-
 	return true;
 }
 

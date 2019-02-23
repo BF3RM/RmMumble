@@ -91,6 +91,8 @@ void ServerUser::MoveToContextualChannel()
     if (TargetChannel == cChannel) return;
     if (TargetChannel) {
         s->setUserState(this, TargetChannel, this->bMute, this->bDeaf, this->bSuppress, this->bPrioritySpeaker, this->qsName, this->qsComment);
+		qmTargetCache.clear();
+		qmTargets.clear();
     }
 }
 

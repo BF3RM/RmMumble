@@ -495,8 +495,6 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 	VICTIM_SETUP;
 
 	Channel *root = qhChannels.value(0);
-	uSource->qmTargetCache.clear();
-	uSource->qmTargets.clear();
 
 	/*
 		First check all permissions involved

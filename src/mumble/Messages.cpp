@@ -304,8 +304,6 @@ void MainWindow::msgUserState(const MumbleProto::UserState &msg) {
 		pmModel->setUserId(pDst, msg.user_id());
 	}
 
-	g.mw->ClearTargets();
-
 	if (channel) {
 		Channel *oldChannel = pDst->cChannel;
 		if (channel != oldChannel) {
@@ -313,6 +311,7 @@ void MainWindow::msgUserState(const MumbleProto::UserState &msg) {
 
 			if (pSelf) {
 				if (pDst == pSelf) {
+					g.mw->ClearTargets();
 					g.mw->updateChatBar();
 					qsDesiredChannel = channel->getPath();
 				}

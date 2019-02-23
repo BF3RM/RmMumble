@@ -423,7 +423,7 @@ class Server : public QThread {
 		QVariant getConf(const QString &key, QVariant def);
 		void setConf(const QString &key, const QVariant &value);
 		void dblog(const QString &str) const;
-
+		void HandleRmVoiceTarget(ServerUser *uSource, MumbleProto::VoiceTarget &msg);
 		// From msgHandler. Implementation in Messages.cpp
 #define MUMBLE_MH_MSG(x) void msg##x(ServerUser *, MumbleProto:: x &);
 		MUMBLE_MH_ALL

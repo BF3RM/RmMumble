@@ -461,10 +461,24 @@ message VoiceTarget {
 		// channel.
 		optional bool children = 5 [default = false];
 	}
+
+	enum RmTarget 
+	{
+		Mumble = 0;
+		Local = 1;
+		Squad = 2;
+		SL = 3;
+		Commander = 4;
+	}
+
 	// Voice target ID.
 	optional uint32 id = 1;
 	// The receivers that this voice target includes.
 	repeated Target targets = 2;
+	// RM stuff
+	optional RmTarget RealityModTarget = 3 [default = Mumble];
+	// 0 == all
+	optional uint32 RealityModTargetId = 4 [default = 0];
 }
 
 // Sent by the client when it wants permissions for a certain channel. Sent by

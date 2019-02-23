@@ -40,11 +40,13 @@ struct ShortcutTarget {
 		MumbleDefault = 0,
 		RmLocal = 1,
 		RmSquad = 2,
-		RmSquadLeader = 3
+		RmSquadLeader = 3,
+		RmCommander = 4
 	};
 
 
 	ERmTarget RmTarget = ERmTarget::MumbleDefault;
+	uint32_t RmTargetId = 0;
 	bool bUsers;
 	QStringList qlUsers;
 	QList<unsigned int> qlSessions;

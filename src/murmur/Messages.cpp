@@ -1629,10 +1629,90 @@ void Server::msgUserList(ServerUser *uSource, MumbleProto::UserList &msg) {
 	}
 }
 
+void Server::HandleRmVoiceTarget(ServerUser* User, MumbleProto::VoiceTarget& Message)
+{
+	auto Target = Message.id();
+	if (User->sState != ServerUser::Authenticated || Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Mumble)
+	{
+		return;
+	}
+
+	QWriteLocker lock(&qrwlVoiceThread);
+	User->qmTargetCache.remove(Target);
+
+	WhisperTarget MyWhisperTarget;
+
+	if (Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Local)
+	{
+		for (auto VoiceUser : qhUsers)
+		{
+			if (VoiceUser->GetFactionId() == User->GetFactionId())
+			{
+				MyWhisperTarget.qlSessions << VoiceUser->uiSession;
+			}
+		}
+	}
+
+	if (Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Squad)
+	{
+		if (!User->HasSquad())
+		{
+			return;
+		}
+
+		WhisperTarget::Channel Channel;
+		Channel.iId = User->cChannel->iId;
+		MyWhisperTarget.qlChannels << Channel;
+	}
+
+	if (Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_SL)
+	{
+		if (!User->IsSquadLeader())
+		{
+			return;
+		}
+
+		if (Message.realitymodtargetid() == 0)
+		{
+			for (auto VoiceUser : qhUsers)
+			{
+				if (VoiceUser->IsSquadLeader() && VoiceUser != User)
+				{
+					MyWhisperTarget.qlSessions << VoiceUser->uiSession;
+				}
+			}
+		}
+		else if (Message.realitymodtargetid() != 0)
+		{
+			for (auto VoiceUser : qhUsers)
+			{
+				if (VoiceUser->IsSquadLeader() && VoiceUser->GetSquadId() == Message.realitymodtargetid() && VoiceUser != User)
+				{
+					MyWhisperTarget.qlSessions << VoiceUser->uiSession;
+					break;
+				}
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	User->qmTargets.remove(Target);
+	User->qmTargets.insert(Target, MyWhisperTarget);
+}
+
 void Server::msgVoiceTarget(ServerUser *uSource, MumbleProto::VoiceTarget &msg) {
 	MSG_SETUP_NO_UNIDLE(ServerUser::Authenticated);
 
 	int target = msg.id();
+	if (msg.realitymodtarget() != MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Mumble)
+	{
+		HandleRmVoiceTarget(uSource, msg);
+		return;
+	}
+
 	if ((target < 1) || (target >= 0x1f))
 		return;
 

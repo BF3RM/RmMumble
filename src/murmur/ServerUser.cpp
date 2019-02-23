@@ -33,7 +33,7 @@ ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), U
  * Identity = Faction~~Squad~~IsSquadLeader
  */
 
-bool ServerUser::IsSquadLeader()
+bool ServerUser::IsSquadLeader() const
 {
     auto SplitIdentity = qsIdentity.split("~~");
 	if (SplitIdentity.size() < 3) return false;
@@ -45,7 +45,7 @@ bool ServerUser::IsSquadLeader()
     return false;
 }
 
-int ServerUser::GetSquadId()
+int ServerUser::GetSquadId() const
 {
     if (qsIdentity.isEmpty()) return 0;
     auto SplitIdentity = qsIdentity.split("~~");
@@ -53,7 +53,7 @@ int ServerUser::GetSquadId()
     return SplitIdentity[1].toInt();
 }
 
-int ServerUser::GetFactionId()
+int ServerUser::GetFactionId() const
 {
     if (qsIdentity.isEmpty()) return 0;
     auto SplitIdentity = qsIdentity.split("~~");

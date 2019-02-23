@@ -99,9 +99,10 @@ class ServerUser : public Connection, public User {
     public:
         void UpdateContext(std::string NewContext);
         void UpdateIdentity(QString NewIdentity);
-        bool IsSquadLeader();
-        int GetSquadId();
-        int GetFactionId();
+        bool IsSquadLeader() const;
+		inline const bool HasSquad() const { return GetSquadId() != 0; }
+        int GetSquadId() const;
+        int GetFactionId() const;
         void MoveToContextualChannel();
         Channel* GetContextualChannel();
 	protected:

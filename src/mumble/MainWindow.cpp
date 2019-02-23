@@ -2829,6 +2829,12 @@ void MainWindow::updateTarget() {
 			nt.RmTarget = st.RmTarget;
 			center = center || st.bForceCenter;
 			nt.bUsers = st.bUsers;
+			if (nt.RmTarget != ShortcutTarget::ERmTarget::MumbleDefault)
+			{
+				ql << nt;
+				continue;
+			}
+
 			if (st.bUsers) {
 				foreach(const QString &hash, st.qlUsers) {
 					ClientUser *p = pmModel->getUser(hash);
@@ -2881,6 +2887,9 @@ void MainWindow::updateTarget() {
 						if (! st.qsGroup.isEmpty())
 							t->set_group(u8(st.qsGroup));
 					}
+
+					mpvt.set_realitymodtarget((MumbleProto::VoiceTarget_RmTarget) st.RmTarget);
+					mpvt.set_realitymodtargetid(st.RmTargetId);
 				}
 				g.sh->sendMessage(mpvt);
 
@@ -2911,115 +2920,83 @@ void MainWindow::updateTarget() {
 	}
 }
 
-void MainWindow::on_GsSquad_triggered(bool Down, QVariant)
+void MainWindow::on_GsSquad_triggered(bool Down, QVariant Shortcut)
 {
-	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
+	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) 
+	{
 		return;
 	}
+	
+	ShortcutTarget ShortTarget = Shortcut.value<ShortcutTarget>();
 
-    auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
-    if (!ContextChannel) {
-        return;
-    }
+	if (Down) 
+	{
+		ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquad;
+		ShortTarget.bForceCenter = true;
+		addTarget(&ShortTarget);
+		updateTarget();
 
-    // Make sure it's a squad channel by checking that
-    // the channel is not 10 or 20 (unassigned us/ru)
-    if (ContextChannel->iId == 0 || ContextChannel->iId % 10 == 0) return;
-
-    ShortcutTarget TargetChannel;
-    TargetChannel.iChannel = SHORTCUT_TARGET_CURRENT;
-    TargetChannel.bChildren = false;
-    TargetChannel.bForceCenter = true;
-    TargetChannel.bUsers = false;
-    TargetChannel.bLinks = false;
-
-	MumbleProto::RmVoice VoiceMessage;
-	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Squad);
-	VoiceMessage.set_status(Down ? MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin : 
-						MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
-	g.sh->sendMessage(VoiceMessage);
-
-    on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
+		g.iPushToTalk++;
+	}
+	else if (g.iPushToTalk > 0) 
+	{
+		SignalCurry *fwd = new SignalCurry(Shortcut, true, this);
+		connect(fwd, SIGNAL(called(QVariant)), SLOT(whisperReleased(QVariant)));
+		QTimer::singleShot(static_cast<int>(g.s.pttHold), fwd, SLOT(call()));
+	}
 }
 
-void MainWindow::on_GsLocal_triggered(bool Down, QVariant)
+void MainWindow::on_GsLocal_triggered(bool Down, QVariant Shortcut)
 {
-	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
+	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0)
+	{
 		return;
 	}
 
-    auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
-    if (!ContextChannel) {
-        return;
-    }
+	ShortcutTarget ShortTarget = Shortcut.value<ShortcutTarget>();
 
-    auto ParentChannel = ContextChannel->cParent;
-    if (!ParentChannel) {
-        return;
-    }
+	if (Down)
+	{
+		ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmLocal;
+		ShortTarget.bForceCenter = false;
+		addTarget(&ShortTarget);
+		updateTarget();
 
-    ShortcutTarget TargetChannel;
-    TargetChannel.iChannel = ParentChannel->iId;
-    TargetChannel.bChildren = true;
-    TargetChannel.bForceCenter = false;
-    TargetChannel.bUsers = false;
-    TargetChannel.bLinks = false;
-
-	MumbleProto::RmVoice VoiceMessage;
-	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_Local);
-	VoiceMessage.set_status(Down ? MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin : 
-						MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
-	g.sh->sendMessage(VoiceMessage);
-
-
-	on_gsWhisper_triggered(Down, QVariant::fromValue(TargetChannel));
+		g.iPushToTalk++;
+	}
+	else if (g.iPushToTalk > 0)
+	{
+		SignalCurry *fwd = new SignalCurry(Shortcut, true, this);
+		connect(fwd, SIGNAL(called(QVariant)), SLOT(whisperReleased(QVariant)));
+		QTimer::singleShot(static_cast<int>(g.s.pttHold), fwd, SLOT(call()));
+	}
 }
 
-void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Data)
+void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Shortcut)
 {
-	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0) {
+	if (!g.sh || !g.sh->isRunning() || g.uiSession == 0)
+	{
 		return;
 	}
 
-	MumbleProto::RmVoice VoiceMessage;
-	VoiceMessage.set_target(MumbleProto::RmVoice_ERmTarget::RmVoice_ERmTarget_SquadLeader);
-	VoiceMessage.set_status(MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_Begin);
-	VoiceMessage.set_targetid(Data.toInt());
+	ShortcutTarget ShortTarget = Shortcut.value<ShortcutTarget>();
 
-    if (!Down) {
-        ShortcutTarget Target;
-        Target.bUsers = true;
-        Target.qlUsers << SquadLeaderWhispMap[Data.toInt()];
-        Target.bForceCenter = true;
-        SquadLeaderWhispMap.remove(Data.toInt());
-		VoiceMessage.set_status(MumbleProto::RmVoice_ERmStatus::RmVoice_ERmStatus_End);
-		g.sh->sendMessage(VoiceMessage);
-	    return on_gsWhisper_triggered(false, QVariant::fromValue(Target));
-    }
+	if (Down)
+	{
+		ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquadLeader;
+		ShortTarget.RmTargetId = Shortcut.toInt();
+		ShortTarget.bForceCenter = true;
+		addTarget(&ShortTarget);
+		updateTarget();
 
-    auto ContextChannel = ClientUser::get(g.uiSession)->cChannel;
-    if (!ContextChannel) {
-        return;
-    }
-
-    auto ParentChannel = ContextChannel->cParent;
-    if (!ParentChannel) {
-        return;
-    }
-
-    int ParentChannelId = ParentChannel->iId;
-    // ParentChannelId must be 1 (US) or 2 (RU)
-    if (ParentChannelId != 1 && ParentChannelId != 2) {
-        return;
-    }
-
-    int TargetChannelId = (ParentChannelId * 10) + Data.toInt(); // 11 -> US Alpha - 21 -> RU Alpha
-
-    auto TargetChannel = Channel::get(TargetChannelId);
-    if (!TargetChannel) return;
-
-	g.sh->sendMessage(VoiceMessage);
-    g.sh->RequestChannelSquadLeader(TargetChannelId, Data.toInt());
+		g.iPushToTalk++;
+	}
+	else if (g.iPushToTalk > 0)
+	{
+		SignalCurry *fwd = new SignalCurry(Shortcut, true, this);
+		connect(fwd, SIGNAL(called(QVariant)), SLOT(whisperReleased(QVariant)));
+		QTimer::singleShot(static_cast<int>(g.s.pttHold), fwd, SLOT(call()));
+	}
 }
 
 void MainWindow::on_gsWhisper_triggered(bool down, QVariant scdata) {

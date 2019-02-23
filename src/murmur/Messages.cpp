@@ -495,6 +495,8 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 	VICTIM_SETUP;
 
 	Channel *root = qhChannels.value(0);
+	uSource->qmTargetCache.clear();
+	uSource->qmTargets.clear();
 
 	/*
 		First check all permissions involved
@@ -1639,6 +1641,12 @@ void Server::HandleRmVoiceTarget(ServerUser* User, MumbleProto::VoiceTarget& Mes
 
 	QWriteLocker lock(&qrwlVoiceThread);
 	User->qmTargetCache.remove(Target);
+
+	if (User->qmTargets.contains(Target))
+	{
+		User->qmTargets.remove(Target);
+		return;
+	}
 
 	WhisperTarget MyWhisperTarget;
 

@@ -638,6 +638,13 @@ bool MainWindow::winEvent(MSG *msg, long *) {
 
 	return false;
 }
+
+void MainWindow::ClearTargets()
+{
+	qmTargets.clear();
+	qmCurrentTargets.clear();
+}
+
 #endif
 
 void MainWindow::closeEvent(QCloseEvent *e) {
@@ -2816,7 +2823,7 @@ Channel *MainWindow::mapChannel(int idx) const {
 }
 
 void MainWindow::updateTarget() {
-	g.iPrevTarget = g.iTarget;
+ 	g.iPrevTarget = g.iTarget;
 
 	if (qmCurrentTargets.isEmpty()) {
 		g.bCenterPosition = false;
@@ -2928,11 +2935,11 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant Shortcut)
 	}
 	
 	ShortcutTarget ShortTarget = Shortcut.value<ShortcutTarget>();
+	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquad;
+	ShortTarget.bForceCenter = true;
 
 	if (Down) 
 	{
-		ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquad;
-		ShortTarget.bForceCenter = true;
 		addTarget(&ShortTarget);
 		updateTarget();
 
@@ -2940,7 +2947,7 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant Shortcut)
 	}
 	else if (g.iPushToTalk > 0) 
 	{
-		SignalCurry *fwd = new SignalCurry(Shortcut, true, this);
+		SignalCurry *fwd = new SignalCurry(QVariant::fromValue<ShortcutTarget>(ShortTarget), true, this);
 		connect(fwd, SIGNAL(called(QVariant)), SLOT(whisperReleased(QVariant)));
 		QTimer::singleShot(static_cast<int>(g.s.pttHold), fwd, SLOT(call()));
 	}
@@ -2954,11 +2961,11 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant Shortcut)
 	}
 
 	ShortcutTarget ShortTarget = Shortcut.value<ShortcutTarget>();
+	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmLocal;
+	ShortTarget.bForceCenter = false;
 
 	if (Down)
 	{
-		ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmLocal;
-		ShortTarget.bForceCenter = false;
 		addTarget(&ShortTarget);
 		updateTarget();
 
@@ -2966,7 +2973,7 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant Shortcut)
 	}
 	else if (g.iPushToTalk > 0)
 	{
-		SignalCurry *fwd = new SignalCurry(Shortcut, true, this);
+		SignalCurry *fwd = new SignalCurry(QVariant::fromValue<ShortcutTarget>(ShortTarget), true, this);
 		connect(fwd, SIGNAL(called(QVariant)), SLOT(whisperReleased(QVariant)));
 		QTimer::singleShot(static_cast<int>(g.s.pttHold), fwd, SLOT(call()));
 	}
@@ -2980,12 +2987,12 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Shortcut)
 	}
 
 	ShortcutTarget ShortTarget = Shortcut.value<ShortcutTarget>();
+	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquadLeader;
+	ShortTarget.RmTargetId = Shortcut.toInt();
+	ShortTarget.bForceCenter = true;
 
 	if (Down)
 	{
-		ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquadLeader;
-		ShortTarget.RmTargetId = Shortcut.toInt();
-		ShortTarget.bForceCenter = true;
 		addTarget(&ShortTarget);
 		updateTarget();
 
@@ -2993,7 +3000,7 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Shortcut)
 	}
 	else if (g.iPushToTalk > 0)
 	{
-		SignalCurry *fwd = new SignalCurry(Shortcut, true, this);
+		SignalCurry *fwd = new SignalCurry(QVariant::fromValue<ShortcutTarget>(ShortTarget), true, this);
 		connect(fwd, SIGNAL(called(QVariant)), SLOT(whisperReleased(QVariant)));
 		QTimer::singleShot(static_cast<int>(g.s.pttHold), fwd, SLOT(call()));
 	}

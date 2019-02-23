@@ -72,6 +72,8 @@ void ServerUser::UpdateIdentity(QString NewIdentity)
 {
     if (qsIdentity != NewIdentity) {
         qsIdentity = NewIdentity;
+		qmTargets.clear();
+		qmTargetCache.clear();
         MoveToContextualChannel();
     }
 }

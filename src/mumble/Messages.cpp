@@ -304,6 +304,8 @@ void MainWindow::msgUserState(const MumbleProto::UserState &msg) {
 		pmModel->setUserId(pDst, msg.user_id());
 	}
 
+	g.mw->ClearTargets();
+
 	if (channel) {
 		Channel *oldChannel = pDst->cChannel;
 		if (channel != oldChannel) {

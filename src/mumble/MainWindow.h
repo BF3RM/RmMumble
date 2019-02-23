@@ -135,7 +135,8 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 #endif
 		unsigned int uiNewHardware;
 #endif
-	protected:
+		void ClearTargets();
+protected:
 		QNetworkAccessManager HttpManager;
 		class RMSocket* RmSocket;
 		QString RmUser;

@@ -42,6 +42,16 @@ bool ShortcutTarget::isServerSpecific() const {
 }
 
 bool ShortcutTarget::operator == (const ShortcutTarget &o) const {
+	if (o.RmTarget != RmTarget)
+	{
+		return false;
+	}
+
+	if (o.RmTarget == RmTarget && o.RmTargetId != RmTargetId)
+	{
+		return false;
+	}
+
 	if ((bUsers != o.bUsers) || (bForceCenter != o.bForceCenter))
 		return false;
 	if (bUsers)
@@ -78,17 +88,21 @@ QDataStream &operator<< (QDataStream &qds, const ShortcutTarget &st) {
 	qds << st.bUsers << st.bForceCenter;
 
 	if (st.bUsers)
-		return qds << st.qlUsers;
+		qds << st.qlUsers;
 	else
-		return qds << st.iChannel << st.qsGroup << st.bLinks << st.bChildren;
+		qds << st.iChannel << st.qsGroup << st.bLinks << st.bChildren;
+
+	return qds << (uint8_t)st.RmTarget << st.RmTargetId;
 }
 
 QDataStream &operator>> (QDataStream &qds, ShortcutTarget &st) {
 	qds >> st.bUsers >> st.bForceCenter;
 	if (st.bUsers)
-		return qds >> st.qlUsers;
+		qds >> st.qlUsers;
 	else
-		return qds >> st.iChannel >> st.qsGroup >> st.bLinks >> st.bChildren;
+		qds >> st.iChannel >> st.qsGroup >> st.bLinks >> st.bChildren;
+
+	return qds >> (uint8_t&)st.RmTarget >> st.RmTargetId;
 }
 
 const QString Settings::cqsDefaultPushClickOn = QLatin1String(":/on.ogg");

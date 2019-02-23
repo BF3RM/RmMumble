@@ -446,6 +446,7 @@ void Plugins::on_Timer_timeout() {
 			if (swsIdentity != swsIdentitySent) {
 				swsIdentitySent.assign(swsIdentity);
 				mpus.set_plugin_identity(u8(QString::fromStdWString(swsIdentitySent)));
+				g.mw->ClearTargets();
 			}
 			if (g.sh)
 				g.sh->sendMessage(mpus);

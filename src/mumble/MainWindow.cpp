@@ -2834,6 +2834,7 @@ void MainWindow::updateTarget() {
 		foreach(const ShortcutTarget &st, qmCurrentTargets.keys()) {
 			ShortcutTarget nt;
 			nt.RmTarget = st.RmTarget;
+			nt.RmTargetId = st.RmTargetId;
 			center = center || st.bForceCenter;
 			nt.bUsers = st.bUsers;
 			if (nt.RmTarget != ShortcutTarget::ERmTarget::MumbleDefault)

@@ -62,6 +62,8 @@ bool ShortcutTarget::operator == (const ShortcutTarget &o) const {
 
 quint32 qHash(const ShortcutTarget &t) {
 	quint32 h = t.bForceCenter ? 0x55555555 : 0xaaaaaaaa;
+	h ^= (uint8_t)t.RmTarget;
+	h ^= t.RmTargetId;
 	if (t.bUsers) {
 		foreach(unsigned int u, t.qlSessions)
 			h ^= u;

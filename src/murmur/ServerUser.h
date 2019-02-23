@@ -25,6 +25,7 @@
 #include "Timer.h"
 #include "User.h"
 #include "HostAddress.h"
+#include "Mumble.pb.h"
 
 // Unfortunately, this needs to be "large enough" to hold
 // enough frames to account for both short-term and
@@ -58,6 +59,8 @@ struct WhisperTarget {
 	};
 	QList<unsigned int> qlSessions;
 	QList<WhisperTarget::Channel> qlChannels;
+	MumbleProto::VoiceTarget::RmTarget m_RmTarget = MumbleProto::VoiceTarget_RmTarget::VoiceTarget_RmTarget_Mumble;
+	uint32_t m_RmTargetId = 0;
 };
 
 struct RmPlayerPosition

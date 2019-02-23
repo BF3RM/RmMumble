@@ -757,6 +757,14 @@ void Server::msgUserState(ServerUser *uSource, MumbleProto::UserState &msg) {
 		bBroadcast = true;
 	}
 
+	for (auto& User : qhUsers)
+	{
+		for (auto& Target : User->qmTargets)
+		{
+			UpdateRmWhisperTarget(User, Target);
+		}
+	}
+
 	if (bBroadcast) {
 		// Texture handling for clients < 1.2.2.
 		// Send the texture data in the message.
@@ -1629,72 +1637,55 @@ void Server::msgUserList(ServerUser *uSource, MumbleProto::UserList &msg) {
 	}
 }
 
-void Server::HandleRmVoiceTarget(ServerUser* User, MumbleProto::VoiceTarget& Message)
+void Server::UpdateRmWhisperTarget(ServerUser* SourceUser, WhisperTarget& MyTarget)
 {
-	auto Target = Message.id();
-	if (User->sState != ServerUser::Authenticated || Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Mumble)
-	{
-		return;
-	}
-
-	QWriteLocker lock(&qrwlVoiceThread);
-	User->qmTargetCache.remove(Target);
-
-	if (User->qmTargets.contains(Target))
-	{
-		User->qmTargets.remove(Target);
-		return;
-	}
-
-	WhisperTarget MyWhisperTarget;
-
-	if (Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Local)
+	if (MyTarget.m_RmTarget == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Local)
 	{
 		for (auto VoiceUser : qhUsers)
 		{
-			if (VoiceUser->GetFactionId() == User->GetFactionId())
+			if (VoiceUser->GetFactionId() == SourceUser->GetFactionId())
 			{
-				MyWhisperTarget.qlSessions << VoiceUser->uiSession;
+				MyTarget.qlSessions << VoiceUser->uiSession;
 			}
 		}
 	}
 
-	if (Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Squad)
+	if (MyTarget.m_RmTarget == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Squad)
 	{
-		if (!User->HasSquad())
+		if (!SourceUser->HasSquad())
 		{
 			return;
 		}
 
 		WhisperTarget::Channel Channel;
-		Channel.iId = User->cChannel->iId;
-		MyWhisperTarget.qlChannels << Channel;
+		Channel.iId = SourceUser->cChannel->iId;
+		MyTarget.qlChannels << Channel;
 	}
 
-	if (Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_SL)
+	if (MyTarget.m_RmTarget == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_SL)
 	{
-		if (!User->IsSquadLeader())
+		if (!SourceUser->IsSquadLeader())
 		{
 			return;
 		}
 
-		if (Message.realitymodtargetid() == 0)
+		if (MyTarget.m_RmTargetId == 0)
 		{
 			for (auto VoiceUser : qhUsers)
 			{
-				if (VoiceUser->IsSquadLeader() && VoiceUser != User)
+				if (VoiceUser->IsSquadLeader() && VoiceUser != SourceUser && VoiceUser->GetFactionId() == SourceUser->GetFactionId())
 				{
-					MyWhisperTarget.qlSessions << VoiceUser->uiSession;
+					MyTarget.qlSessions << VoiceUser->uiSession;
 				}
 			}
 		}
-		else if (Message.realitymodtargetid() != 0)
+		else if (MyTarget.m_RmTargetId != 0)
 		{
 			for (auto VoiceUser : qhUsers)
 			{
-				if (VoiceUser->IsSquadLeader() && VoiceUser->GetSquadId() == Message.realitymodtargetid() && VoiceUser != User)
+				if (VoiceUser->IsSquadLeader() && VoiceUser->GetSquadId() == MyTarget.m_RmTargetId && VoiceUser != SourceUser && VoiceUser->GetFactionId() == SourceUser->GetFactionId())
 				{
-					MyWhisperTarget.qlSessions << VoiceUser->uiSession;
+					MyTarget.qlSessions << VoiceUser->uiSession;
 					break;
 				}
 			}
@@ -1704,9 +1695,33 @@ void Server::HandleRmVoiceTarget(ServerUser* User, MumbleProto::VoiceTarget& Mes
 			return;
 		}
 	}
+}
 
-	User->qmTargets.remove(Target);
-	User->qmTargets.insert(Target, MyWhisperTarget);
+void Server::HandleRmVoiceTarget(ServerUser* SourceUser, MumbleProto::VoiceTarget& Message)
+{
+	auto Target = Message.id();
+	if (SourceUser->sState != ServerUser::Authenticated || Message.realitymodtarget() == MumbleProto::VoiceTarget::RmTarget::VoiceTarget_RmTarget_Mumble)
+	{
+		return;
+	}
+
+	QWriteLocker lock(&qrwlVoiceThread);
+	SourceUser->qmTargetCache.remove(Target);
+
+	if (SourceUser->qmTargets.contains(Target))
+	{
+		SourceUser->qmTargets.remove(Target);
+		return;
+	}
+
+	WhisperTarget MyWhisperTarget;
+	MyWhisperTarget.m_RmTarget = Message.realitymodtarget();
+	MyWhisperTarget.m_RmTargetId = Message.realitymodtargetid();
+
+	UpdateRmWhisperTarget(SourceUser, MyWhisperTarget);
+
+	SourceUser->qmTargets.remove(Target);
+	SourceUser->qmTargets.insert(Target, MyWhisperTarget);
 }
 
 void Server::msgVoiceTarget(ServerUser *uSource, MumbleProto::VoiceTarget &msg) {

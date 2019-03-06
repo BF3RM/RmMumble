@@ -195,9 +195,7 @@ protected:
 
 	public slots:
 		void on_qmServer_aboutToShow();
-#ifdef RM_DEBUG
 		void on_qaServerConnect_triggered(bool autoconnect = false);
-#endif
 		void on_qaServerDisconnect_triggered();
 		void on_qaServerBanList_triggered();
 		void on_qaServerUserList_triggered();
@@ -229,9 +227,7 @@ protected:
 		void on_qaUserFriendRemove_triggered();
 		void on_qaUserFriendUpdate_triggered();
 		void qmChannel_aboutToShow();
-#if RM_DEBUG
 		void on_qaChannelJoin_triggered();
-#endif
 		void on_qaChannelAdd_triggered();
 		void on_qaChannelRemove_triggered();
 		void on_qaChannelACL_triggered();

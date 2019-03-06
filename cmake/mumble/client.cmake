@@ -187,8 +187,6 @@ set(MUMBLE_SOURCES
 
 if(WIN32)
     list(APPEND MUMBLE_SOURCES
-            src/mumble/ASIOInput.cpp
-            src/mumble/ASIOInput.h
             3rdparty/xinputcheck-src/xinputcheck.cpp
             src/mumble/UserLockFile_win.cpp
             src/mumble/TextToSpeech_win.cpp

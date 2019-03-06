@@ -22,7 +22,9 @@ static ConfigWidget *PluginConfigDialogNew(Settings &st) {
 	return new PluginConfig(st);
 }
 
+#if RM_DEBUG
 static ConfigRegistrar registrar(5000, PluginConfigDialogNew);
+#endif
 
 struct PluginInfo {
 	bool locked;

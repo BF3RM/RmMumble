@@ -17,7 +17,9 @@ static ConfigWidget *LookConfigNew(Settings &st) {
 	return new LookConfig(st);
 }
 
+#ifdef RM_DEBUG
 static ConfigRegistrar registrar(1100, LookConfigNew);
+#endif
 
 LookConfig::LookConfig(Settings &st) : ConfigWidget(st) {
 	setupUi(this);

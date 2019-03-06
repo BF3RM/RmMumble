@@ -36,9 +36,11 @@ TextToSpeechPrivate::~TextToSpeechPrivate() {
 }
 
 void TextToSpeechPrivate::say(const QString &text) {
+#ifdef RM_DEBUG
 	if (pVoice) {
 		pVoice->Speak((const wchar_t *) text.utf16(), SPF_ASYNC, NULL);
 	}
+#endif
 }
 
 void TextToSpeechPrivate::setVolume(int volume) {

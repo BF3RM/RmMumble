@@ -1353,6 +1353,7 @@ void MainWindow::setupView(bool toggle_minimize) {
 }
 
 void MainWindow::on_qaServerConnect_triggered(bool autoconnect) {
+#ifdef RM_DEBUG
 	ConnectDialog *cd = new ConnectDialog(this, autoconnect);
 	int res = cd->exec();
 
@@ -1370,6 +1371,7 @@ void MainWindow::on_qaServerConnect_triggered(bool autoconnect) {
 		g.sh->start(QThread::TimeCriticalPriority);
 	}
 	delete cd;
+#endif
 }
 
 void MainWindow::on_Reconnect_timeout() {

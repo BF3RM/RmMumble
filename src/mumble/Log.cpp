@@ -59,6 +59,7 @@ LogConfig::LogConfig(Settings &st) : ConfigWidget(st) {
 		twi->setCheckState(ColHighlight, Qt::Unchecked);
 		twi->setCheckState(ColStaticSound, Qt::Unchecked);
 
+#ifdef RM_DEBUG
 		twi->setToolTip(ColConsole, tr("Toggle console for %1 events").arg(messageName));
 		twi->setToolTip(ColNotification, tr("Toggle pop-up notifications for %1 events").arg(messageName));
 		twi->setToolTip(ColHighlight, tr("Toggle window highlight (if not active) for %1 events").arg(messageName));
@@ -70,6 +71,7 @@ LogConfig::LogConfig(Settings &st) : ConfigWidget(st) {
 		twi->setWhatsThis(ColHighlight, tr("Click here to toggle window highlight for %1 events.<br />If checked, Mumble's window will be highlighted for every %1 event, if not active.").arg(messageName));
 		twi->setWhatsThis(ColStaticSound, tr("Click here to toggle sound notification for %1 events.<br />If checked, Mumble uses a sound file predefined by you to indicate %1 events. Sound files and Text-To-Speech cannot be used at the same time.").arg(messageName));
 		twi->setWhatsThis(ColStaticSoundPath, tr("Path to sound file used for sound notifications in the case of %1 events.<br />Single click to play<br />Double-click to change<br />Ensure that sound notifications for these events are enabled or this field will not have any effect.").arg(messageName));
+#endif
 #ifndef USE_NO_TTS
 		twi->setCheckState(ColTTS, Qt::Unchecked);
 		twi->setToolTip(ColTTS, tr("Toggle Text-To-Speech for %1 events").arg(messageName));
@@ -93,13 +95,15 @@ void LogConfig::load(const Settings &r) {
 		Log::MsgType mt = static_cast<Log::MsgType>(i->data(ColMessage, Qt::UserRole).toInt());
 		Settings::MessageLog ml = static_cast<Settings::MessageLog>(r.qmMessages.value(mt));
 
+#ifdef RM_DEBUG
 		i->setCheckState(ColConsole, (ml & Settings::LogConsole) ? Qt::Checked : Qt::Unchecked);
 		i->setCheckState(ColNotification, (ml & Settings::LogBalloon) ? Qt::Checked : Qt::Unchecked);
 		i->setCheckState(ColHighlight, (ml & Settings::LogHighlight) ? Qt::Checked : Qt::Unchecked);
+		i->setCheckState(ColStaticSound, (ml & Settings::LogSoundfile) ? Qt::Checked : Qt::Unchecked);
+#endif
 #ifndef USE_NO_TTS
 		i->setCheckState(ColTTS, (ml & Settings::LogTTS) ? Qt::Checked : Qt::Unchecked);
 #endif
-		i->setCheckState(ColStaticSound, (ml & Settings::LogSoundfile) ? Qt::Checked : Qt::Unchecked);
 		i->setText(ColStaticSoundPath, r.qmMessageSounds.value(mt));
 	}
 
@@ -121,18 +125,20 @@ void LogConfig::save() const {
 		Log::MsgType mt = static_cast<Log::MsgType>(i->data(ColMessage, Qt::UserRole).toInt());
 
 		int v = 0;
+#ifdef RM_DEBUG
 		if (i->checkState(ColConsole) == Qt::Checked)
 			v |= Settings::LogConsole;
 		if (i->checkState(ColNotification) == Qt::Checked)
 			v |= Settings::LogBalloon;
 		if (i->checkState(ColHighlight) == Qt::Checked)
 			v |= Settings::LogHighlight;
+		if (i->checkState(ColStaticSound) == Qt::Checked)
+			v |= Settings::LogSoundfile;
+#endif
 #ifndef USE_NO_TTS
 		if (i->checkState(ColTTS) == Qt::Checked)
 			v |= Settings::LogTTS;
 #endif
-		if (i->checkState(ColStaticSound) == Qt::Checked)
-			v |= Settings::LogSoundfile;
 		s.qmMessages[mt] = v;
 		s.qmMessageSounds[mt] = i->text(ColStaticSoundPath);
 	}
@@ -450,6 +456,9 @@ QString Log::validHtml(const QString &html, QTextCursor *tc) {
 }
 
 void Log::log(MsgType mt, const QString &console, const QString &terse, bool ownMessage) {
+#ifndef RM_DEBUG
+	return;
+#endif
 	QDateTime dt = QDateTime::currentDateTime();
 
 	int ignore = qmIgnore.value(mt);

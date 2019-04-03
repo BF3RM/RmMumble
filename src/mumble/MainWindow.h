@@ -113,6 +113,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 #endif
 
 		QPoint qpContextPosition;
+		QTime pingDelay;
 
 		void recheckTTS();
 		void msgBox(QString msg);
@@ -137,6 +138,11 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		unsigned int uiNewHardware;
 #endif
 		void ClearTargets();
+
+		void setStatusLeft(std::string message) { statusLeft.setText(QString::fromStdString(message)); };
+		void setStatusMid(std::string message) { statusMid.setText(QString::fromStdString(message)); };
+		void setStatusRight(std::string message) { statusRight.setText(QString::fromStdString(message)); };
+
 protected:
 		QNetworkAccessManager HttpManager;
 		class RMSocket* RmSocket;
@@ -167,6 +173,10 @@ protected:
 		MUComboBox *qcbTransmitMode;
 		QAction *qaTransmitMode;
 		QAction *qaTransmitModeSeparator;
+
+		QLabel statusLeft;
+		QLabel statusMid;
+		QLabel statusRight;
 
 		void UpdatePlayerIdentity(class RMMessage* Message);
 		void createActions();

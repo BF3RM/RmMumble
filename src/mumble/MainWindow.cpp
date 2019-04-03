@@ -150,6 +150,14 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	setupUi(this);
 	setupGui();
 
+	QMainWindow::statusBar()->addPermanentWidget(&statusLeft, 1);
+	QMainWindow::statusBar()->addPermanentWidget(&statusMid, 1);
+	QMainWindow::statusBar()->addPermanentWidget(&statusRight, 1);
+
+	setStatusLeft("Socket Disconnected");
+	setStatusMid("...");
+	setStatusRight("...");
+
 	connect(qmUser, SIGNAL(aboutToShow()), this, SLOT(qmUser_aboutToShow()));
 	connect(qmChannel, SIGNAL(aboutToShow()), this, SLOT(qmChannel_aboutToShow()));
 	connect(qteChat, SIGNAL(entered(QString)), this, SLOT(sendChatbarMessage(QString)));
@@ -200,9 +208,12 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		Message->Send();
 	});
 
+	pingDelay.start();
 	RmSocket->AddListener([this](RMMessage* Message) {
 		RmPingTimeout->start(11000);
-
+		
+		setStatusMid(std::string("Ping: ") + std::to_string(pingDelay.elapsed()) + "/ms");
+		pingDelay.restart();
 		if (Message->GetMessageType() == EMessageType::Ping)
 		{
 			auto Pong = RmSocket->NewMessage(EMessageType::Ping);

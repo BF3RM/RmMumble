@@ -1,3 +1,6 @@
+#include "qnetworkaccessmanager.h"
+#include "MainWindow.h"
+#include "Global.h"
 #include "RMSocket.h"
 #include "RMMessage.h"
 #include <QTcpServer> 
@@ -18,6 +21,7 @@ void RMSocket::run()
         if (!Socket) continue;
 
         emit OnConnected();
+		g.mw->setStatusLeft("Socket Connected");
 
 		uint32_t DataSize = 0;
         qint64 Status = 0;
@@ -75,7 +79,9 @@ void RMSocket::run()
 
         if (Socket) Socket->deleteLater();
         emit OnDisconnected();
-    }
+		g.mw->setStatusLeft("Socket Disconnected");
+		g.mw->setStatusMid("...");
+	}
 }
 
 class RMMessage* RMSocket::GetPoolMessage()
@@ -114,6 +120,8 @@ void RMSocket::Stop()
 {
 	MessagePoolLock.lock();
 	Socket->disconnect();
+	g.mw->setStatusLeft("Socket Disconnected");
+	g.mw->setStatusMid("...");
 	Socket->close();
 	MessagePoolLock.unlock();
 }

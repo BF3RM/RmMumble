@@ -6,10 +6,11 @@
 #include <QTcpServer> 
 #include <iostream>
 #include <QTcpSocket>
+#include <qtimer.h>
 
 void RMSocket::run()
 {
-    QTcpServer Server;
+	QTcpServer Server;
 	if (!Server.listen(QHostAddress::Any, 64304)) {
         return;
     }
@@ -23,12 +24,17 @@ void RMSocket::run()
         emit OnConnected();
 		g.mw->setStatusLeft("Socket Connected");
 
+		QTimer* RmPingTimeout = new QTimer();
+		RmPingTimeout->start(11000);
+
 		uint32_t DataSize = 0;
         qint64 Status = 0;
 
-        while (Socket && Socket->isValid()) {
+        while (RmPingTimeout->remainingTime() > 0 && Socket && Socket->isValid()) {
 			if (Socket->waitForReadyRead(1) && Socket->bytesAvailable() > 0)
 			{
+				RmPingTimeout->start(11000);
+
 				while (Socket->bytesAvailable() > 0) {
 					Status = Socket->read((char*)&DataSize, sizeof(uint32_t));
 					if (Status == -1) break;
@@ -77,6 +83,7 @@ void RMSocket::run()
 			}
         }
 
+		delete RmPingTimeout;
         if (Socket) Socket->deleteLater();
         emit OnDisconnected();
 		g.mw->setStatusLeft("Socket Disconnected");

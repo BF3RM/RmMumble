@@ -184,14 +184,6 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 #ifdef NO_UPDATE_CHECK
 	delete qaHelpVersionCheck;
 #endif
-	RmPingTimeout = new QTimer();
-	connect(RmPingTimeout, &QTimer::timeout, this, [this](){
-		g.l->log(Log::Information, tr("Connection with RM timed-out. Disconnecting."));
-		g.sh->disconnect();
-		g.sh->wait();
-		RmSocket->Stop();
-	});
-
 	RmSocket = new RMSocket;
     connect(RmSocket, &RMSocket::finished, RmSocket, &QObject::deleteLater);
 
@@ -210,8 +202,6 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 	pingDelay.start();
 	RmSocket->AddListener([this](RMMessage* Message) {
-		RmPingTimeout->start(11000);
-		
 		setStatusMid(std::string("Ping: ") + std::to_string(pingDelay.elapsed()) + "/ms");
 		pingDelay.restart();
 		if (Message->GetMessageType() == EMessageType::Ping)
@@ -269,7 +259,6 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	});
 
     RmSocket->start();
-	RmPingTimeout->moveToThread(RmSocket);
 }
 
 void MainWindow::OnUuidReceived(QNetworkReply* Reply)

@@ -75,6 +75,18 @@ void ServerUser::UpdateIdentity(QString NewIdentity)
 		qmTargets.clear();
 		qmTargetCache.clear();
 		s->clearACLCache(this);
+
+		auto SplitIdentity = qsIdentity.split("~~");
+		if (SplitIdentity.size() == 3) 
+		{
+			if (SplitIdentity[2] == "1")
+			{
+				m_PerUserData[qsName].m_IsSquadLeader = true;
+			}
+			m_PerUserData[qsName].m_TeamId = SplitIdentity[0].toInt();
+			m_PerUserData[qsName].m_SquadId = SplitIdentity[1].toInt();
+		}
+
         MoveToContextualChannel();
     }
 }
@@ -88,6 +100,73 @@ Channel* ServerUser::GetContextualChannel()
 void ServerUser::MoveToContextualChannel()
 {
     if (!s) return;
+
+	std::vector<QString> ToBeDeleted;
+
+	std::map<int, int> SquadIds;
+	std::map<int, int> TeamIds;
+	std::map<bool, int> IsSquadLeaders;
+
+	for (auto& UserData : m_PerUserData)
+	{
+		bool UserExist = false;
+		for (auto& User : s->qhUsers)
+		{
+			if (User->qsName == UserData.first)
+			{
+				UserExist = true;
+				break;
+			}
+		}
+
+		if (!UserExist)
+		{
+			ToBeDeleted.push_back(UserData.first);
+		}
+		else
+		{
+			SquadIds[UserData.second.m_SquadId]++;
+			TeamIds[UserData.second.m_TeamId]++;
+			SquadIds[UserData.second.m_IsSquadLeader]++;
+		}
+	}
+
+	int IsSquadLeaderCount = 0;
+	int TeamCount = 0;
+	int SquadCount = 0;
+
+	for (auto& Id : SquadIds)
+	{
+		if (Id.second > SquadCount)
+		{
+			m_SquadId = Id.first;
+			SquadCount = Id.second;
+		}
+	}
+
+	for (auto& Id : TeamIds)
+	{
+		if (Id.second > TeamCount)
+		{
+			m_TeamId = Id.first;
+			TeamCount = Id.second;
+		}
+	}
+
+	for (auto& Id : IsSquadLeaders)
+	{
+		if (Id.second > IsSquadLeaderCount)
+		{
+			m_IsSquadLeader = Id.first;
+			IsSquadLeaderCount = Id.second;
+		}
+	}
+
+	for (auto& Name : ToBeDeleted)
+	{
+		m_PerUserData.erase(Name);
+	}
+
     auto TargetChannel = GetContextualChannel();
     if (TargetChannel == cChannel) return;
     if (TargetChannel) {

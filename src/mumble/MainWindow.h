@@ -153,7 +153,7 @@ protected:
 		QTimer* RmPositionTimer = nullptr;
 
 		void OnUuidReceived(class QNetworkReply* Reply);
-        void CreatePrShortcuts();
+        void SetupRmShortcuts();
 		Usage uUsage;
 		QTimer *qtReconnect;
 

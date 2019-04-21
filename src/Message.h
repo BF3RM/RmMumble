@@ -44,7 +44,8 @@
 	MUMBLE_MH_MSG(SuggestConfig) \
 	MUMBLE_MH_MSG(ChannelSquadLeader) \
 	MUMBLE_MH_MSG(RmVoice) \
-	MUMBLE_MH_MSG(RmUpdatePlayerPosition)
+	MUMBLE_MH_MSG(RmUpdatePlayerPosition) \
+	MUMBLE_MH_MSG(RmUpdatePlayersList)
 
 class MessageHandler {
 	public:

@@ -95,6 +95,14 @@ class LeakyBucket {
 		LeakyBucket(unsigned int tokensPerSec, unsigned int maxTokens);
 };
 
+struct PerUserData
+{
+	std::string m_FromUser = "";
+	bool m_IsSquadLeader = false;
+	int32_t m_SquadId = 0;
+	int32_t m_TeamId = 0;
+};
+
 class ServerUser : public Connection, public User {
 	private:
 		Q_OBJECT
@@ -110,7 +118,14 @@ class ServerUser : public Connection, public User {
         Channel* GetContextualChannel();
 	protected:
 		Server *s;
+		int m_TeamId = 0;
+		int m_SquadId = 0;
+		bool m_IsSquadLeader = false;
 	public:
+		// This is a cache of what people think this user should be
+		// It is feed from all the clients, the server then decides where to
+		// move the player based on what the most voted option is
+		std::map<QString /** Whom from */, PerUserData /* What squad, team should be in */> m_PerUserData;
 		RmPlayerPosition PlayerPosition;
 		enum State { Connected, Authenticated };
 		State sState;

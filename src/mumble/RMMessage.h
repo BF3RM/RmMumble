@@ -7,6 +7,7 @@
 enum class EMessageType : uint8_t
 {
 	Default = 100,
+	UpdatePlayersList = 117,
 	Shutdown = 118,
 	IdentityRequest = 119,
 	UpdateData = 120,

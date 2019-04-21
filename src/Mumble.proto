@@ -613,3 +613,8 @@ message RmUpdatePlayerPosition
 	required float Y = 2;
 	required float Z = 3;
 }
+
+message RmUpdatePlayersList
+{
+	required bytes Data = 1;
+}

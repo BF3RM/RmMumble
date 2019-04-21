@@ -2056,3 +2056,48 @@ bool Server::canNest(Channel *newParent, Channel *channel) const {
 
 	return (parentLevel + channelDepth) < iChannelNestingLimit;
 }
+
+void Server::msgRmUpdatePlayersList(class ServerUser* User, class MumbleProto::RmUpdatePlayersList& Message)
+{
+	auto Data = Message.data();
+	uint32_t NumberOfPlayers = *(uint32_t*)Data.c_str();
+	uint32_t Offset = sizeof(uint32_t);
+
+	for (uint32_t I = 0; I < NumberOfPlayers; I++)
+	{
+		uint32_t LocalOffset = Offset;
+		uint32_t PlayerNameLength = *(uint32_t*)(Data.c_str() + LocalOffset) + 1; // missing 0x0 in the count 
+		LocalOffset += sizeof(uint32_t);
+		if (PlayerNameLength > 30)
+		{
+			qInfo() << "Something dodgy with player name length sent from user " << User->qsName;
+			return;
+		}
+
+		PerUserData UserData;
+
+		char* TargetPlayerName = new char[PlayerNameLength];
+		memcpy(TargetPlayerName, Data.c_str() + LocalOffset, PlayerNameLength);
+		UserData.m_FromUser = User->qsName.toStdString();
+		LocalOffset += PlayerNameLength;
+		UserData.m_SquadId = *(int32_t*)(Data.c_str() + LocalOffset);
+		LocalOffset += sizeof(int32_t);
+		UserData.m_TeamId = *(int32_t*)(Data.c_str() + LocalOffset);
+		LocalOffset += sizeof(bool);
+		UserData.m_IsSquadLeader = *(bool*)(Data.c_str() + LocalOffset);
+
+		Offset += LocalOffset;
+
+		for (auto& User : qhUsers)
+		{
+			if (User->qsName.toStdString() == TargetPlayerName)
+			{
+				User->m_PerUserData[User->qsName] = UserData;
+				User->Upda
+				break;
+			}
+		}
+
+		free(TargetPlayerName);
+	}
+}

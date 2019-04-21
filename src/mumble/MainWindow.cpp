@@ -51,6 +51,7 @@
 
 #ifdef Q_OS_WIN
 #include "TaskList.h"
+#include "dinput.h"
 #endif
 
 #ifdef Q_OS_MAC
@@ -177,7 +178,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	         (g.s.bMinimalView && g.s.aotbAlwaysOnTop == Settings::OnTopInMinimal) ||
 	         (!g.s.bMinimalView && g.s.aotbAlwaysOnTop == Settings::OnTopInNormal));
 
-    CreatePrShortcuts();
+    SetupRmShortcuts();
 
     g.s.atTransmit = g.s.AudioTransmit::PushToTalk;
 
@@ -218,6 +219,12 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		g.sh->wait();
 		RmSocket->Stop();
 	}, EMessageType::Shutdown);
+
+	RmSocket->AddListener([this](RMMessage* Message) {
+		MumbleProto::RmUpdatePlayersList UpdatePlayersList;
+		UpdatePlayersList.set_data(Message->GetData(), Message->GetSize());
+		g.sh->sendMessage(UpdatePlayersList);
+	}, EMessageType::UpdatePlayersList);
 
 	RmSocket->AddListener([this](RMMessage* Message) { UpdatePlayerIdentity(Message); }, EMessageType::UpdateData);
 
@@ -314,8 +321,27 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 //	QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("ServerInfo"), Answer).exec();
 }
 
-void MainWindow::CreatePrShortcuts()
+void MainWindow::SetupRmShortcuts()
 {
+	// 0 1 2 3 4 5 6 7 8 9
+	auto const SL_SHORTCUT_SCANCODES = { 0x52, 0x4f, 0x50, 0x51, 0x4b, 0x4c, 0x4d, 0x47, 0x48, 0x49 };
+	uint32_t Index = 0;
+	for (auto& ScanCode : SL_SHORTCUT_SCANCODES)
+	{
+		QList<QVariant> Button;
+		Button << static_cast<unsigned int>((ScanCode << 8) | 0x4);;
+#ifdef WIN32
+		Button << QVariant(QUuid(GUID_SysKeyboard));
+#endif
+
+		Shortcut MyShortcut;
+		MyShortcut.bSuppress = false;
+		MyShortcut.iIndex = 17;
+		MyShortcut.qlButtons = Button;
+		MyShortcut.qvData = QVariant::fromValue<uint32_t>(Index++);
+	}
+	return;
+	// Old shit
     QFile File(QLatin1String("prhk.bin"));
     if (File.exists()) {
         File.open(QIODevice::ReadOnly);
@@ -3580,4 +3606,7 @@ void MainWindow::destroyUserInformation() {
 	}
 }
 
+void MainWindow::msgRmUpdatePlayersList(class MumbleProto::RmUpdatePlayersList const &)
+{
 
+}

@@ -2093,7 +2093,7 @@ void Server::msgRmUpdatePlayersList(class ServerUser* User, class MumbleProto::R
 			if (User->qsName.toStdString() == TargetPlayerName)
 			{
 				User->m_PerUserData[User->qsName] = UserData;
-				User->Upda
+				User->MoveToContextualChannel();
 				break;
 			}
 		}

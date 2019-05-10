@@ -192,6 +192,29 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="RemoveAll">
+          <property name="toolTip">
+           <string>Remove all the shortcuts</string>
+          </property>
+          <property name="whatsThis">
+           <string>This will permanently remove all the shortcuts.</string>
+          </property>
+          <property name="text">
+           <string>Remove All</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="AddRmShortcuts">
+          <property name="toolTip">
+           <string>Add all the RM shortcuts to the list.</string>
+          </property>
+          <property name="text">
+           <string>Add RM Shortcuts</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>

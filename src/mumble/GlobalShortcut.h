@@ -205,6 +205,8 @@ class GlobalShortcutConfig : public ConfigWidget, public Ui::GlobalShortcut {
 		void on_qtwShortcuts_itemChanged(QTreeWidgetItem *, int);
 		void on_qpbOpenAccessibilityPrefs_clicked();
 		void on_qpbSkipWarning_clicked();
+		void OnRemoveAll();
+		void OnAddRmShortcuts();
 };
 
 struct ShortcutKey {

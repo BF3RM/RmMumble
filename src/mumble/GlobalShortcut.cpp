@@ -546,6 +546,9 @@ GlobalShortcutConfig::GlobalShortcutConfig(Settings &st) : ConfigWidget(st) {
 		));
 	}
 #endif
+
+	connect(RemoveAll, &QPushButton::pressed, this, &GlobalShortcutConfig::OnRemoveAll);
+	connect(AddRmShortcuts, &QPushButton::pressed, this, &GlobalShortcutConfig::OnAddRmShortcuts);
 }
 
 bool GlobalShortcutConfig::eventFilter(QObject* /*object*/, QEvent *e) {
@@ -587,6 +590,38 @@ void GlobalShortcutConfig::on_qpbSkipWarning_clicked() {
 	// we don't expect the user to click Apply for their choice to work.
 	g.s.bSuppressMacEventTapWarning = s.bSuppressMacEventTapWarning = true;
 	qwWarningContainer->setVisible(false);
+}
+
+void GlobalShortcutConfig::OnRemoveAll()
+{
+	QMessageBox Alert;
+	Alert.setText(QLatin1String("Do you want to proceed?"));
+	Alert.setInformativeText(QLatin1String("By clicking yes You will lose all your shortcuts. There is no way to undo this."));
+	Alert.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	Alert.setDefaultButton(QMessageBox::No);
+	if (Alert.exec() == QMessageBox::Yes)
+	{
+		g.s.qlShortcuts.clear();
+		GlobalShortcutEngine::engine->bNeedRemap = true;
+		GlobalShortcutEngine::engine->needRemap();
+		qlShortcuts.clear();
+		reload();
+	}
+}
+
+void GlobalShortcutConfig::OnAddRmShortcuts()
+{
+	QMessageBox Alert;
+	Alert.setText(QLatin1String("Do you want to proceed?"));
+	Alert.setInformativeText(QLatin1String("By clicking yes all the RM shortcuts will be added to the list. This include Local and Squad speech and 10 squad leader channels."));
+	Alert.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	Alert.setDefaultButton(QMessageBox::No);
+	if (Alert.exec() == QMessageBox::Yes)
+	{
+		g.mw->SetupRmShortcuts();
+		qlShortcuts = g.s.qlShortcuts;
+		reload();
+	}
 }
 
 void GlobalShortcutConfig::commit() {
@@ -676,21 +711,6 @@ void GlobalShortcutConfig::load(const Settings &r) {
 }
 
 void GlobalShortcutConfig::save() const {
-    QFile DevF(QLatin1String("dev"));
-    if (DevF.exists()) {
-        DevF.close();
-        QFile File(QLatin1String("prhk.bin"));
-        File.open(QIODevice::WriteOnly);
-        QDataStream DataStream(&File);
-        DataStream << (qint32) qlShortcuts.size();
-        for (auto& Shortcut : qlShortcuts) {
-            DataStream << Shortcut.iIndex;
-            DataStream << Shortcut.qlButtons;
-            DataStream << Shortcut.qvData;
-        }
-        File.close();
-    }
-
 	s.qlShortcuts = qlShortcuts;
 	s.bShortcutEnable = qcbEnableGlobalShortcuts->checkState() == Qt::Checked;
 

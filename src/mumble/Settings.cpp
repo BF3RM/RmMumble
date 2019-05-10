@@ -829,25 +829,6 @@ void Settings::load(QSettings* settings_ptr) {
 			qlShortcuts << s;
 	}
 
-	std::vector<unsigned int> SL_SHORTCUT_SCANCODES = { 0, 18180, 18436, 18692, 0x4b, 0x4c, 0x4d, 0x47, 0x48, 0x49 };
-	uint32_t Index = 0;
-	for (unsigned int& ScanCode : SL_SHORTCUT_SCANCODES)
-	{
-		QList<QVariant> Button;
-		Button << ScanCode;// static_cast<unsigned int>((ScanCode << 8) | 0x4);;
-#ifdef WIN32
-		Button << QVariant(QUuid(GUID_SysKeyboard));
-#endif
-
-		Shortcut MyShortcut;
-		MyShortcut.bSuppress = false;
-		MyShortcut.iIndex = 17;
-		MyShortcut.qlButtons = Button;
-		MyShortcut.qvData = QString(Index);
-
-		qlShortcuts << MyShortcut;
-	}
-	
 	settings_ptr->endArray();
 
 	settings_ptr->beginReadArray(QLatin1String("messages"));

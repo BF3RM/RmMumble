@@ -142,6 +142,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void setStatusLeft(std::string message) { statusLeft.setText(QString::fromStdString(message)); };
 		void setStatusMid(std::string message) { statusMid.setText(QString::fromStdString(message)); };
 		void setStatusRight(std::string message) { statusRight.setText(QString::fromStdString(message)); };
+		void SetupRmShortcuts();
 
 protected:
 		QNetworkAccessManager HttpManager;
@@ -153,7 +154,6 @@ protected:
 		QTimer* RmPositionTimer = nullptr;
 
 		void OnUuidReceived(class QNetworkReply* Reply);
-        void SetupRmShortcuts();
 		Usage uUsage;
 		QTimer *qtReconnect;
 

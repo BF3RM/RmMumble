@@ -178,7 +178,10 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	         (g.s.bMinimalView && g.s.aotbAlwaysOnTop == Settings::OnTopInMinimal) ||
 	         (!g.s.bMinimalView && g.s.aotbAlwaysOnTop == Settings::OnTopInNormal));
 
-    SetupRmShortcuts();
+	if (g.s.qlShortcuts.isEmpty())
+	{
+		SetupRmShortcuts();
+	}
 
     g.s.atTransmit = g.s.AudioTransmit::PushToTalk;
 
@@ -323,53 +326,36 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 
 void MainWindow::SetupRmShortcuts()
 {
+	//g.s.qlShortcuts.clear();
+
 	// 0 1 2 3 4 5 6 7 8 9
-	auto const SL_SHORTCUT_SCANCODES = { 0x52, 0x4f, 0x50, 0x51, 0x4b, 0x4c, 0x4d, 0x47, 0x48, 0x49 };
+	std::vector<unsigned int> SL_SHORTCUT_SCANCODES = { 20996, 20228, 20484, 20740, 19204, 19460, 19716, 18180, 18436, 18692 };
 	uint32_t Index = 0;
-	for (auto& ScanCode : SL_SHORTCUT_SCANCODES)
+
+	auto AddKeyboardShortcut = [](unsigned int ScanCode, GlobalShortcut* GShortcut, QVariant Data = QVariant())
 	{
 		QList<QVariant> Button;
-		Button << static_cast<unsigned int>((ScanCode << 8) | 0x4);;
-#ifdef WIN32
-		Button << QVariant(QUuid(GUID_SysKeyboard));
-#endif
+		Button << ScanCode;
+		Button << QUuid(GUID_SysKeyboard);
 
-		Shortcut MyShortcut;
-		MyShortcut.bSuppress = false;
-		MyShortcut.iIndex = 17;
-		MyShortcut.qlButtons = Button;
-		MyShortcut.qvData = QVariant::fromValue<uint32_t>(Index++);
+		Shortcut Short;
+		Short.bSuppress = false;
+		Short.iIndex = GlobalShortcutEngine::engine->qmShortcuts.key(GShortcut);
+		Short.qlButtons << QVariant(Button);
+		Short.qvData = Data;
+		g.s.qlShortcuts << Short;
+	};
+
+	for (auto& ScanCode : SL_SHORTCUT_SCANCODES)
+	{
+		AddKeyboardShortcut(ScanCode, GsWhisperSquadLeader, QString::number(Index++));
 	}
-	return;
-	// Old shit
-    QFile File(QLatin1String("prhk.bin"));
-    if (File.exists()) {
-        File.open(QIODevice::ReadOnly);
-        QDataStream DataStream(&File);
-        qint32 NumberOfShortcuts;
-        DataStream >> NumberOfShortcuts;
-        for (int I = 0; I < NumberOfShortcuts; I++) {
-            Shortcut S;
-            DataStream >> S.iIndex;
-            DataStream >> S.qlButtons;
-            DataStream >> S.qvData;
-            S.bSuppress = false;
 
-            bool ShouldCreateShortcute = true;
-            for (auto& Ss : g.s.qlShortcuts) {
-                if (Ss.iIndex == S.iIndex && Ss.qvData == S.qvData) {
-                    ShouldCreateShortcute = false;
-                }
-            }
+	AddKeyboardShortcut(8964, GsLocal); // H
+	AddKeyboardShortcut(12292, GsSquad); // B
 
-            if (ShouldCreateShortcute) {
-                g.s.qlShortcuts << S;
-            }
-        }
-
-        GlobalShortcutEngine::engine->bNeedRemap = true;
-        GlobalShortcutEngine::engine->needRemap();
-    }
+	GlobalShortcutEngine::engine->bNeedRemap = true;
+	GlobalShortcutEngine::engine->needRemap();
 }
 
 void MainWindow::UpdatePlayerIdentity(class RMMessage* Message)

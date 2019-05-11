@@ -13,7 +13,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
+list(APPEND CMAKE_MODULE_PATH  ${CMAKE_SOURCE_DIR}/cmake/modules)
 add_definitions(-DRM_DEBUG)
 include_directories(cmake/general ${CMAKE_BINARY_DIR}/3rdparty ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto)
 
@@ -24,7 +24,12 @@ endif()
 set(BUILD_OBJECT_LIBRARY_ONLY OFF CACHE BOOL "")
 
 add_subdirectory(cmake/celt)
+if (WIN32 AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+find_package(opus REQUIRED)
+include_directories(${OPUS_INCLUDE_DIRS})
+else()
 add_subdirectory(cmake/opus)
+endif()
 
 add_subdirectory(3rdparty/libsndfile)
 include(cmake/speex/speex.cmake)
@@ -37,8 +42,7 @@ include(cmake/mumble/shared.cmake)
 include(cmake/mumble/server.cmake)
 include(cmake/mumble/client.cmake)
 
-if(WIN32)
-
+if (WIN32 AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") #only if win32 and not mxe
 add_custom_target(Qt5CopyBinaries
         # todo: check if debug and release folder exist
         # debug version

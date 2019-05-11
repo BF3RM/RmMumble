@@ -65,7 +65,7 @@
 // #define HAVE_LRINT 1
 
 /* Define if you have C99's lrintf function. */
-// #define HAVE_LRINTF 1
+#define HAVE_LRINTF 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1

@@ -1,9 +1,8 @@
 project(celt C)
 
 set(CELT_C
-${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/bands.c
 ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/celt.c
-${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/cwrs.c
+${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/bands.c
 ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/cwrs.c
 ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/entcode.c
 ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/entdec.c
@@ -23,9 +22,8 @@ ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/rate.c
 ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-src/libcelt/vq.c
 )
 
-
 add_library(celt0.0.7.0 SHARED ${CELT_C})
-
+target_link_libraries(celt0.0.7.0 PRIVATE -Wl,--allow-multiple-definition)
 if(WIN32)
 target_compile_definitions(celt0.0.7.0 PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
 set(CONFIG_INCLUDE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.7.0-build/win32)
@@ -60,9 +58,9 @@ set (celt0.11.0_SOURCES
  ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-src/libcelt/vq.c 
  )
 
- add_library(celt0.0.11.0 SHARED ${celt0.11.0_SOURCES})
-
- if(WIN32)
+add_library(celt0.0.11.0 SHARED ${celt0.11.0_SOURCES})
+target_link_libraries(celt0.0.11.0 PRIVATE -Wl,--allow-multiple-definition)
+if(WIN32)
  target_compile_definitions(celt0.0.11.0 PRIVATE -DHAVE_CONFIG_H WIN32 _WIN32)
  set(CONFIG_INCLUDE ${CMAKE_SOURCE_DIR}/3rdparty/celt-0.11.0-build/win32)
 else()

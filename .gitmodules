@@ -33,7 +33,7 @@
 	url = https://github.com/madler/zlib.git
 [submodule "3rdparty/openssl"]
 	path = 3rdparty/openssl
-	url = https://github.com/apc-llc/OpenSSL-CMake.git
+	url = https://github.com/snaiperskaya96/openssl-cmake-1.0.1e-src.git
 [submodule "3rdparty/libsndfile"]
 	path = 3rdparty/libsndfile
 	url = https://github.com/erikd/libsndfile.git

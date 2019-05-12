@@ -1,4 +1,4 @@
-find_package(Qt5 COMPONENTS Svg TextToSpeech REQUIRED)
+find_package(Qt5 COMPONENTS Svg REQUIRED)
 
 set(MumbleExeName RmMumble)
 
@@ -189,7 +189,7 @@ if(WIN32)
     list(APPEND MUMBLE_SOURCES
             3rdparty/xinputcheck-src/xinputcheck.cpp
             src/mumble/UserLockFile_win.cpp
-            src/mumble/TextToSpeech_win.cpp
+            #src/mumble/TextToSpeech_win.cpp
             src/mumble/SharedMemory_win.cpp
             src/mumble/Overlay_win.cpp
             src/mumble/Overlay_win.h
@@ -214,7 +214,7 @@ else()
     list(APPEND MUMBLE_SOURCES
             src/mumble/ALSAAudio.cpp
             src/mumble/ALSAAudio.h
-            src/mumble/TextToSpeech_unix.cpp
+            #src/mumble/TextToSpeech_unix.cpp
             src/mumble/SharedMemory_unix.cpp
             src/mumble/os_unix.cpp
             src/mumble/Overlay_unix.cpp
@@ -230,7 +230,7 @@ else()
             )
 endif()
 
-qt5_wrap_cpp(QT5_SRC src/ServerResolver.h src/SignalCurry.h src/mumble/TextToSpeech.h)
+qt5_wrap_cpp(QT5_SRC src/ServerResolver.h src/SignalCurry.h)# src/mumble/TextToSpeech.h)
 qt5_add_resources(MUMBLE_RESOURCES 
     ${CMAKE_SOURCE_DIR}/src/mumble/mumble.qrc 
 #    ${CMAKE_SOURCE_DIR}/src/mumble/mumble_translations.qrc
@@ -254,7 +254,6 @@ else()
     #add_executable(RmMumble ${FLAGS} ${MUMBLE_EXE_SOURCES})
     target_link_libraries(${MumbleExeName} PRIVATE shlwapi)
     target_compile_definitions(${MumbleExeName} PRIVATE -DUNICODE -DUSE_DBUS)
-    set(DEFINITIONS -DRM_POSITIONAL_DEBUG)
 endif()
 
 set_target_properties(${MumbleExeName} 
@@ -262,16 +261,17 @@ set_target_properties(${MumbleExeName}
     ENABLE_EXPORTS 1
     C_STANDARD 11)
 
-target_link_libraries(${MumbleExeName} PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} opus Qt5::Svg Qt5::TextToSpeech sndfile)
+target_link_libraries(${MumbleExeName} PRIVATE ${SHARED_LIBS} ${ADDITIONAL_LIBS} opus Qt5::Svg sndfile)
 target_include_directories(${MumbleExeName}
         PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/mumble
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/mumble ${CMAKE_SOURCE_DIR}/src/mumble/widgets ${CMAKE_SOURCE_DIR}/3rdparty/qqbonjour-src>
         PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/ 3rdparty/asio/common 3rdparty/asio/host 3rdparty/asio/host/pc
+        #${CMAKE_SOURCE_DIR}/src/mumble ${OPENSSL_INCLUDE_DIR} 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/ 3rdparty/asio/common 3rdparty/asio/host 3rdparty/asio/host/pc
+        ${CMAKE_SOURCE_DIR}/src/mumble 3rdparty/smallft-src ${SHARED_INCLUDES} 3rdparty/xinputcheck-src/ 3rdparty/asio/common 3rdparty/asio/host 3rdparty/asio/host/pc
         )
 
-target_compile_definitions(${MumbleExeName} PRIVATE -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} ${DEFINITIONS} -DUSE_DBUS -DUSE_MANUAL_PLUGIN -DUSE_ASIO)
+target_compile_definitions(${MumbleExeName} PRIVATE -DUSE_NO_TTS -DMUMBLE -DNO_XINPUT2 ${SHARED_DEFS} ${DEFINITIONS} -DUSE_DBUS -DUSE_MANUAL_PLUGIN -DUSE_ASIO)
 
 if(WIN32)
         set_target_properties(${MumbleExeName} PROPERTIES LINK_FLAGS_RELEASE "-delayload:shell32.dll")
@@ -284,10 +284,13 @@ if(WIN32)
 	target_compile_definitions(RmRadio PRIVATE -DUNICODE -DRESTRICT=__restrict)
 	target_compile_definitions(RmRadio PRIVATE -DRM_POSITIONAL_DEBUG)
 
-	add_library(PositionalAudioDebug SHARED plugins/positional-audio-debug/positional-audio-debug.cpp)
-	target_include_directories(PositionalAudioDebug PRIVATE ${CMAKE_SOURCE_DIR}/plugins/positional-audio-debug/websocketpp ${CMAKE_SOURCE_DIR}/plugins/positional-audio-debug/asio/asio/include)
-	target_link_libraries(PositionalAudioDebug PRIVATE psapi ws2_32)
-	target_compile_definitions(PositionalAudioDebug PRIVATE -DRESTRICT=__restrict)
+    if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        add_library(PositionalAudioDebug SHARED plugins/positional-audio-debug/positional-audio-debug.cpp)
+        target_include_directories(PositionalAudioDebug PRIVATE ${CMAKE_SOURCE_DIR}/plugins/positional-audio-debug/websocketpp ${CMAKE_SOURCE_DIR}/plugins/positional-audio-debug/asio/asio/include)
+        target_link_libraries(PositionalAudioDebug PRIVATE psapi ws2_32)
+        target_compile_definitions(PositionalAudioDebug PRIVATE -DRESTRICT=__restrict)
+        set(DEFINITIONS -DRM_POSITIONAL_DEBUG)
+    endif()
 endif()
 #[[
 set(SHARED_SOURCES ${SHARED_SOURCE} ${SPEEX_SOURCES})

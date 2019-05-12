@@ -26,10 +26,6 @@ static ConfigWidget *LogConfigDialogNew(Settings &st) {
 LogConfig::LogConfig(Settings &st) : ConfigWidget(st) {
 	setupUi(this);
 
-#ifdef USE_NO_TTS
-	qgbTTS->setDisabled(true);
-#endif
-
 #if QT_VERSION >= 0x050000
 	qtwMessages->header()->setSectionResizeMode(ColMessage, QHeaderView::Stretch);
 	qtwMessages->header()->setSectionResizeMode(ColConsole, QHeaderView::ResizeToContents);
@@ -153,7 +149,6 @@ void LogConfig::save() const {
 }
 
 void LogConfig::accept() const {
-	g.l->tts->setVolume(s.iTTSVolume);
 	g.mw->qteLog->document()->setMaximumBlockCount(s.iMaxLogBlocks);
 }
 
@@ -201,8 +196,6 @@ void LogConfig::browseForAudioFile() {
 }
 
 Log::Log(QObject *p) : QObject(p) {
-	tts=new TextToSpeech(this);
-	tts->setVolume(g.s.iTTSVolume);
 	uiLastId = 0;
 	qdDate = QDate::currentDate();
 }
@@ -579,12 +572,6 @@ void Log::log(MsgType mt, const QString &console, const QString &terse, bool own
 			pos += len;
 		}
 	}
-
-	// TTS threshold limiter.
-	if (plain.length() <= g.s.iTTSThreshold)
-		tts->say(plain);
-	else if ((! terse.isEmpty()) && (terse.length() <= g.s.iTTSThreshold))
-		tts->say(terse);
 }
 
 // Post a notification using the MainWindow's QSystemTrayIcon.

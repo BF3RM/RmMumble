@@ -72,6 +72,10 @@ extern HWND mumble_mw_hwnd;
 #endif // Q_OS_WIN
 
 //extern "C" __declspec(dllexport) void mumbleSelfDetection() {};
+#ifndef QT_NO_DEBUG
+#define QT_NO_DEBUG
+#define MANUALLY_DEFINED_QT_NO_DEBUG
+#endif
 
 #if defined(Q_OS_WIN) && !defined(QT_NO_DEBUG)
 extern "C" __declspec(dllexport) int main(int argc, char **argv) {
@@ -686,9 +690,14 @@ extern "C" __declspec(dllexport) int MumbleMain(HINSTANCE instance, HINSTANCE pr
 
 	// qWinMain takes argv as a reference.
 	QVector<char *> argv;
-	qWinMain(instance, prevInstance, cmdParam.data(), cmdShow, argc, argv);
+	//qWinMain(instance, prevInstance, cmdParam.data(), cmdShow, argc, argv);
 
 	int result = main(argc, argv.data());
 	return result;
 }
+#endif
+
+#ifdef MANUALLY_DEFINED_QT_NO_DEBUG
+#undef MANUALLY_DEFINED_QT_NO_DEBUG
+#undef QT_NO_DEBUG
 #endif

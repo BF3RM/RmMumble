@@ -18,7 +18,10 @@ mkdir cmake-build && cd cmake-build
 apt update
 apt install -y autoconf automake autopoint bash bison bzip2 flex g++ g++-multilib gettext git gperf intltool libc6-dev-i386 libgdk-pixbuf2.0-dev libltdl-dev libssl-dev libtool-bin libxml-parser-perl lzip make openssl p7zip-full patch perl pkg-config python ruby sed unzip wget xz-utils
 git clone https://github.com/snaiperskaya96/mxe.git && cd mxe
-make qtbase qtsvg qttools qttranslations boost protobuf sqlite flac ogg vorbis libsndfile dlfcn-win32 opus cc MXE_PLUGIN_DIRS=plugins/examples/qt5-freeze -j4
+make qtbase qtsvg qttools qttranslations boost protobuf sqlite flac ogg vorbis libsndfile dlfcn-win32 opus cc MXE_PLUGIN_DIRS=plugins/examples/qt5-freeze MXE_TARGETS=x86_64-w64-mingw32.shared --jobs=3 JOBS=2
 
 PATH=$PATH:/mxe/usr/bin/ make -j6
 PATH=$PATH:/mxe/usr/bin/ make -j6
+
+
+bash /mxe/tools/copydlldeps.sh --infile bin/RmMumbleApp.dll --destdir bin/ --recursivesrcdir /mxe/usr/x86_64-w64-mingw32.shared/ --copy --enforcedir /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/platforms/ --enforcedir /mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/sqldrivers/ --objdump /mxe/usr/bin/x86_64-w64-mingw32.shared-objdump

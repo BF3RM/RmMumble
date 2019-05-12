@@ -336,8 +336,9 @@ void MainWindow::SetupRmShortcuts()
 	{
 		QList<QVariant> Button;
 		Button << ScanCode;
+#ifdef WIN32
 		Button << QUuid(GUID_SysKeyboard);
-
+#endif
 		Shortcut Short;
 		Short.bSuppress = false;
 		Short.iIndex = GlobalShortcutEngine::engine->qmShortcuts.key(GShortcut);
@@ -650,6 +651,7 @@ bool MainWindow::winEvent(MSG *msg, long *) {
 
 	return false;
 }
+#endif
 
 void MainWindow::ClearTargets()
 {
@@ -657,7 +659,6 @@ void MainWindow::ClearTargets()
 	qmCurrentTargets.clear();
 }
 
-#endif
 
 void MainWindow::closeEvent(QCloseEvent *e) {
 #ifndef Q_OS_MAC

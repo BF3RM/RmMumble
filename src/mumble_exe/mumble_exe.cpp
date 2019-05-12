@@ -10,8 +10,6 @@
 
 #include <string>
 
-#define DEBUG
-
 typedef int (*DLL_MAIN)(HINSTANCE, HINSTANCE, LPSTR, int);
 #ifdef DEBUG
 typedef int (*DLL_DEBUG_MAIN)(int, char **);
@@ -137,6 +135,7 @@ static const std::wstring GetAbsoluteMumbleAppDllPath(std::wstring suggested_bas
 	return base_dir + L"RmMumbleApp.dll";
 }
 
+
 #ifdef DEBUG
 int main(int argc, char **argv) {
 	if (!ConfigureEnvironment()) {
@@ -162,9 +161,6 @@ int main(int argc, char **argv) {
 		Alert(L"Mumble Launcher Error -2", L"Unable to find the absolute path of mumble_app.dll.");
 		return -2;
 	}
-
-	std::cout << "Hello" << std::endl;
-	Alert(L"Mumble Launcher Error -3", abs_dll_path.c_str());
 
 	HMODULE dll = LoadLibraryExW(abs_dll_path.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 	if (!dll) {
@@ -203,7 +199,7 @@ std::string GetLastErrorAsString()
 	return message;
 }
 
-int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, wchar_t *cmdArg, int cmdShow) {
+int APIENTRY WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdArg, int cmdShow) {
 	if (!ConfigureEnvironment()) {
 		Alert(L"Mumble Launcher Error -1", L"Unable to configure environment.");
 		return -1;
@@ -224,7 +220,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, wchar_t *cmdAr
 
 	std::wstring abs_dll_path = GetAbsoluteMumbleAppDllPath(ok ? versioned_root_path : std::wstring());
 	if (abs_dll_path.empty()) {
-		Alert(L"Mumble Launcher Error -2", L"Unable to find the absolute path of mumble_app.dll.");
+		Alert(L"Mumble Launcher Error -2", L"Unable to find the absolute path of RmMumbleApp.dll.");
 		return -2;
 	}
 
@@ -241,7 +237,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, wchar_t *cmdAr
 	}
 
 	(void) cmdArg;
-	int rc = entry_point(instance, prevInstance, NULL, cmdShow);
+	int rc = entry_point(instance, prevInstance, cmdArg, cmdShow);
 
 	return rc;
 }

@@ -37,6 +37,8 @@ if(WIN32)
     #target_link_libraries(speex PRIVATE ogg crypto ssl)
     target_compile_definitions(speex PRIVATE -DWIN32 -D_WINDOWS -D_USE_MATH_DEFINES)
     target_include_directories(speex PRIVATE ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_SOURCE_DIR}/3rdparty/speex-build/win32)
+    target_link_libraries(speex PRIVATE -Wl,--allow-multiple-definition ogg winmm)
 elseif(UNIX)
     target_include_directories(speex PRIVATE 3rdparty/speex-build/)
 endif()
+

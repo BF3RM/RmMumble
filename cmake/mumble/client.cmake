@@ -1,6 +1,6 @@
 find_package(Qt5 COMPONENTS Svg REQUIRED)
 
-set(MumbleExeName RmMumble)
+set(MumbleExeName RmMumbleApp)
 
 set(MUMBLE_SOURCES
 #        src/mumble/release/qrc_mumble.cpp
@@ -80,10 +80,10 @@ set(MUMBLE_SOURCES
 
         src/mumble/LookConfig.cpp
         src/mumble/LookConfig.h
-        src/mumble/main.cpp
         src/mumble/MainWindow.cpp
         src/mumble/MainWindow.h
         src/mumble/Messages.cpp
+        src/mumble/main.cpp
         src/mumble/mumble_pch.hpp
         src/mumble/mumble_pch.hpp.cpp
         src/mumble/ManualPlugin.cpp
@@ -250,10 +250,13 @@ set(DEFINITIONS "")
 if(UNIX)
     add_executable(${MumbleExeName} ${FLAGS} ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC} ${MUMBLE_RESOURCES})
 else()
-    add_executable(${MumbleExeName} ${FLAGS} src/mumble/main.cpp ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${SHARED_OBJS} ${QT5_SRC} ${MUMBLE_RESOURCES})
+    add_library(${MumbleExeName} SHARED ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${SHARED_OBJS} ${QT5_SRC} ${MUMBLE_RESOURCES})
+    set_target_properties(${MumbleExeName} PROPERTIES PREFIX "")
     #add_executable(RmMumble ${FLAGS} ${MUMBLE_EXE_SOURCES})
     target_link_libraries(${MumbleExeName} PRIVATE shlwapi)
-    target_compile_definitions(${MumbleExeName} PRIVATE -DUNICODE -DUSE_DBUS)
+    target_compile_definitions(${MumbleExeName} PUBLIC -DUNICODE -DUSE_DBUS)
+    add_executable(RmMumble ${FLAGS} src/mumble_exe/mumble_exe.cpp)
+    target_link_libraries(RmMumble PRIVATE ${MumbleExeName} shlwapi)
 endif()
 
 set_target_properties(${MumbleExeName} 
@@ -292,6 +295,7 @@ if(WIN32)
         set(DEFINITIONS -DRM_POSITIONAL_DEBUG)
     endif()
 endif()
+
 #[[
 set(SHARED_SOURCES ${SHARED_SOURCE} ${SPEEX_SOURCES})
 set(SHARED_LIBS Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl)

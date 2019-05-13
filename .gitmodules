@@ -46,15 +46,3 @@
 [submodule "plugins/positional-audio-debug/asio"]
 	path = plugins/positional-audio-debug/asio
 	url = https://github.com/chriskohlhoff/asio.git
-[submodule "3rdparty/harfbuzz"]
-	path = 3rdparty/harfbuzz
-	url = https://github.com/harfbuzz/harfbuzz.git
-[submodule "3rdparty/flac"]
-	path = 3rdparty/flac
-	url = https://github.com/xiph/flac.git
-[submodule "3rdparty/vorbis"]
-	path = 3rdparty/vorbis
-	url = https://github.com/xiph/vorbis.git
-[submodule "3rdparty/pcre"]
-	path = 3rdparty/pcre
-	url = https://github.com/vmg/libpcre.git

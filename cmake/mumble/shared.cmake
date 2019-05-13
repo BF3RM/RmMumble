@@ -3,11 +3,7 @@ find_package(Qt5 COMPONENTS Gui Network Widgets DBus Xml Sql Svg REQUIRED)
 
 set(PCRE_BUILD_PCRE16 ON CACHE BOOL "Build 16 bit PCRE library" FORCE)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/harfbuzz)
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/zlib)
-#add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/flac)
-#add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/vorbis)
-add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/pcre)
 
 include_directories(E:\\Qt\\5.11.2\\msvc2017_64\\include)
 
@@ -128,28 +124,16 @@ set(SHARED_SOURCES ${SHARED_SOURCE}
         #${SPEEX_SOURCES}
         )
 
-set(SHARED_LIBS pcre16 celt0.0.7.0 celt0.0.11.0 ${Protobuf_LIBRARIES} ${RM_OPENSSL_LIBS} speex ${Boost_LIBRARIES} opus sndfile )
+set(SHARED_LIBS celt0.0.7.0 celt0.0.11.0 ${Protobuf_LIBRARIES} ${RM_OPENSSL_LIBS} speex ${Boost_LIBRARIES} opus sndfile )
 set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto
         ${RM_OPENSSL_INCLUDE} ${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src ${Protobuf_INCLUDE_DIR})
 set(SHARED_DEFS -DUSE_NO_SRV -DUSE_OPUS -DPCRE_STATIC)
 
 if(WIN32)
     set(SHARED_DEFS ${SHARED_DEFS} -DUNICODE -DRESTRICT=__restrict)
-    set(SHARED_LIBS ${SHARED_LIBS} crypt32 ws2_32 qwave celt0.0.7.0 celt0.0.11.0 ksuser harfbuzz)
+    set(SHARED_LIBS ${SHARED_LIBS} crypt32 ws2_32 qwave celt0.0.7.0 celt0.0.11.0 ksuser)
 else()
     set(SHARED_DEFS ${SHARED_DEFS} -DRESTRICT=__restrict__)
 endif()
 
 set(SHARED_LIBS Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql Qt5::Svg ${SHARED_LIBS})
-#[[
-add_library(RmShared STATIC ${SHARED_SOURCE} ${SPEEX_SOURCES})
-target_link_libraries(RmShared PUBLIC Qt5::Gui Qt5::Network Qt5::Widgets Qt5::DBus Qt5::Xml Qt5::Sql ${Protobuf_LIBRARIES} crypto ssl)
-target_include_directories(RmShared
-        PUBLIC
-        $<INSTALL_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl>
-        PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/
-        )
-target_compile_definitions(RmShared PRIVATE -DUSE_NO_SRV)
-]]

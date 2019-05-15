@@ -21,7 +21,7 @@ include_directories(cmake/general ${CMAKE_BINARY_DIR}/3rdparty)
 
 if (UNIX)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
-        set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} -static -static-libgcc -static-libstdc++)
+        set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++)
 endif()
 
 set(BUILD_OBJECT_LIBRARY_ONLY OFF CACHE BOOL "")

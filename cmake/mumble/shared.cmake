@@ -131,7 +131,7 @@ set(SHARED_DEFS -DUSE_NO_SRV -DUSE_OPUS -DPCRE_STATIC)
 
 if(WIN32)
     set(SHARED_DEFS ${SHARED_DEFS} -DUNICODE -DRESTRICT=__restrict)
-    set(SHARED_LIBS ${SHARED_LIBS} crypt32 ws2_32 qwave celt0.0.7.0 celt0.0.11.0 ksuser)
+    set(SHARED_LIBS ${SHARED_LIBS} crypt32 ws2_32 qwave celt0.0.7.0 celt0.0.11.0 ksuser dbghelp)
 else()
     set(SHARED_DEFS ${SHARED_DEFS} -DRESTRICT=__restrict__)
 endif()

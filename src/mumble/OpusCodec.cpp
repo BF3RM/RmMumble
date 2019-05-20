@@ -35,6 +35,7 @@ OpusCodec::OpusCodec() {
 #else
 	alternatives << QString::fromLatin1("opus0.dll");
 	alternatives << QString::fromLatin1("opus.dll");
+	alternatives << QString::fromLatin1("libopus-0.dll");
 #endif
 	foreach(const QString &lib, alternatives) {
 		qlOpus.setFileName(MumbleApplication::instance()->applicationVersionRootPath() + QLatin1String("/") + lib);

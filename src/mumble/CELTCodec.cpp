@@ -54,6 +54,7 @@ CELTCodec::CELTCodec(const QString &celt_version) {
 	}
 
 	alternatives << QString::fromLatin1("celt0.%1.dll").arg(celt_version);
+	alternatives << QString::fromLatin1("libcelt0.%1.dll").arg(celt_version);
 #endif
 	foreach(const QString &lib, alternatives) {
 		qlCELT.setFileName(MumbleApplication::instance()->applicationVersionRootPath() + QLatin1String("/") + lib);

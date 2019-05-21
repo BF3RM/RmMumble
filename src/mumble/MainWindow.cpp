@@ -48,7 +48,7 @@
 #include "SSLCipherInfo.h"
 #include "SvgIcon.h"
 #include "RMSocket.h"
-#include "RM3DSocket.h"
+#include "Rm3DSocket.h"
 
 #ifdef Q_OS_WIN
 #include "TaskList.h"

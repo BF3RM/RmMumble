@@ -19,6 +19,8 @@
 #include "Global.h"
 #include "NetworkConfig.h"
 #include "VoiceRecorder.h"
+#include "Rm3DSocket.h"
+#include "MainWindow.h"
 
 #ifdef USE_RNNOISE
 extern "C" {
@@ -1076,10 +1078,13 @@ void AudioInput::flushCheck(const QByteArray &frame, bool terminator) {
 		}
 	}
 
+	if (g.mw && g.mw->m_3DSocket)
+	{
+		pds << g.mw->m_3DSocket->GetPawnPosition()[0];
+		pds << g.mw->m_3DSocket->GetPawnPosition()[1];
+		pds << g.mw->m_3DSocket->GetPawnPosition()[2];
+	}
 	if (g.s.bTransmitPosition && g.p && ! g.bCenterPosition && g.p->fetch()) {
-		pds << g.p->fPosition[0];
-		pds << g.p->fPosition[1];
-		pds << g.p->fPosition[2];
 	}
 
 	sendAudioFrame(data, pds);

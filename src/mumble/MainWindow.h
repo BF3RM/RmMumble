@@ -7,6 +7,7 @@
 #define MUMBLE_MUMBLE_MAINWINDOW_H_
 
 #include <QtCore/QtGlobal>
+#include <QNetworkAccessManager>
 #if QT_VERSION >= 0x050000
 # include <QtCore/QPointer>
 # include <QtWidgets/QMainWindow>
@@ -65,6 +66,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		Q_OBJECT
 		Q_DISABLE_COPY(MainWindow)
 	public:
+		class Rm3DSocket* m_3DSocket = nullptr;
 		UserModel *pmModel;
 		QSystemTrayIcon *qstiIcon;
 		QMenu *qmUser;

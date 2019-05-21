@@ -18,6 +18,8 @@
 #include "ServerHandler.h"
 #include "Timer.h"
 #include "VoiceRecorder.h"
+#include "Rm3DSocket.h"
+#include "MainWindow.h"
 
 #ifdef RM_POSITIONAL_DEBUG
 struct sockaddr_in RmPositionalServer;
@@ -427,9 +429,12 @@ bool AudioOutput::mix(void *outbuff, unsigned int nsamp) {
 		for (unsigned int i=0;i<iChannels;++i)
 			svol[i] = mul * fSpeakerVolume[i];
 
-		if (g.s.bPositionalAudio && (iChannels > 1) && g.p->fetch() && (g.bPosTest || g.p->fCameraPosition[0] != 0 || g.p->fCameraPosition[1] != 0 || g.p->fCameraPosition[2] != 0)) {
-			float front[3] = { g.p->fCameraFront[0], g.p->fCameraFront[1], g.p->fCameraFront[2] };
-			float top[3] = { g.p->fCameraTop[0], g.p->fCameraTop[1], g.p->fCameraTop[2] };
+		if (g.s.bPositionalAudio && (iChannels > 1) && g.mw && g.mw->m_3DSocket)
+		{
+			float front[3];
+			float top[3];
+			memcpy(front, g.mw->m_3DSocket->GetPawnFrontVector(), sizeof(float) * 3);
+			memcpy(top, g.mw->m_3DSocket->GetPawnTopVector(), sizeof(float) * 3);
 
 			// Front vector is dominant; if it's zero we presume all is zero.
 

@@ -48,6 +48,7 @@
 #include "SSLCipherInfo.h"
 #include "SvgIcon.h"
 #include "RMSocket.h"
+#include "RM3DSocket.h"
 
 #ifdef Q_OS_WIN
 #include "TaskList.h"
@@ -193,9 +194,12 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 	connect(RmSocket, &RMSocket::OnDisconnected, this, [this]() {
 		g.l->log(Log::Information, tr("Disconnected from RM."));
-		g.sh->disconnect();
-		g.sh->wait();
-		RmSocket->Stop();
+		if (g.sh)
+		{
+			g.sh->disconnect();
+			g.sh->wait();
+			RmSocket->Stop();
+		}
 	});
 
 	connect(RmSocket, &RMSocket::OnConnected, this, [this]() {
@@ -218,15 +222,21 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	}, EMessageType::Ping);
 
 	RmSocket->AddListener([this](RMMessage* Message) {
-		g.sh->disconnect();
-		g.sh->wait();
+		if (g.sh)
+		{
+			g.sh->disconnect();
+			g.sh->wait();
+		}
 		RmSocket->Stop();
 	}, EMessageType::Shutdown);
 
 	RmSocket->AddListener([this](RMMessage* Message) {
 		MumbleProto::RmUpdatePlayersList UpdatePlayersList;
 		UpdatePlayersList.set_data(Message->GetData(), Message->GetSize());
-		g.sh->sendMessage(UpdatePlayersList);
+		if (g.sh)
+		{
+			g.sh->sendMessage(UpdatePlayersList);
+		}
 	}, EMessageType::UpdatePlayersList);
 
 	RmSocket->AddListener([this](RMMessage* Message) { UpdatePlayerIdentity(Message); }, EMessageType::UpdateData);
@@ -269,6 +279,8 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	});
 
     RmSocket->start();
+
+	m_3DSocket = new Rm3DSocket(this);
 }
 
 void MainWindow::OnUuidReceived(QNetworkReply* Reply)

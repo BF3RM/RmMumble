@@ -9,6 +9,7 @@ set(MUMBLE_SOURCES
 #        src/mumble/release/qrc_MumbleTheme.cpp
         src/mumble/widgets/MUComboBox.cpp
         src/mumble/widgets/MUComboBox.h
+        src/mumble/Rm3DSocket.cpp
         src/mumble/About.cpp
         src/mumble/About.h
         src/mumble/ACLEditor.cpp

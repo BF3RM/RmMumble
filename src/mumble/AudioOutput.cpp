@@ -545,7 +545,7 @@ bool AudioOutput::mix(void *outbuff, unsigned int nsamp) {
 				memcpy(Message + sizeof(float) * 3, aop->qsName.constData(), aop->qsName.size());
 				sendto(RmDebugClient, Message, sizeof(float) * 3 + aop->qsName.size(), 0, (sockaddr*)&RmPositionalServer, sizeof(sockaddr_in));
 #endif
-				float dir[3] = { aop->fPos[0] - g.p->fCameraPosition[0], aop->fPos[1] - g.p->fCameraPosition[1], aop->fPos[2] - g.p->fCameraPosition[2] };
+				float dir[3] = { aop->fPos[0] - g.mw->m_3DSocket->GetPawnPosition()[0], aop->fPos[1] - g.mw->m_3DSocket->GetPawnPosition()[1], aop->fPos[2] - g.mw->m_3DSocket->GetPawnPosition()[2] };
 				float len = sqrtf(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]);
 				if (len > 0.0f) {
 					dir[0] /= len;

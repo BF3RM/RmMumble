@@ -146,6 +146,8 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void setStatusRight(std::string message) { statusRight.setText(QString::fromStdString(message)); };
 		void SetupRmShortcuts();
 
+		inline QHash<ShortcutTarget, int> GetCurrentTargets() const { return qmCurrentTargets; }
+
 protected:
 		QNetworkAccessManager HttpManager;
 		class RMSocket* RmSocket;

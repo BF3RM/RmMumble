@@ -21,6 +21,7 @@
 #include "VoiceRecorder.h"
 #include "Rm3DSocket.h"
 #include "MainWindow.h"
+#include "Settings.h"
 
 #ifdef USE_RNNOISE
 extern "C" {
@@ -1078,13 +1079,26 @@ void AudioInput::flushCheck(const QByteArray &frame, bool terminator) {
 		}
 	}
 
+	uint8_t RmTarget = 0x0;
+
+	if (g.mw)
+	{
+		auto Targets = g.mw->GetCurrentTargets();
+		QHash<ShortcutTarget, int>::iterator It;
+		for (It = Targets.begin(); It != Targets.end(); ++It)
+		{
+			RmTarget &= (uint8_t) It.key().RmTarget;
+		}
+	}
+
+	qInfo() << (void*)RmTarget;
+	pds << RmTarget;
+
 	if (g.mw && g.mw->m_3DSocket)
 	{
 		pds << g.mw->m_3DSocket->GetPawnPosition()[0];
 		pds << g.mw->m_3DSocket->GetPawnPosition()[1];
 		pds << g.mw->m_3DSocket->GetPawnPosition()[2];
-	}
-	if (g.s.bTransmitPosition && g.p && ! g.bCenterPosition && g.p->fetch()) {
 	}
 
 	sendAudioFrame(data, pds);

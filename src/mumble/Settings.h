@@ -37,11 +37,11 @@ struct Shortcut {
 struct ShortcutTarget {
 	enum class ERmTarget : uint8_t
 	{
-		MumbleDefault = 0,
-		RmLocal = 1,
-		RmSquad = 2,
-		RmSquadLeader = 3,
-		RmCommander = 4
+		MumbleDefault = 1,
+		RmLocal = 2,
+		RmSquad = 4,
+		RmSquadLeader = 8,
+		RmCommander = 16
 	};
 
 

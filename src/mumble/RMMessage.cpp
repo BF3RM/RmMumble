@@ -21,7 +21,7 @@ void RMMessage::Send()
 	m_Socket->AddMessageToPoll(this);
 }
 
-void RMMessage::AddData(void* Source, uint32_t Size)
+void RMMessage::AddData(const void* Source, const uint32_t Size)
 {
 	m_DataSize += Size;
 	m_Data = (char*)realloc((void*)m_Data, m_DataSize);

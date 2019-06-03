@@ -30,7 +30,7 @@ public:
 
 	void Send();
 
-	void AddData(void* Source, uint32_t Size);
+	void AddData(const void* Source, const uint32_t Size);
 
 	inline void* GetData() const { return &m_Data[sizeof(uint32_t) + sizeof(EMessageType)]; }
 

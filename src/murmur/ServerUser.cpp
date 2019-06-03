@@ -127,7 +127,7 @@ void ServerUser::MoveToContextualChannel()
 		{
 			SquadIds[UserData.second.m_SquadId]++;
 			TeamIds[UserData.second.m_TeamId]++;
-			SquadIds[UserData.second.m_IsSquadLeader]++;
+			IsSquadLeaders[UserData.second.m_IsSquadLeader]++;
 		}
 	}
 

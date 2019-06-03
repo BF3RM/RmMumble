@@ -464,11 +464,11 @@ message VoiceTarget {
 
 	enum RmTarget 
 	{
-		Mumble = 0;
-		Local = 1;
-		Squad = 2;
-		SL = 3;
-		Commander = 4;
+		Mumble = 1;
+		Local = 2;
+		Squad = 4;
+		SL = 8;
+		Commander = 16;
 	}
 
 	// Voice target ID.

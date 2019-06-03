@@ -130,6 +130,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void updateChatBar();
 		void openTextMessageDialog(ClientUser *p);
 		void openUserLocalVolumeDialog(ClientUser *p);
+		inline class RMSocket* GetSocket() const { return RmSocket; }
 
 #ifdef Q_OS_WIN
 #if QT_VERSION >= 0x050000

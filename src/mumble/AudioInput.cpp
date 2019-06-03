@@ -1087,11 +1087,10 @@ void AudioInput::flushCheck(const QByteArray &frame, bool terminator) {
 		QHash<ShortcutTarget, int>::iterator It;
 		for (It = Targets.begin(); It != Targets.end(); ++It)
 		{
-			RmTarget &= (uint8_t) It.key().RmTarget;
+			RmTarget |= (uint8_t) It.key().RmTarget;
 		}
 	}
 
-	qInfo() << (void*)RmTarget;
 	pds << RmTarget;
 
 	if (g.mw && g.mw->m_3DSocket)

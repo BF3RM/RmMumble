@@ -7,6 +7,8 @@
 #define MUMBLE_MUMBLE_AUDIOOUTPUTUSER_H_
 
 #include <QtCore/QObject>
+#include <chrono>
+#include "Settings.h"
 
 class AudioOutputUser : public QObject {
 	private:
@@ -22,7 +24,10 @@ class AudioOutputUser : public QObject {
 		float *pfBuffer;
 		float *pfVolume;
 		float fPos[3];
+		ShortcutTarget::ERmTarget m_CurrentTarget;
 		virtual bool needSamples(unsigned int snum) = 0;
+	protected:
+		std::chrono::steady_clock::time_point m_LastUpdateTime;
 };
 
 #endif  // AUDIOOUTPUTUSER_H_

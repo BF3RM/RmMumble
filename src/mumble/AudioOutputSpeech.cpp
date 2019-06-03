@@ -13,6 +13,8 @@
 #include "ClientUser.h"
 #include "Global.h"
 #include "PacketDataStream.h"
+#include "MainWindow.h"
+#include "RMSocket.h"
 
 AudioOutputSpeech::AudioOutputSpeech(ClientUser *user, unsigned int freq, MessageHandler::UDPMessageType type) : AudioOutputUser(user->qsName) {
 	int err;
@@ -239,6 +241,43 @@ bool AudioOutputSpeech::needSamples(unsigned int snum) {
 							else
 								bHasTerminator = true;
 						} while ((header & 0x80) && pds.isValid());
+					}
+
+					pds >> (uint8_t&) m_CurrentTarget;
+					auto Now = std::chrono::steady_clock::now();
+					if (std::chrono::duration_cast<std::chrono::milliseconds>(Now - m_LastUpdateTime).count() >= 15)
+					{
+						m_LastUpdateTime = Now;
+						auto OnTalkMessage = g.mw->GetSocket()->NewMessage(EMessageType::Talking);
+						auto UserName = qsName.toStdString();
+						OnTalkMessage->AddData(&m_CurrentTarget, sizeof(uint8_t));
+						OnTalkMessage->AddData(UserName.c_str(), UserName.size());
+						OnTalkMessage->Send();
+					}
+
+					if ((uint8_t) m_CurrentTarget & (uint8_t) ShortcutTarget::ERmTarget::MumbleDefault)
+					{
+						qInfo() << qsName << " is talking in default mumble";
+					}
+
+					if ((uint8_t) m_CurrentTarget & (uint8_t) ShortcutTarget::ERmTarget::RmLocal)
+					{
+						qInfo() << qsName << " is talking in local";
+					}
+
+					if ((uint8_t) m_CurrentTarget & (uint8_t) ShortcutTarget::ERmTarget::RmSquad)
+					{
+						qInfo() << qsName << " is talking in squad";
+					}
+
+					if ((uint8_t) m_CurrentTarget & (uint8_t) ShortcutTarget::ERmTarget::RmCommander)
+					{
+						qInfo() << qsName << " is talking in commander";
+					}
+
+					if ((uint8_t) m_CurrentTarget & (uint8_t) ShortcutTarget::ERmTarget::RmSquadLeader)
+					{
+						qInfo() << qsName << " is talking in SL";
 					}
 
 					if (pds.left()) {

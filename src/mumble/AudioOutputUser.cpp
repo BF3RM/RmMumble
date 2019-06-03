@@ -12,6 +12,7 @@ AudioOutputUser::AudioOutputUser(const QString& name) : qsName(name) {
 	pfBuffer = NULL;
 	pfVolume = NULL;
 	fPos[0]=fPos[1]=fPos[2]=0.0;
+	m_LastUpdateTime = std::chrono::steady_clock::now();
 }
 
 AudioOutputUser::~AudioOutputUser() {

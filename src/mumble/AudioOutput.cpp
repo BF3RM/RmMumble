@@ -429,7 +429,7 @@ bool AudioOutput::mix(void *outbuff, unsigned int nsamp) {
 		for (unsigned int i=0;i<iChannels;++i)
 			svol[i] = mul * fSpeakerVolume[i];
 
-		if (g.s.bPositionalAudio && (iChannels > 1) && g.mw && g.mw->m_3DSocket)
+		if ((iChannels > 1) && g.mw && g.mw->m_3DSocket)
 		{
 			float front[3];
 			float top[3];
@@ -535,7 +535,9 @@ bool AudioOutput::mix(void *outbuff, unsigned int nsamp) {
 				}
 			}
 
-			if (validListener && ((aop->fPos[0] != 0.0f) || (aop->fPos[1] != 0.0f) || (aop->fPos[2] != 0.0f))) {
+			if (((uint8_t)aop->m_CurrentTarget & (uint8_t) ShortcutTarget::ERmTarget::RmLocal)
+				== (uint8_t) ShortcutTarget::ERmTarget::RmLocal 
+				&& validListener && ((aop->fPos[0] != 0.0f) || (aop->fPos[1] != 0.0f) || (aop->fPos[2] != 0.0f))) {
 #ifdef RM_POSITIONAL_DEBUG
 /**
  * x y z id 

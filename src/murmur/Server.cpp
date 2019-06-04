@@ -2085,8 +2085,9 @@ void Server::msgRmUpdatePlayersList(class ServerUser* User, class MumbleProto::R
 		UserData.m_TeamId = *(int32_t*)(Data.c_str() + LocalOffset);
 		LocalOffset += sizeof(bool);
 		UserData.m_IsSquadLeader = *(bool*)(Data.c_str() + LocalOffset);
-
 		Offset += LocalOffset;
+
+		UserData.m_LastUpdateTime = std::chrono::steady_clock::now();
 
 		for (auto& User : qhUsers)
 		{

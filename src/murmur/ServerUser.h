@@ -101,6 +101,7 @@ struct PerUserData
 	bool m_IsSquadLeader = false;
 	int32_t m_SquadId = 0;
 	int32_t m_TeamId = 0;
+	std::chrono::steady_clock::time_point m_LastUpdateTime;
 };
 
 class ServerUser : public Connection, public User {

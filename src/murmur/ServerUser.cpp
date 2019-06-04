@@ -85,6 +85,7 @@ void ServerUser::UpdateIdentity(QString NewIdentity)
 			}
 			m_PerUserData[qsName].m_TeamId = SplitIdentity[0].toInt();
 			m_PerUserData[qsName].m_SquadId = SplitIdentity[1].toInt();
+			m_PerUserData[qsName].m_LastUpdateTime = std::chrono::steady_clock::now();
 		}
 
         MoveToContextualChannel();
@@ -107,8 +108,16 @@ void ServerUser::MoveToContextualChannel()
 	std::map<int, int> TeamIds;
 	std::map<bool, int> IsSquadLeaders;
 
+	auto Now = std::chrono::steady_clock::now();
+
 	for (auto& UserData : m_PerUserData)
 	{
+		// Ignore if older than 60 seconds
+		if (std::chrono::duration_cast<std::chrono::seconds>(Now - UserData.second.m_LastUpdateTime).count() <= 60)
+		{
+			continue;
+		}
+
 		bool UserExist = false;
 		for (auto& User : s->qhUsers)
 		{

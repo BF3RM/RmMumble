@@ -33,32 +33,25 @@ ServerUser::ServerUser(Server *p, QSslSocket *socket) : Connection(p, socket), U
  * Identity = Faction~~Squad~~IsSquadLeader
  */
 
-bool ServerUser::IsSquadLeader() const
+bool ServerUser::IsSquadLeader()
 {
-    auto SplitIdentity = qsIdentity.split("~~");
-	if (SplitIdentity.size() < 3) return false;
+	UpdateSharedIdentity();
 
-    if (SplitIdentity[2] == "1") {
-        return true;
-    }
-
-    return false;
+	return m_IsSquadLeader;
 }
 
-int ServerUser::GetSquadId() const
+int ServerUser::GetSquadId()
 {
-    if (qsIdentity.isEmpty()) return 0;
-    auto SplitIdentity = qsIdentity.split("~~");
-    if (SplitIdentity.size() < 3) return 0;
-    return SplitIdentity[1].toInt();
+	UpdateSharedIdentity();
+
+	return m_SquadId;
 }
 
-int ServerUser::GetFactionId() const
+int ServerUser::GetFactionId()
 {
-    if (qsIdentity.isEmpty()) return 0;
-    auto SplitIdentity = qsIdentity.split("~~");
-    if (qsIdentity.size() < 3) return 0;
-    return SplitIdentity[0].toInt();
+	UpdateSharedIdentity();
+
+	return m_TeamId;
 }
 
 void ServerUser::UpdateContext(std::string NewContext)
@@ -98,10 +91,8 @@ Channel* ServerUser::GetContextualChannel()
     return s->qhChannels[ChannelId];
 }
 
-void ServerUser::MoveToContextualChannel()
+void ServerUser::UpdateSharedIdentity()
 {
-    if (!s) return;
-
 	std::vector<QString> ToBeDeleted;
 
 	std::map<int, int> SquadIds;
@@ -113,7 +104,7 @@ void ServerUser::MoveToContextualChannel()
 	for (auto& UserData : m_PerUserData)
 	{
 		// Ignore if older than 60 seconds
-		if (std::chrono::duration_cast<std::chrono::seconds>(Now - UserData.second.m_LastUpdateTime).count() <= 60)
+		if (std::chrono::duration_cast<std::chrono::seconds>(Now - UserData.second.m_LastUpdateTime).count() >= 60)
 		{
 			continue;
 		}
@@ -175,6 +166,13 @@ void ServerUser::MoveToContextualChannel()
 	{
 		m_PerUserData.erase(Name);
 	}
+}
+
+void ServerUser::MoveToContextualChannel()
+{
+    if (!s) return;
+
+	UpdateSharedIdentity();
 
     auto TargetChannel = GetContextualChannel();
     if (TargetChannel == cChannel) return;

@@ -1681,10 +1681,12 @@ void Server::UpdateRmWhisperTarget(ServerUser* SourceUser, WhisperTarget& MyTarg
 		}
 		else if (MyTarget.m_RmTargetId != 0)
 		{
+			qInfo() << "Trying to find SL " << MyTarget.m_RmTargetId;
 			for (auto VoiceUser : qhUsers)
 			{
-				if (VoiceUser->IsSquadLeader() && VoiceUser->GetSquadId() == MyTarget.m_RmTargetId && VoiceUser != SourceUser && VoiceUser->GetFactionId() == SourceUser->GetFactionId())
+				if (VoiceUser->IsSquadLeader() && (VoiceUser->GetSquadId()) == MyTarget.m_RmTargetId && VoiceUser != SourceUser && VoiceUser->GetFactionId() == SourceUser->GetFactionId())
 				{
+					qInfo() << "Found " << VoiceUser->qsName;
 					MyTarget.qlSessions << VoiceUser->uiSession;
 					break;
 				}
@@ -1708,11 +1710,11 @@ void Server::HandleRmVoiceTarget(ServerUser* SourceUser, MumbleProto::VoiceTarge
 	QWriteLocker lock(&qrwlVoiceThread);
 	SourceUser->qmTargetCache.remove(Target);
 
-	if (SourceUser->qmTargets.contains(Target))
+	/*if (SourceUser->qmTargets.contains(Target))
 	{
 		SourceUser->qmTargets.remove(Target);
 		return;
-	}
+	}*/
 
 	WhisperTarget MyWhisperTarget;
 	MyWhisperTarget.m_RmTarget = Message.realitymodtarget();

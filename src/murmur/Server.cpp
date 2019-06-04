@@ -2076,16 +2076,17 @@ void Server::msgRmUpdatePlayersList(class ServerUser* User, class MumbleProto::R
 
 		PerUserData UserData;
 
-		char* TargetPlayerName = new char[PlayerNameLength];
+		char* TargetPlayerName = new char[PlayerNameLength + 1];
+		memset(TargetPlayerName, '\n', PlayerNameLength + 1);
 		memcpy(TargetPlayerName, Data.c_str() + LocalOffset, PlayerNameLength);
 		UserData.m_FromUser = User->qsName.toStdString();
 		LocalOffset += PlayerNameLength;
 		UserData.m_SquadId = *(int32_t*)(Data.c_str() + LocalOffset);
 		LocalOffset += sizeof(int32_t);
 		UserData.m_TeamId = *(int32_t*)(Data.c_str() + LocalOffset);
-		LocalOffset += sizeof(bool);
+		LocalOffset += sizeof(int32_t);
 		UserData.m_IsSquadLeader = *(bool*)(Data.c_str() + LocalOffset);
-		Offset += LocalOffset;
+		Offset += sizeof(int32_t) * 3 + PlayerNameLength + sizeof(bool);
 
 		UserData.m_LastUpdateTime = std::chrono::steady_clock::now();
 

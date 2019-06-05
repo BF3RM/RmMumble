@@ -22,7 +22,7 @@ void RMSocket::run()
         if (!Socket) continue;
 
         emit OnConnected();
-		g.mw->setStatusLeft("Socket Connected");
+		g.mw->setStatusLeft("Connected");
 
 		QTimer* RmPingTimeout = new QTimer();
 		RmPingTimeout->start(11000);
@@ -86,7 +86,7 @@ void RMSocket::run()
 		delete RmPingTimeout;
         if (Socket) Socket->deleteLater();
         emit OnDisconnected();
-		g.mw->setStatusLeft("Socket Disconnected");
+		g.mw->setStatusLeft("Disconnected");
 		g.mw->setStatusMid("...");
 	}
 }

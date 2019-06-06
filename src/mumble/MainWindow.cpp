@@ -49,6 +49,7 @@
 #include "SvgIcon.h"
 #include "RMSocket.h"
 #include "Rm3DSocket.h"
+#include "RmUpdater.h"
 
 #ifdef Q_OS_WIN
 #include "TaskList.h"
@@ -281,6 +282,8 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
     RmSocket->start();
 
 	m_3DSocket = new Rm3DSocket(this);
+	auto Updater = new RmUpdater;
+	Updater->CheckForUpdates([this](bool UpdateAvailable) { qInfo() << UpdateAvailable; });
 }
 
 void MainWindow::OnUuidReceived(QNetworkReply* Reply)

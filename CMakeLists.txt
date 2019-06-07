@@ -45,9 +45,8 @@ include(cmake/speex/speex.cmake)
 
 include(cmake/protobuf/protobuf.cmake)
 
+include(cmake/mumble/updater.cmake)
 include(cmake/mumble/shared.cmake)
-
-#include_directories(${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src)
 include(cmake/mumble/server.cmake)
 include(cmake/mumble/client.cmake)
 

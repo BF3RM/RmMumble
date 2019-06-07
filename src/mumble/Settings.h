@@ -170,6 +170,7 @@ struct Settings {
 	/// Removed. This was previously used to configure whether the Mumble
 	/// ConfigDialog should show advanced options or not.
 	bool bExpert;
+	bool m_NoUpdate = false;
 
 	bool bTxAudioCue;
 	static const QString cqsDefaultPushClickOn;

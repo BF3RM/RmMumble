@@ -219,6 +219,10 @@ int main(int argc, char **argv) {
 			} else if (args.at(i) == QLatin1String("-n") || args.at(i) == QLatin1String("--noidentity")) {
 				suppressIdentity = true;
 				g.s.bSuppressIdentity = true;
+#ifdef RM_DEVELOPMENT
+			} else if (args.at(i) == QLatin1String("-no-update")) { 
+				g.s.m_NoUpdate = true;
+#endif
 			} else if (args.at(i) == QLatin1String("-jn") || args.at(i) == QLatin1String("--jackname")) {
 				g.s.qsJackClientName = QString(args.at(i+1));
 				customJackClientName = true;
@@ -286,7 +290,8 @@ int main(int argc, char **argv) {
 	}
 #endif
 #endif
-
+// Prevent direct connection on release builds
+#ifdef RM_DEVELOPMENT
 	if (bRpcMode) {
 		bool sent = false;
 		QMap<QString, QVariant> param;
@@ -331,6 +336,7 @@ int main(int argc, char **argv) {
 
 		}
 	}
+#endif
 
 #ifdef Q_OS_WIN
 	// The code above this block is somewhat racy, in that it might not

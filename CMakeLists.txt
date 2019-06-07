@@ -45,6 +45,19 @@ include(cmake/speex/speex.cmake)
 
 include(cmake/protobuf/protobuf.cmake)
 
+find_package(GitInfo)
+git_wc_info(${PROJECT_SOURCE_DIR} RM)
+
+if ("${RM_WC_BRANCH}" EQUAL "production")
+add_definitions(-DRM_PRODUCTION)
+message("Building in RM production mode")
+else()
+add_definitions(-DRM_DEVELOPMENT)
+message("Building in RM development mode")
+endif()
+
+message(STATUS "The current git branch is ${RM_WC_BRANCH}")
+
 include(cmake/mumble/updater.cmake)
 include(cmake/mumble/shared.cmake)
 include(cmake/mumble/server.cmake)

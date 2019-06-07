@@ -21,27 +21,33 @@
 #endif
 #endif
 
+#ifdef WIN32
+#define UPDATER_PLATFORM "Windows"
+#else
+#define UPDATER_PLATFORM "Linux"
+#endif
+
+#ifdef ENVIRONMENT64
+#define UPDATER_ARCH "64"
+#else
+#define UPDATER_ARCH "32"
+#endif
+
+#ifdef RM_DEVELOPMENT
+#define UPDATER_DEV "/dev"
+#else
+#define UPDATER_DEV ""
+#endif
+
 void RmUpdater::CheckForUpdates(std::function<void(bool UpdateAvailable)> Callback, bool Client)
 {
     m_UpdateCheckCallback = Callback;
     QNetworkAccessManager* Manager = new QNetworkAccessManager();
     QObject::connect(Manager, &QNetworkAccessManager::finished, std::bind(&RmUpdater::OnCheckForUpdatesReply, this, std::placeholders::_1));
     QNetworkRequest Request;
-    Request.setUrl(QUrl(
-        "http://rm-mumble.skayahack.uk/latest/"
-        #ifdef WIN32
-        "Windows"
-        #else
-        "Linux"
-        #endif
-        "Client"
-        #ifdef ENVIRONMENT64
-        "64"
-        #else
-        "32"
-        #endif
-        "/dev"
-    ));
+    Request.setUrl(QUrl(QString("http://rm-mumble.skayahack.uk/latest/%1%2%3%4").arg(
+            UPDATER_PLATFORM, (Client ? "Client" : "Server"), UPDATER_ARCH, UPDATER_DEV
+    )));
     Manager->get(Request);
 }
 

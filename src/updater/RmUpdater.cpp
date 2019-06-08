@@ -240,7 +240,7 @@ std::string RmUpdater::CopyUpdaterToTemporaryFile()
 
     #ifndef WIN32
     LibPostfix += "so";
-    QString UpdaterPostfix = "";
+    UpdaterPostfix = "";
     #endif
 
     QStringList Libraries = UpdaterDir.entryList(QStringList() << ("*." + LibPostfix), QDir::Files);

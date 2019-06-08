@@ -103,14 +103,11 @@ void DownloadUpdate(std::string Path, bool IsClient)
             QDir MumblePath(Path.c_str());
             QString Name = (IsClient ? "RmMumble" : "RmMurmur");
             QMessageBox::information(Progress, "Update Complete", "Well done! You survived the update. Will restart " + Name + " in a moment...");
-            QProcess UpdaterProcess;
             #ifdef WIN32
-            UpdaterProcess.setProgram(MumblePath.filePath(Name + ".exe"));
+            QProcess::startDetached(MumblePath.filePath(Name + ".exe"), {}, QString(Path.c_str()));
             #else
-            UpdaterProcess.setProgram(MumblePath.filePath(Name));
+            QProcess::startDetached(MumblePath.filePath(Name), {}, QString(Path.c_str()));
             #endif
-            UpdaterProcess.setWorkingDirectory(QString(Path.c_str()));
-            UpdaterProcess.startDetached();
             QApplication::quit();
         }
 

@@ -280,7 +280,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		}
 	});
 
-	if (!g.s.m_ForceUpdate)
+	if (g.s.m_ForceUpdate)
 	{
 		RunUpdater();
 	}
@@ -289,11 +289,12 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 	if (!g.s.m_NoUpdate)
 	#endif
 	{
-		auto Updater = new RmUpdater;
-		Updater->CheckForUpdates([this](bool UpdateAvailable)
+		RmUpdater Updater;
+		Updater.CheckForUpdates([this](bool UpdateAvailable)
 		{ 
 			if (UpdateAvailable)
 			{
+				QMessageBox::information(this, QLatin1String("New update available"), QLatin1String("There is a new update available. It will be downloaded and installed automatically."), QMessageBox::Ok);
 				RunUpdater();
 			}
 		});
@@ -305,9 +306,26 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 void MainWindow::RunUpdater()
 {
+	RmUpdater Updater;
+	std::string TempUpdaterPath = Updater.CopyUpdaterToTemporaryFile();
+	QDir TempUpdaterDir(QLatin1String(TempUpdaterPath.c_str()));
+
 	QProcess UpdaterProcess;
-	UpdaterProcess.setProgram(QLatin1String("RmUpdater.exe"));
-	UpdaterProcess.setArguments(QStringList(QLatin1String("-client")));
+	#ifdef WIN32
+	UpdaterProcess.setProgram(TempUpdaterDir.filePath(QLatin1String("RmUpdater.exe")));
+	#else
+	UpdaterProcess.setProgram(TempUpdaterDir.filePath(QLatin1String("RmUpdater")));
+	#endif
+	UpdaterProcess.setWorkingDirectory(TempUpdaterDir.absolutePath());
+	QStringList Arguments;//(QLatin1String("--client")); should just be --server when server
+	Arguments << QLatin1String("--path") << QApplication::applicationDirPath();
+
+	if (g.s.m_ForceUpdate)
+	{
+		Arguments << QLatin1String("--force-update");
+	}
+
+	UpdaterProcess.setArguments(Arguments);
 	UpdaterProcess.startDetached();
 	g.bQuit = true;
 	QApplication::quit();

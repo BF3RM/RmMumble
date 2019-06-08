@@ -6,8 +6,10 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QTemporaryFile>
+#include <QTemporaryDir>
 #include <QDir>
 #include <memory>
+#include <QMessageBox>
 #include "zlib/contrib/minizip/zip.h"
 #include "zlib/contrib/minizip/unzip.h"
 
@@ -52,6 +54,7 @@
 RmUpdater::RmUpdater()
 {
     m_Manager = new QNetworkAccessManager();
+    m_Manager->setRedirectPolicy(QNetworkRequest::RedirectPolicy::NoLessSafeRedirectPolicy);
 }
 
 void RmUpdater::CheckForUpdates(RmUpdater::Response Callback, bool Client)
@@ -108,15 +111,16 @@ void RmUpdater::OnCheckForUpdatesReply(class QNetworkReply* Reply, RmUpdater::Re
     
 }
 
-void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string StdPath, bool Client)
+void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, RmUpdater::ExtractProgress ExtractCallback, std::string StdPath, bool Client)
 {
     QNetworkRequest Request;
     Request.setUrl(QUrl(QString("http://rm-mumble.skayahack.uk/get-latest/%1%2%3%4").arg(
             UPDATER_PLATFORM, (Client ? "Client" : "Server"), UPDATER_ARCH, UPDATER_DEV
     )));
+    qDebug() << "Downloading " << Request.url();
     auto Reply = m_Manager->get(Request);
     QObject::connect(Reply, &QNetworkReply::downloadProgress, Progress);
-    QObject::connect(Reply, &QNetworkReply::finished, [StdPath, Reply, this]() 
+    QObject::connect(Reply, &QNetworkReply::finished, [StdPath, Reply, this, ExtractCallback]() 
     { 
         QString Path(StdPath.c_str());
         QTemporaryFile TempZip;
@@ -128,7 +132,7 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string
             unzFile ZipFile = unzOpen(TempZip.fileName().toStdString().c_str());
             if (!ZipFile)
             {
-                qCritical() << "Cannot open the downloaded update";
+                QMessageBox::critical(nullptr, "Error", "Cannot open the downloaded update");
                 QApplication::exit();
                 return;
             }
@@ -136,7 +140,7 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string
             unz_global_info GlobalInfo;
             if (unzGetGlobalInfo(ZipFile, &GlobalInfo) != UNZ_OK )
             {
-                qCritical() << "Cannot read global info";
+                QMessageBox::critical(nullptr, "Error", "Cannot read global info");
                 unzClose(ZipFile);
                 QApplication::exit();
                 return;
@@ -145,11 +149,12 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string
             QDir Directory(Path);
             for (unsigned long I = 0; I < GlobalInfo.number_entry; I++)
             {
+                ExtractCallback(I + 1, GlobalInfo.number_entry);
                 unz_file_info FileInfo;
                 char FileName[512];
                 if (unzGetCurrentFileInfo(ZipFile, &FileInfo, FileName, 512, nullptr, 0, nullptr, 0 ) != UNZ_OK)
                 {
-                    qCritical() << "Cannot read file info";
+                    QMessageBox::critical(nullptr, "Error", "Cannot read file info");
                     unzClose(ZipFile);
                     QApplication::exit();
                     return;
@@ -165,7 +170,7 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string
                 {
                     if (unzOpenCurrentFile(ZipFile) != UNZ_OK)
                     {
-                        qCritical() << "Could not open current file";
+                        QMessageBox::critical(nullptr, "Error", "Could not open current file");
                         unzClose(ZipFile);
                         QApplication::exit();
                         return;
@@ -174,7 +179,7 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string
                     QFile File(Directory.filePath(FilePath));
                     if (!File.open(QIODevice::Truncate | QIODevice::WriteOnly))
                     {
-                        qCritical() << "Could not open " << File.fileName() << " for writing. " << File.errorString();
+                        QMessageBox::critical(nullptr, "Error", "Could not open " + File.fileName() + " for writing. " + File.errorString());
                         unzCloseCurrentFile(ZipFile);
                         unzClose(ZipFile);
                         QApplication::exit();
@@ -188,7 +193,7 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string
                         Error = unzReadCurrentFile(ZipFile, Buffer, BufferSize);
                         if (Error < 0)
                         {
-                            qCritical() << "There was an error while reading file " << Directory.filePath(FilePath) << ". Error code: " << Error;
+                            QMessageBox::critical(nullptr, "Error", "There was an error while reading file " + Directory.filePath(FilePath) + ". Error code: " + Error);
                             unzCloseCurrentFile(ZipFile);
                             unzClose(ZipFile);
                             QApplication::exit();
@@ -206,7 +211,7 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string
                 {
                     if (unzGoToNextFile(ZipFile) != UNZ_OK)
                     {
-                        qCritical() << "Could not read next file";
+                        QMessageBox::critical(nullptr, "Error", "Could not read next file");
                         unzClose(ZipFile);
                         QApplication::exit();
                         return;
@@ -221,4 +226,30 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, std::string
         }
        // OnCheckForUpdatesReply(Reply);
     });
+}
+
+std::string RmUpdater::CopyUpdaterToTemporaryFile()
+{
+    QTemporaryDir Dir;
+    Dir.setAutoRemove(false);
+    QDir UpdaterDir(QCoreApplication::applicationDirPath());
+
+    QString LibPostfix = "dll";
+    QString UpdaterPostfix = ".exe";
+
+    #ifndef WIN32
+    LibPostfix += "so"
+    QString UpdaterPostfix = "";
+    #endif
+
+    QStringList Libraries = UpdaterDir.entryList(QStringList() << ("*." + LibPostfix), QDir::Files);
+
+    for(auto& Library : Libraries)
+    {
+        QFile::copy(UpdaterDir.filePath(Library), Dir.filePath(Library));
+    }
+
+    QFile::copy(UpdaterDir.filePath("RmUpdater" + UpdaterPostfix), Dir.filePath("RmUpdater" + UpdaterPostfix ));
+
+    return Dir.path().toStdString();
 }

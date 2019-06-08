@@ -236,7 +236,7 @@ int APIENTRY WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdArg, i
 		return -4;
 	}
 
-	(void) cmdArg;
+
 	int rc = entry_point(instance, prevInstance, cmdArg, cmdShow);
 
 	return rc;

@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QNetworkReply>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QTemporaryFile>
 #include <QTemporaryDir>
 #include <QDir>
@@ -82,9 +83,9 @@ void RmUpdater::OnCheckForUpdatesReply(class QNetworkReply* Reply, RmUpdater::Re
         return;
     }
 
-    QJsonValue Major = Document[QString("major")];
-    QJsonValue Minor = Document[QString("minor")];
-    QJsonValue Patch = Document[QString("patch")];
+    QJsonValue Major = Document.object()["major"];
+    QJsonValue Minor = Document.object()["minor"];
+    QJsonValue Patch = Document.object()["patch"];
 
     if (Major.isNull() || Minor.isNull() || Patch.isNull())
     {

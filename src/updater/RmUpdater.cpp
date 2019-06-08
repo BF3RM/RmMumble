@@ -82,9 +82,9 @@ void RmUpdater::OnCheckForUpdatesReply(class QNetworkReply* Reply, RmUpdater::Re
         return;
     }
 
-    QJsonValue Major = Document["major"];
-    QJsonValue Minor = Document["minor"];
-    QJsonValue Patch = Document["patch"];
+    QJsonValue Major = Document[QString("major")];
+    QJsonValue Minor = Document[QString("minor")];
+    QJsonValue Patch = Document[QString("patch")];
 
     if (Major.isNull() || Minor.isNull() || Patch.isNull())
     {

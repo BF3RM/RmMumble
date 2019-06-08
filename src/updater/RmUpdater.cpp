@@ -239,7 +239,7 @@ std::string RmUpdater::CopyUpdaterToTemporaryFile()
     QString UpdaterPostfix = ".exe";
 
     #ifndef WIN32
-    LibPostfix += "so"
+    LibPostfix += "so";
     QString UpdaterPostfix = "";
     #endif
 

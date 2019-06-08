@@ -131,6 +131,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void openTextMessageDialog(ClientUser *p);
 		void openUserLocalVolumeDialog(ClientUser *p);
 		inline class RMSocket* GetSocket() const { return RmSocket; }
+		void SendTalkingMessage(std::string Who, ShortcutTarget::ERmTarget Where);
 
 #ifdef Q_OS_WIN
 #if QT_VERSION >= 0x050000

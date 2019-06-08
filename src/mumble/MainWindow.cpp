@@ -253,7 +253,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		g.l->log(Log::Information, tr("Connecting to ") + SplitMessage[0]);
 
 		RmConnectingUuid = SplitMessage[0];
-		RmUser = SplitMessage[1];
+		RmUser = g.s.qsUsername = SplitMessage[1];
 
 		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(RmConnectingUuid);
 		auto Request = new QNetworkRequest(QUrl(Url));
@@ -2966,6 +2966,8 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant Shortcut)
 	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquad;
 	ShortTarget.bForceCenter = true;
 
+	SendTalkingMessage(g.s.qsUsername.toStdString(), (Down ? ShortcutTarget::ERmTarget::RmSquad : ShortcutTarget::ERmTarget::None));
+
 	if (Down) 
 	{
 		addTarget(&ShortTarget);
@@ -2991,6 +2993,8 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant Shortcut)
 	ShortcutTarget ShortTarget = Shortcut.value<ShortcutTarget>();
 	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmLocal;
 	ShortTarget.bForceCenter = false;
+
+	SendTalkingMessage(g.s.qsUsername.toStdString(), (Down ? ShortcutTarget::ERmTarget::RmLocal : ShortcutTarget::ERmTarget::None));
 
 	if (Down)
 	{
@@ -3018,6 +3022,8 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Shortcut)
 	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquadLeader;
 	ShortTarget.RmTargetId = Shortcut.toInt();
 	ShortTarget.bForceCenter = true;
+
+	SendTalkingMessage(g.s.qsUsername.toStdString(), (Down ? ShortcutTarget::ERmTarget::RmSquadLeader : ShortcutTarget::ERmTarget::None));
 
 	if (Down)
 	{
@@ -3653,4 +3659,12 @@ void MainWindow::destroyUserInformation() {
 void MainWindow::msgRmUpdatePlayersList(class MumbleProto::RmUpdatePlayersList const &)
 {
 
+}
+
+void MainWindow::SendTalkingMessage(std::string Who, ShortcutTarget::ERmTarget Where)
+{
+	auto OnTalkMessage = GetSocket()->NewMessage(EMessageType::Talking);
+	OnTalkMessage->AddData(&Where, sizeof(uint8_t));
+	OnTalkMessage->AddData(Who.c_str(), Who.size());
+	OnTalkMessage->Send();
 }

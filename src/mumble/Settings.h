@@ -37,6 +37,7 @@ struct Shortcut {
 struct ShortcutTarget {
 	enum class ERmTarget : uint8_t
 	{
+		None = 0,
 		MumbleDefault = 1,
 		RmLocal = 2,
 		RmSquad = 4,

@@ -201,7 +201,7 @@ protected:
 		void showEvent(QShowEvent *e) Q_DECL_OVERRIDE;
 		void changeEvent(QEvent* e) Q_DECL_OVERRIDE;
 		void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
-
+		void RunUpdater();
 		QMenu *createPopupMenu() Q_DECL_OVERRIDE;
 
 		bool handleSpecialContextMenu(const QUrl &url, const QPoint &pos_, bool focus = false);

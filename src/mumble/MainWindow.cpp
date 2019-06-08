@@ -280,16 +280,37 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		}
 	});
 
-    RmSocket->start();
+	if (!g.s.m_ForceUpdate)
+	{
+		RunUpdater();
+	}
 
-	m_3DSocket = new Rm3DSocket(this);
 	#ifdef RM_DEVELOPMENT
 	if (!g.s.m_NoUpdate)
 	#endif
 	{
 		auto Updater = new RmUpdater;
-		Updater->CheckForUpdates([this](bool UpdateAvailable) { qInfo() << UpdateAvailable; });
+		Updater->CheckForUpdates([this](bool UpdateAvailable)
+		{ 
+			if (UpdateAvailable)
+			{
+				RunUpdater();
+			}
+		});
 	}
+
+	RmSocket->start();
+	m_3DSocket = new Rm3DSocket(this);
+}
+
+void MainWindow::RunUpdater()
+{
+	QProcess UpdaterProcess;
+	UpdaterProcess.setProgram(QLatin1String("RmUpdater.exe"));
+	UpdaterProcess.setArguments(QStringList(QLatin1String("-client")));
+	UpdaterProcess.startDetached();
+	g.bQuit = true;
+	QApplication::quit();
 }
 
 void MainWindow::OnUuidReceived(QNetworkReply* Reply)

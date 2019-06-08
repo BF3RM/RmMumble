@@ -1,7 +1,10 @@
-find_package(Qt5 COMPONENTS Network)
+find_package(Qt5 COMPONENTS Network Core Widgets)
 
-add_library(UpdaterLib STATIC ${CMAKE_SOURCE_DIR}/src/updater/RmUpdater.cpp)
-target_include_directories(UpdaterLib PUBLIC ${CMAKE_SOURCE_DIR}/src/updater)
-target_link_libraries(UpdaterLib PUBLIC Qt5::Network)
+file(GLOB MINIZIP_SOURCES ${CMAKE_SOURCE_DIR}/3rdparty/zlib/contrib/minizip/*.c)
 
-add_executable(Updater ${CMAKE_SOURCE_DIR}/src/updater/main.cpp)
+add_library(UpdaterLib STATIC ${CMAKE_SOURCE_DIR}/src/updater/RmUpdater.cpp ${MINIZIP_SOURCES})
+target_include_directories(UpdaterLib PUBLIC ${CMAKE_SOURCE_DIR}/src/updater ${CMAKE_SOURCE_DIR}/3rdparty/zlib/ ${CMAKE_BINARY_DIR}/3rdparty/zlib)
+target_link_libraries(UpdaterLib PRIVATE Qt5::Network Qt5::Widgets zlib)
+
+add_executable(RmUpdater ${CMAKE_SOURCE_DIR}/src/updater/main.cpp ${CMAKE_SOURCE_DIR}/src/updater/Progress.cpp)
+target_link_libraries(RmUpdater PRIVATE UpdaterLib Qt5::Core Qt5::Widgets)

@@ -1,11 +1,19 @@
 #include <functional>
+#include <cstdint>
 
 class RmUpdater
 {
 public:
-    void CheckForUpdates(std::function<void(bool UpdateAvailable)> Callback, bool Client = true);
+    typedef std::function<void(int64_t BytesReceived, int64_t BytesTotal)> DownloadProgress; 
+    typedef std::function<void(bool UpdateAvailable)> Response; 
+
+public:
+    RmUpdater();
+    void CheckForUpdates(RmUpdater::Response Callback, bool Client = true);
+    void DownloadLatest(RmUpdater::DownloadProgress Progress, std::string Path, bool Client = true);
+    //downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 protected:
-    void OnCheckForUpdatesReply(class QNetworkReply* Reply);
+    void OnCheckForUpdatesReply(class QNetworkReply* Reply, RmUpdater::Response Callback);
 protected:
-    std::function<void(bool UpdateAvailable)> m_UpdateCheckCallback;
+    class QNetworkAccessManager* m_Manager = nullptr;
 };

@@ -223,6 +223,8 @@ int main(int argc, char **argv) {
 			} else if (args.at(i) == QLatin1String("-no-update")) { 
 				g.s.m_NoUpdate = true;
 #endif
+			} else if (args.at(i) == QLatin1String("-force-update")) { 
+				g.s.m_ForceUpdate = true;
 			} else if (args.at(i) == QLatin1String("-jn") || args.at(i) == QLatin1String("--jackname")) {
 				g.s.qsJackClientName = QString(args.at(i+1));
 				customJackClientName = true;

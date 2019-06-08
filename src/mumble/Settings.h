@@ -171,6 +171,7 @@ struct Settings {
 	/// ConfigDialog should show advanced options or not.
 	bool bExpert;
 	bool m_NoUpdate = false;
+	bool m_ForceUpdate = false;
 
 	bool bTxAudioCue;
 	static const QString cqsDefaultPushClickOn;

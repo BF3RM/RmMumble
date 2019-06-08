@@ -310,13 +310,6 @@ void MainWindow::RunUpdater()
 	std::string TempUpdaterPath = Updater.CopyUpdaterToTemporaryFile();
 	QDir TempUpdaterDir(QLatin1String(TempUpdaterPath.c_str()));
 
-	QProcess UpdaterProcess;
-	#ifdef WIN32
-	UpdaterProcess.setProgram(TempUpdaterDir.filePath(QLatin1String("RmUpdater.exe")));
-	#else
-	UpdaterProcess.setProgram(TempUpdaterDir.filePath(QLatin1String("RmUpdater")));
-	#endif
-	UpdaterProcess.setWorkingDirectory(TempUpdaterDir.absolutePath());
 	QStringList Arguments;//(QLatin1String("--client")); should just be --server when server
 	Arguments << QLatin1String("--path") << QApplication::applicationDirPath();
 
@@ -325,8 +318,12 @@ void MainWindow::RunUpdater()
 		Arguments << QLatin1String("--force-update");
 	}
 
-	UpdaterProcess.setArguments(Arguments);
-	UpdaterProcess.startDetached();
+	#ifdef WIN32
+	QProcess::startDetached(TempUpdaterDir.filePath(QLatin1String("RmUpdater.exe")), Arguments, TempUpdaterDir.absolutePath());
+	#else
+	QProcess::startDetached(TempUpdaterDir.filePath(QLatin1String("RmUpdater")), Arguments, TempUpdaterDir.absolutePath());
+	#endif
+
 	g.bQuit = true;
 	QApplication::quit();
 }

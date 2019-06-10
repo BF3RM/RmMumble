@@ -60,7 +60,7 @@ target_include_directories(RmMurmur
         )
 target_compile_definitions(RmMurmur PRIVATE -DMURMUR -DUSE_NO_SRV ${SHARED_DEFS})
 
-
+add_dependencies(RmMurmur RmUpdater)
 #[[
 add_executable(RmMurmur ${MURMUR_SOURCES} ${MURMUR_HEADERS})
 target_link_libraries(RmMurmur PRIVATE RmShared ${ADDITIONAL_LIBS} speex)

@@ -249,6 +249,7 @@ endif()
 set(DEFINITIONS "")
 
 if(UNIX)
+    set(MumbleExeName RmMumble)
     add_executable(${MumbleExeName} ${FLAGS} ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC} ${MUMBLE_RESOURCES})
 else()
     add_library(${MumbleExeName} SHARED ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${SHARED_OBJS} ${QT5_SRC} ${MUMBLE_RESOURCES})
@@ -296,6 +297,8 @@ if(WIN32)
         set(DEFINITIONS -DRM_POSITIONAL_DEBUG)
     endif()
 endif()
+
+add_dependencies(${MumbleExeName} RmUpdater)
 
 #[[
 set(SHARED_SOURCES ${SHARED_SOURCE} ${SPEEX_SOURCES})

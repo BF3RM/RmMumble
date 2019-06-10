@@ -1,8 +1,3 @@
-#ifndef RM_VERSION_DEFINED
-#define RM_VERSION_DEFINED
-
 #define RM_MAJOR_VERSION 1
 #define RM_MINOR_VERSION 2
 #define RM_PATCH_VERSION 4
-
-#endif

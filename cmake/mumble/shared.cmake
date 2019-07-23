@@ -124,7 +124,7 @@ set(SHARED_SOURCES ${SHARED_SOURCE}
         #${SPEEX_SOURCES}
         )
 
-set(SHARED_LIBS celt0.0.7.0 celt0.0.11.0 ${Protobuf_LIBRARIES} ${RM_OPENSSL_LIBS} speex ${Boost_LIBRARIES} opus sndfile )
+set(SHARED_LIBS UpdaterLib celt0.0.7.0 celt0.0.11.0 ${Protobuf_LIBRARIES} ${RM_OPENSSL_LIBS} speex ${Boost_LIBRARIES} opus sndfile )
 set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto
         ${RM_OPENSSL_INCLUDE} ${CMAKE_BINARY_DIR}/3rdparty/libsndfile/src ${Protobuf_INCLUDE_DIR})
 set(SHARED_DEFS -DUSE_NO_SRV -DUSE_OPUS -DPCRE_STATIC)

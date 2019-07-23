@@ -248,11 +248,7 @@ bool AudioOutputSpeech::needSamples(unsigned int snum) {
 					if (std::chrono::duration_cast<std::chrono::milliseconds>(Now - m_LastUpdateTime).count() >= 15)
 					{
 						m_LastUpdateTime = Now;
-						auto OnTalkMessage = g.mw->GetSocket()->NewMessage(EMessageType::Talking);
-						auto UserName = qsName.toStdString();
-						OnTalkMessage->AddData(&m_CurrentTarget, sizeof(uint8_t));
-						OnTalkMessage->AddData(UserName.c_str(), UserName.size());
-						OnTalkMessage->Send();
+						g.mw->SendTalkingMessage(qsName.toStdString(), m_CurrentTarget);
 					}
 
 					if ((uint8_t) m_CurrentTarget & (uint8_t) ShortcutTarget::ERmTarget::MumbleDefault)

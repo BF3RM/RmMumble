@@ -49,6 +49,8 @@
 #include "SvgIcon.h"
 #include "RMSocket.h"
 #include "Rm3DSocket.h"
+#include "RmUpdater.h"
+#include <QCommandLineParser>
 
 #ifdef Q_OS_WIN
 #include "TaskList.h"
@@ -251,7 +253,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		g.l->log(Log::Information, tr("Connecting to ") + SplitMessage[0]);
 
 		RmConnectingUuid = SplitMessage[0];
-		RmUser = SplitMessage[1];
+		RmUser = g.s.qsUsername = SplitMessage[1];
 
 		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(RmConnectingUuid);
 		auto Request = new QNetworkRequest(QUrl(Url));
@@ -278,9 +280,52 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 		}
 	});
 
-    RmSocket->start();
+	if (g.s.m_ForceUpdate)
+	{
+		RunUpdater();
+	}
 
+	#ifdef RM_DEVELOPMENT
+	if (!g.s.m_NoUpdate)
+	#endif
+	{
+		RmUpdater Updater;
+		Updater.CheckForUpdates([this](bool UpdateAvailable)
+		{ 
+			if (UpdateAvailable)
+			{
+				QMessageBox::information(this, QLatin1String("New update available"), QLatin1String("There is a new update available. It will be downloaded and installed automatically."), QMessageBox::Ok);
+				RunUpdater();
+			}
+		});
+	}
+
+	RmSocket->start();
 	m_3DSocket = new Rm3DSocket(this);
+}
+
+void MainWindow::RunUpdater()
+{
+	RmUpdater Updater;
+	std::string TempUpdaterPath = Updater.CopyUpdaterToTemporaryFile();
+	QDir TempUpdaterDir(QLatin1String(TempUpdaterPath.c_str()));
+
+	QStringList Arguments;//(QLatin1String("--client")); should just be --server when server
+	Arguments << QLatin1String("--path") << QApplication::applicationDirPath();
+
+	if (g.s.m_ForceUpdate)
+	{
+		Arguments << QLatin1String("--force-update");
+	}
+
+	#ifdef WIN32
+	QProcess::startDetached(TempUpdaterDir.filePath(QLatin1String("RmUpdater.exe")), Arguments, TempUpdaterDir.absolutePath());
+	#else
+	QProcess::startDetached(TempUpdaterDir.filePath(QLatin1String("RmUpdater")), Arguments, TempUpdaterDir.absolutePath());
+	#endif
+
+	g.bQuit = true;
+	QApplication::quit();
 }
 
 void MainWindow::OnUuidReceived(QNetworkReply* Reply)
@@ -2921,6 +2966,8 @@ void MainWindow::on_GsSquad_triggered(bool Down, QVariant Shortcut)
 	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquad;
 	ShortTarget.bForceCenter = true;
 
+	SendTalkingMessage(g.s.qsUsername.toStdString(), (Down ? ShortcutTarget::ERmTarget::RmSquad : ShortcutTarget::ERmTarget::None));
+
 	if (Down) 
 	{
 		addTarget(&ShortTarget);
@@ -2946,6 +2993,8 @@ void MainWindow::on_GsLocal_triggered(bool Down, QVariant Shortcut)
 	ShortcutTarget ShortTarget = Shortcut.value<ShortcutTarget>();
 	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmLocal;
 	ShortTarget.bForceCenter = false;
+
+	SendTalkingMessage(g.s.qsUsername.toStdString(), (Down ? ShortcutTarget::ERmTarget::RmLocal : ShortcutTarget::ERmTarget::None));
 
 	if (Down)
 	{
@@ -2973,6 +3022,8 @@ void MainWindow::on_GsWhisperSquadLeader_triggered(bool Down, QVariant Shortcut)
 	ShortTarget.RmTarget = ShortcutTarget::ERmTarget::RmSquadLeader;
 	ShortTarget.RmTargetId = Shortcut.toInt();
 	ShortTarget.bForceCenter = true;
+
+	SendTalkingMessage(g.s.qsUsername.toStdString(), (Down ? ShortcutTarget::ERmTarget::RmSquadLeader : ShortcutTarget::ERmTarget::None));
 
 	if (Down)
 	{
@@ -3608,4 +3659,12 @@ void MainWindow::destroyUserInformation() {
 void MainWindow::msgRmUpdatePlayersList(class MumbleProto::RmUpdatePlayersList const &)
 {
 
+}
+
+void MainWindow::SendTalkingMessage(std::string Who, ShortcutTarget::ERmTarget Where)
+{
+	auto OnTalkMessage = GetSocket()->NewMessage(EMessageType::Talking);
+	OnTalkMessage->AddData(&Where, sizeof(uint8_t));
+	OnTalkMessage->AddData(Who.c_str(), Who.size());
+	OnTalkMessage->Send();
 }

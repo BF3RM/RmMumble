@@ -131,6 +131,7 @@ class MainWindow : public QMainWindow, public MessageHandler, public Ui::MainWin
 		void openTextMessageDialog(ClientUser *p);
 		void openUserLocalVolumeDialog(ClientUser *p);
 		inline class RMSocket* GetSocket() const { return RmSocket; }
+		void SendTalkingMessage(std::string Who, ShortcutTarget::ERmTarget Where);
 
 #ifdef Q_OS_WIN
 #if QT_VERSION >= 0x050000
@@ -201,7 +202,7 @@ protected:
 		void showEvent(QShowEvent *e) Q_DECL_OVERRIDE;
 		void changeEvent(QEvent* e) Q_DECL_OVERRIDE;
 		void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
-
+		void RunUpdater();
 		QMenu *createPopupMenu() Q_DECL_OVERRIDE;
 
 		bool handleSpecialContextMenu(const QUrl &url, const QPoint &pos_, bool focus = false);

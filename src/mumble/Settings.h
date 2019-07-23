@@ -37,6 +37,7 @@ struct Shortcut {
 struct ShortcutTarget {
 	enum class ERmTarget : uint8_t
 	{
+		None = 0,
 		MumbleDefault = 1,
 		RmLocal = 2,
 		RmSquad = 4,
@@ -170,6 +171,8 @@ struct Settings {
 	/// Removed. This was previously used to configure whether the Mumble
 	/// ConfigDialog should show advanced options or not.
 	bool bExpert;
+	bool m_NoUpdate = false;
+	bool m_ForceUpdate = false;
 
 	bool bTxAudioCue;
 	static const QString cqsDefaultPushClickOn;

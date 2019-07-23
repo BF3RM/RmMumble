@@ -1933,7 +1933,7 @@ bool IsWithinRange(ServerUser* Who, ServerUser* From)
 		pow(X2.X - X1.X, 2) +
 		pow(X2.Y - X1.Y, 2) +
 		pow(X2.Z - X1.Z, 2)
-	) <= 40.f;
+	) <= 75.f;
 }
 
 void Server::msgRmVoice(ServerUser* From, MumbleProto::RmVoice& Message)

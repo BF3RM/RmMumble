@@ -353,7 +353,7 @@ Settings::Settings() {
 	bPositionalAudio = true;
     bPositionalHeadphone = true;
 	fAudioMinDistance = 1.0f;
-    fAudioMaxDistance = 40.0f;
+    fAudioMaxDistance = 75.0f;
     fAudioMaxDistVolume = 0.0f;
     fAudioBloom = 0.0f;
 

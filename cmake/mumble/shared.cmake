@@ -5,8 +5,6 @@ set(PCRE_BUILD_PCRE16 ON CACHE BOOL "Build 16 bit PCRE library" FORCE)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/zlib)
 
-include_directories(E:\\Qt\\5.11.2\\msvc2017_64\\include)
-
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
@@ -106,7 +104,7 @@ set(SHARED_HEADERS
         src/SelfSignedCertificate.h
         src/ServerAddress.h
         src/ServerResolver.h
-        src/ServerResolver_nosrv.h
+        #src/ServerResolver_nosrv.h
         src/ServerResolverRecord.h
         src/SignalCurry.h
         src/SSLCipherInfo.h
@@ -120,9 +118,9 @@ set(SHARED_HEADERS
         ${PROTO_HEADERS}
         )
 
-set(SHARED_SOURCES ${SHARED_SOURCE}
-        #${SPEEX_SOURCES}
-        )
+qt5_wrap_cpp(SHARED_MOCS ${SHARED_HEADERS})
+
+set(SHARED_SOURCES ${SHARED_SOURCE} ${SHARED_MOCS})
 
 set(SHARED_LIBS UpdaterLib celt0.0.7.0 celt0.0.11.0 ${Protobuf_LIBRARIES} ${RM_OPENSSL_LIBS} speex ${Boost_LIBRARIES} opus sndfile )
 set(SHARED_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto

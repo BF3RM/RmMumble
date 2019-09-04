@@ -7,6 +7,7 @@
 #ifndef MUMBLE_MUMBLE_MUMBLE_PCH_H_
 #define MUMBLE_MUMBLE_MUMBLE_PCH_H_
 
+
 #define QT_NO_CAST_TO_ASCII
 #define QT_NO_CAST_FROM_ASCII
 #define QT_USE_FAST_CONCATENATION
@@ -14,8 +15,10 @@
 
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
-
+#include <winsock2.h>
+#include <windows.h>
 #define BOOST_TYPEOF_SUPPRESS_UNNAMED_NAMESPACE
+
 
 #ifdef __APPLE__
 #include <Carbon/Carbon.h>
@@ -87,7 +90,6 @@
 #ifdef Q_OS_WIN
 #include "../qos2_mingw.h"
 
-#include <winsock2.h>
 #include <qos2.h>
 #include <windows.h>
 #include <shellapi.h>

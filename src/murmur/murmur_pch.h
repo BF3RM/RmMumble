@@ -9,6 +9,10 @@
 
 #define WIN32_LEAN_AND_MEAN
 
+#ifdef WIN32
+#include <winsock2.h>
+#endif
+
 #define _USE_MATH_DEFINES
 
 #ifdef __APPLE__
@@ -43,7 +47,6 @@
 
 #include "../qos2_mingw.h"
 
-#include <winsock2.h>
 #include <qos2.h>
 #include <windows.h>
 #include <shellapi.h>

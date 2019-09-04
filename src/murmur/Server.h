@@ -6,6 +6,8 @@
 #ifndef MUMBLE_MURMUR_SERVER_H_
 #define MUMBLE_MURMUR_SERVER_H_
 
+#define WIN32_LEAN_AND_MEAN 
+
 #ifndef Q_MOC_RUN
 # include <boost/function.hpp>
 #endif

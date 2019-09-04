@@ -15,7 +15,7 @@
 #endif
 
 // <chrono> was introduced in C++11
-#if __cplusplus > 199711LL
+#if __cplusplus >= 199711LL
 #include <chrono>
 #else
 #include <ctime>

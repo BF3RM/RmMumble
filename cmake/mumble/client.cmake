@@ -231,6 +231,24 @@ else()
             )
 endif()
 
+file(GLOB MUMBLE_HEADERS src/mumble/*.h)
+
+if(WIN32)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/ALSAAudio.h)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/G15LCDEngine_unix.h)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/GlobalShortcut_unix.h)
+else()
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/GlobalShortcut_win.h)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/Overlay_win.h)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/DirectSound.h)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/TaskList.h)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/WASAPI.h)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/WASAPINotificationClient.h)
+    list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/XboxInput.h)
+endif()
+
+qt5_wrap_cpp(MUMBLE_MOCS ${MUMBLE_HEADERS})
+
 qt5_wrap_cpp(QT5_SRC src/ServerResolver.h src/SignalCurry.h)# src/mumble/TextToSpeech.h)
 qt5_add_resources(MUMBLE_RESOURCES 
     ${CMAKE_SOURCE_DIR}/src/mumble/mumble.qrc 
@@ -250,9 +268,9 @@ set(DEFINITIONS "")
 
 if(UNIX)
     set(MumbleExeName RmMumble)
-    add_executable(${MumbleExeName} ${FLAGS} ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC} ${MUMBLE_RESOURCES})
+    add_executable(${MumbleExeName} ${FLAGS} ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${QT5_SRC} ${MUMBLE_RESOURCES} ${MUMBLE_MOCS})
 else()
-    add_library(${MumbleExeName} SHARED ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${SHARED_OBJS} ${QT5_SRC} ${MUMBLE_RESOURCES})
+    add_library(${MumbleExeName} SHARED ${MUMBLE_SOURCES} ${SHARED_SOURCES} ${SHARED_OBJS} ${QT5_SRC} ${MUMBLE_RESOURCES} ${MUMBLE_MOCS})
     set_target_properties(${MumbleExeName} PROPERTIES PREFIX "")
     #add_executable(RmMumble ${FLAGS} ${MUMBLE_EXE_SOURCES})
     target_link_libraries(${MumbleExeName} PRIVATE shlwapi)

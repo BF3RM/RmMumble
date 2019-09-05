@@ -14,9 +14,13 @@
 #define QT_USE_FAST_OPERATOR_PLUS
 
 #define NOMINMAX
+
+#ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <windows.h>
+#endif
+
 #define BOOST_TYPEOF_SUPPRESS_UNNAMED_NAMESPACE
 
 

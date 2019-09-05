@@ -259,7 +259,7 @@ list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/GlobalShortcut_ma
 list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/CoreAudio.h)
 list(REMOVE_ITEM MUMBLE_HEADERS ${CMAKE_SOURCE_DIR}/src/mumble/ASIOInput.h)
 
-qt5_wrap_cpp(MUMBLE_MOCS ${MUMBLE_HEADERS})
+qt5_wrap_cpp(MUMBLE_MOCS ${MUMBLE_HEADERS} src/ServerResolver_qt5.cpp src/ServerResolverPrivate.h src/mumble/widgets/MUComboBox.h)
 
 qt5_wrap_cpp(QT5_SRC src/ServerResolver.h src/SignalCurry.h)# src/mumble/TextToSpeech.h)
 qt5_add_resources(MUMBLE_RESOURCES 

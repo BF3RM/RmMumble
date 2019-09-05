@@ -33,6 +33,11 @@ else()
 	list(REMOVE_ITEM MURMUR_HEADERS ${CMAKE_SOURCE_DIR}/src/murmur/Tray.h)
 endif()
 
+list(REMOVE_ITEM MURMUR_HEADERS ${CMAKE_SOURCE_DIR}/src/murmur/BonjourServer.h)
+list(REMOVE_ITEM MURMUR_HEADERS ${CMAKE_SOURCE_DIR}/src/murmur/DBus.h)
+list(REMOVE_ITEM MURMUR_HEADERS ${CMAKE_SOURCE_DIR}/src/murmur/MurmurGRPCImpl.h)
+list(REMOVE_ITEM MURMUR_HEADERS ${CMAKE_SOURCE_DIR}/src/murmur/MurmurIce.h)
+
 qt5_wrap_cpp(MURMUR_MOCS ${MURMUR_HEADERS} src/ServerResolver_qt5.cpp src/ServerResolverPrivate.h)
 
 set(ADDITIONAL_LIBS "")

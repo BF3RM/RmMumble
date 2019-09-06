@@ -10,7 +10,9 @@
 #define WIN32_LEAN_AND_MEAN
 
 #ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
+#include <windows.h>
 #endif
 
 #define _USE_MATH_DEFINES

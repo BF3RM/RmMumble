@@ -27,7 +27,7 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 if (WIN32)
-	add_definitions(-D_WIN32_WINNT=0x0600)
+	add_definitions(-D_WIN32_WINNT=_WIN32_WINNT_WIN7)
 endif()
 
 #include_directories(cmake/general ${CMAKE_BINARY_DIR}/3rdparty ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto)

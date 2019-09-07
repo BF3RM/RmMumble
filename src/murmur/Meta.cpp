@@ -17,8 +17,6 @@
 #include "EnvUtils.h"
 #include "FFDHE.h"
 
-#include <qos2.h>
-
 #if defined(USE_QSSLDIFFIEHELLMANPARAMETERS)
 # include <QSslDiffieHellmanParameters>
 #endif

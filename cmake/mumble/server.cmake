@@ -44,6 +44,9 @@ set(ADDITIONAL_LIBS "")
 if(UNIX)
     list(APPEND ADDITIONAL_LIBS cap)
 endif()
+if(WIN32)
+    list(APPEND ADDITIONAL_LIBS dnsapi)
+endif()
 
 qt5_wrap_cpp(QT5_SRC src/ServerResolver.h)
 

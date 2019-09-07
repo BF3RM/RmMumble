@@ -31,7 +31,7 @@ include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/)
 include_directories(${CMAKE_SOURCE_DIR}/src/)
-include_directories(${CMAKE_SOURCE_DIR}/src/mumble)
+#include_directories(${CMAKE_SOURCE_DIR}/src/mumble)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/arc4random-src/ ${CMAKE_SOURCE_DIR}/src/murmur)
 
 

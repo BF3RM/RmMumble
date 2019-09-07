@@ -38,8 +38,12 @@
 // Set up the appropriate Windows macros such that
 // MinGW's Windows headers expose all the functionality
 // we need.
+#ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0601
+#endif
+#ifndef NTDDI_VERSION
 #define NTDDI_VERSION NTDDI_WIN7
+#endif
 #include <ws2tcpip.h>
 #endif
 

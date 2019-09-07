@@ -25,7 +25,9 @@
 #endif
 
 #ifdef __MINGW32__
+#ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0600
+#endif
 #include <ws2tcpip.h>
 #include <mswsock.h>
 #endif

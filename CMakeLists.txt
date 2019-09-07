@@ -26,6 +26,10 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
         add_definitions(-DRM_DEBUG)
 endif()
 
+if (WIN32)
+	add_definitions(-D_WIN32_WINNT=0x0600)
+endif()
+
 #include_directories(cmake/general ${CMAKE_BINARY_DIR}/3rdparty ${CMAKE_BINARY_DIR}/3rdparty/openssl/ssl ${CMAKE_BINARY_DIR}/3rdparty/openssl/crypto)
 include_directories(cmake/general ${CMAKE_BINARY_DIR}/3rdparty)
 

@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include "zlib/contrib/minizip/zip.h"
 #include "zlib/contrib/minizip/unzip.h"
+#include <thread>
 
 #ifdef WIN32
 #include <io.h>
@@ -118,7 +119,7 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, RmUpdater::
     Request.setUrl(QUrl(QString("http://rm-mumble.skayahack.uk/get-latest/%1%2%3%4").arg(
             UPDATER_PLATFORM, (Client ? "Client" : "Server"), UPDATER_ARCH, UPDATER_DEV
     )));
-    qDebug() << "Downloading " << Request.url();
+    qDebug() << "Downloading " << Request.url().toString();
     auto Reply = m_Manager->get(Request);
     QObject::connect(Reply, &QNetworkReply::downloadProgress, Progress);
     QObject::connect(Reply, &QNetworkReply::finished, [StdPath, Reply, this, ExtractCallback]() 
@@ -178,13 +179,30 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, RmUpdater::
                     }
 
                     QFile File(Directory.filePath(FilePath));
-                    if (!File.open(QIODevice::Truncate | QIODevice::WriteOnly))
-                    {
-                        QMessageBox::critical(nullptr, "Error", "Could not open " + File.fileName() + " for writing. " + File.errorString());
-                        unzCloseCurrentFile(ZipFile);
-                        unzClose(ZipFile);
-                        QApplication::exit();
-                    }
+
+					const int MaxAttempts = 4;
+					int Attempts = 0;
+					while (true) 
+					{
+						if (Attempts++ >= MaxAttempts)
+						{
+							unzCloseCurrentFile(ZipFile);
+							unzClose(ZipFile);
+							QMessageBox::critical(nullptr, "Error", "Could not open " + File.fileName() + " for writing. Make sure that mumble isn't running and that the file isn't being used by any other process. (" + File.errorString() + ")");
+							QApplication::exit();
+							return;
+						}
+
+						if (!File.open(QIODevice::Truncate | QIODevice::WriteOnly))
+						{
+							qInfo() << "Cannot open " << File.fileName() << " for writing. Retrying in" << 3 * Attempts << "seconds...";
+							std::this_thread::sleep_for(std::chrono::seconds(3 * Attempts));
+						}
+						else
+						{
+							break;
+						}
+					}
 
                     const size_t BufferSize = 8192;
                     char* Buffer = new char[BufferSize];
@@ -244,6 +262,7 @@ std::string RmUpdater::CopyUpdaterToTemporaryFile()
     #endif
 
     QStringList Libraries = UpdaterDir.entryList(QStringList() << ("*." + LibPostfix), QDir::Files);
+	Libraries << "platforms";
 
     for(auto& Library : Libraries)
     {

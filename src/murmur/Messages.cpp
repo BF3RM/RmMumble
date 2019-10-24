@@ -1953,7 +1953,7 @@ void Server::msgRmVoice(ServerUser* From, MumbleProto::RmVoice& Message)
 			if (Id == 0)
 			{
 				for (auto User : qhUsers) {
-					if (User->IsSquadLeader()) {
+					if (User->IsSquadLeader() && User->GetFactionId() == From->GetFactionId()) {
 						Targets.push_back(User);
 						break;
 					}
@@ -1963,7 +1963,7 @@ void Server::msgRmVoice(ServerUser* From, MumbleProto::RmVoice& Message)
 			{
 				auto Channel = qhChannels[Id];
 				for (auto User : qhUsers) {
-					if (User->cChannel == Channel && User->IsSquadLeader()) {
+					if (User->cChannel == Channel && User->IsSquadLeader() && User->GetFactionId() == From->GetFactionId()) {
 						Targets.push_back(User);
 						break;
 					}

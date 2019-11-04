@@ -160,6 +160,7 @@ protected:
 		QTimer* RmPositionTimer = nullptr;
 
 		void OnUuidReceived(class QNetworkReply* Reply);
+		void Connect(QString Host, int Port);
 		Usage uUsage;
 		QTimer *qtReconnect;
 

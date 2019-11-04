@@ -254,7 +254,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 
 		RmConnectingUuid = SplitMessage[0];
 		RmUser = g.s.qsUsername = SplitMessage[1];
-
+		/*
 		auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(RmConnectingUuid);
 		auto Request = new QNetworkRequest(QUrl(Url));
 		auto Reply = HttpManager.get(*Request);
@@ -263,6 +263,21 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p) {
 			g.l->log(Log::Information, tr("Received response from backend..."));
 			OnUuidReceived(Reply);
 		});
+		*/
+	});
+
+	connect(RmSocket, &RMSocket::OnHostAndPortReceived, this, [this](QString HostAndPort) {
+		QStringList SplitMessage = HostAndPort.split(tr("|"));
+		if (SplitMessage.length() < 2) return;
+		//if (RmLastConnectedUuid == SplitMessage[0]) return;
+
+		g.l->log(Log::Information, tr("Connecting to ") + SplitMessage[0]);
+
+		QString Host = SplitMessage[0];
+		int Port = SplitMessage[1].toInt();
+
+		g.l->log(Log::Information, tr("Received Host ip and port from vext..."));
+		Connect(Host, Port);
 	});
 
 	connect(RmSocket, &RMSocket::OnMuteAndDeaf, this, [this](bool Mute, bool Deaf) {
@@ -342,11 +357,17 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 	QString Host = Json[QString::fromUtf8("mumbleHost")].toString();
 	int Port = Json[QString::fromUtf8("mumblePort")].toInt();
 	RmLastConnectedUuid = RmConnectingUuid;
+	
+	Connect(Host, Port);
 
+//	QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("ServerInfo"), Answer).exec();
+}
 
+void MainWindow::Connect(QString Host, int Port)
+{
 	QString User = RmUser;
 	QString Pw = tr("");
-	
+
 	if (g.uiSession == 0) {
 		recreateServerHandler();
 
@@ -357,12 +378,13 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 		g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((Host).toHtmlEscaped(), Log::Server)));
 		g.sh->setConnectionInfo(Host, Port, User, Pw);
 		g.sh->start(QThread::TimeCriticalPriority);
-		QObject::connect(g.sh.get(), &ServerHandler::connected, this, [this]() 
+		QObject::connect(g.sh.get(), &ServerHandler::connected, this, [this]()
 		{
 			auto IdentityRequest = RmSocket->NewMessage(EMessageType::IdentityRequest);
 			IdentityRequest->Send();
 		});
-	} else {
+	}
+	else {
 		QObject::connect(g.sh.get(), &ServerHandler::disconnected, this, [this, Host, Port, User, Pw](QAbstractSocket::SocketError, QString) {
 			recreateServerHandler();
 
@@ -378,7 +400,6 @@ void MainWindow::OnUuidReceived(QNetworkReply* Reply)
 		g.sh->disconnect();
 		g.sh->wait();
 	}
-//	QMessageBox(QMessageBox::Icon::Information, QString::fromUtf8("ServerInfo"), Answer).exec();
 }
 
 void MainWindow::SetupRmShortcuts()

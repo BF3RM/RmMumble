@@ -16,6 +16,7 @@ enum class EMessageType : uint8_t
 	Uuid = 123,
 	Ping = 124,
 	MuteAndDeaf = 125,
+	HostAndPort = 126,
 };
 
 class RMSocket;

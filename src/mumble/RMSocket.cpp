@@ -61,6 +61,9 @@ void RMSocket::run()
 							case EMessageType::Uuid:
 								emit OnUuidReceived(QString::fromUtf8((char*)Message->GetData()));
 								break;
+							case EMessageType::HostAndPort:
+								emit OnHostAndPortReceived(QString::fromUtf8((char*)Message->GetData()));
+								break;
 							case EMessageType::MuteAndDeaf:
 								emit OnMuteAndDeaf(*(bool*)(Message->GetData()), *(bool*)(Message->GetData()));
 								break;

@@ -27,7 +27,8 @@ protected:
     std::map<EMessageType, std::vector<OnMessageCallback>> MessageCallbacks;
 signals:
     void OnUuidReceived(QString Uuid);
-    void OnMuteAndDeaf(bool Mute, bool Deaf);
+	void OnHostAndPortReceived(QString Uuid);
+	void OnMuteAndDeaf(bool Mute, bool Deaf);
     void OnDisconnected();
     void OnConnected();
 

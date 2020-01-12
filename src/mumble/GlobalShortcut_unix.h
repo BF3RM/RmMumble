@@ -26,30 +26,31 @@
 
 #define NUM_BUTTONS 0x2ff
 
-class GlobalShortcutX : public GlobalShortcutEngine {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(GlobalShortcutX)
-	public:
-		Display *display;
-		QSet<Window> qsRootWindows;
-		int iXIopcode;
-		QSet<int> qsMasterDevices;
+class GlobalShortcutX : public GlobalShortcutEngine
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(GlobalShortcutX)
+public:
+    Display *display;
+    QSet<Window> qsRootWindows;
+    int iXIopcode;
+    QSet<int> qsMasterDevices;
 
-		volatile bool bRunning;
-		QSet<QString> qsKeyboards;
-		QMap<QString, QFile *> qmInputDevices;
+    volatile bool bRunning;
+    QSet<QString> qsKeyboards;
+    QMap<QString, QFile *> qmInputDevices;
 
-		GlobalShortcutX();
-		~GlobalShortcutX() Q_DECL_OVERRIDE;
-		void run() Q_DECL_OVERRIDE;
-		QString buttonName(const QVariant &) Q_DECL_OVERRIDE;
+    GlobalShortcutX();
+    ~GlobalShortcutX() Q_DECL_OVERRIDE;
+    void run() Q_DECL_OVERRIDE;
+    QString buttonName(const QVariant &) Q_DECL_OVERRIDE;
 
-		void queryXIMasterList();
-	public slots:
-		void displayReadyRead(int);
-		void inputReadyRead(int);
-		void directoryChanged(const QString &);
+    void queryXIMasterList();
+public slots:
+    void displayReadyRead(int);
+    void inputReadyRead(int);
+    void directoryChanged(const QString &);
 };
 
 #endif

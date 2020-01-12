@@ -8,11 +8,12 @@
 
 // Portably (between Qt 4 and Qt 5) load the value
 // of a QAtomicInt.
-inline int QAtomicIntLoad(const QAtomicInt &ai) {
+inline int QAtomicIntLoad(const QAtomicInt &ai)
+{
 #if QT_VERSION >= 0x050000
-	return ai.load();
+    return ai.load();
 #else
-	return int(ai);
+    return int(ai);
 #endif
 }
 

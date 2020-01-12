@@ -9,24 +9,27 @@
 
 #include "BonjourServiceRegister.h"
 
-BonjourServer::BonjourServer() {
-	bsrRegister = NULL;
+BonjourServer::BonjourServer()
+{
+    bsrRegister = NULL;
 #ifdef Q_OS_WIN
-	static bool bDelayLoadFailed = false;
-	if (bDelayLoadFailed) return;
+    static bool bDelayLoadFailed = false;
+    if (bDelayLoadFailed) return;
 
-	HMODULE hLib = LoadLibrary(L"DNSSD.DLL");
-	if (hLib == NULL) {
-		bDelayLoadFailed = true;
-		qWarning("Bonjour: Failed to load dnssd.dll");
-		return;
-	}
-	FreeLibrary(hLib);
+    HMODULE hLib = LoadLibrary(L"DNSSD.DLL");
+    if (hLib == NULL)
+    {
+        bDelayLoadFailed = true;
+        qWarning("Bonjour: Failed to load dnssd.dll");
+        return;
+    }
+    FreeLibrary(hLib);
 #endif
 
-	bsrRegister = new BonjourServiceRegister(this);
+    bsrRegister = new BonjourServiceRegister(this);
 }
 
-BonjourServer::~BonjourServer() {
-	delete bsrRegister;
+BonjourServer::~BonjourServer()
+{
+    delete bsrRegister;
 }

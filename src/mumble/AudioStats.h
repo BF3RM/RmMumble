@@ -15,57 +15,61 @@
 # include <QtGui/QWidget>
 #endif
 
-class AudioBar : public QWidget {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(AudioBar)
-	protected:
-		void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-	public:
-		AudioBar(QWidget *parent = NULL);
-		int iMin, iMax;
-		int iBelow, iAbove;
-		int iValue, iPeak;
-		QColor qcBelow, qcInside, qcAbove;
+class AudioBar : public QWidget
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(AudioBar)
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+public:
+    AudioBar(QWidget *parent = NULL);
+    int iMin, iMax;
+    int iBelow, iAbove;
+    int iValue, iPeak;
+    QColor qcBelow, qcInside, qcAbove;
 
-		QList<QColor> qlReplacableColors;
-		QList<Qt::BrushStyle> qlReplacementBrushes;
+    QList<QColor> qlReplacableColors;
+    QList<Qt::BrushStyle> qlReplacementBrushes;
 };
 
-class AudioEchoWidget : public QWidget {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(AudioEchoWidget)
-	public:
-		AudioEchoWidget(QWidget *parent);
-	protected slots:
-		void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+class AudioEchoWidget : public QWidget
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(AudioEchoWidget)
+public:
+    AudioEchoWidget(QWidget *parent);
+protected slots:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 };
 
-class AudioNoiseWidget : public QWidget {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(AudioNoiseWidget)
-	public:
-		AudioNoiseWidget(QWidget *parent);
-	protected slots:
-		void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+class AudioNoiseWidget : public QWidget
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(AudioNoiseWidget)
+public:
+    AudioNoiseWidget(QWidget *parent);
+protected slots:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 };
 
 #include "ui_AudioStats.h"
 
-class AudioStats : public QDialog, public Ui::AudioStats {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(AudioStats)
-	protected:
-		QTimer *qtTick;
-		bool bTalking;
-	public:
-		AudioStats(QWidget *parent);
-		~AudioStats() Q_DECL_OVERRIDE;
-	public slots:
-		void on_Tick_timeout();
+class AudioStats : public QDialog, public Ui::AudioStats
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(AudioStats)
+protected:
+    QTimer *qtTick;
+    bool bTalking;
+public:
+    AudioStats(QWidget *parent);
+    ~AudioStats() Q_DECL_OVERRIDE;
+public slots:
+    void on_Tick_timeout();
 };
 
 #else

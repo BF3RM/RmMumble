@@ -7,10 +7,11 @@
 #define MUMBLE_PLATFORMCHECK_H_
 
 /// PlatformCheck performs platform checks.
-class PlatformCheck {
-	public:
-		/// IsWine returns true when running under Wine.
-		static bool IsWine();
+class PlatformCheck
+{
+public:
+    /// IsWine returns true when running under Wine.
+    static bool IsWine();
 };
 
 #endif

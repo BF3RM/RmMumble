@@ -37,27 +37,27 @@
 class GKeyLibrary
 {
 public:
-	GKeyLibrary();
-	virtual ~GKeyLibrary();
-	bool isValid() const;
-	static const QUuid quMouse;
-	static const QUuid quKeyboard;
+    GKeyLibrary();
+    virtual ~GKeyLibrary();
+    bool isValid() const;
+    static const QUuid quMouse;
+    static const QUuid quKeyboard;
 
-	bool isMouseButtonPressed(int button);
-	bool isKeyboardGkeyPressed(int key, int mode);
-	QString getMouseButtonString(int button);
-	QString getKeyboardGkeyString(int key, int mode);
+    bool isMouseButtonPressed(int button);
+    bool isKeyboardGkeyPressed(int key, int mode);
+    QString getMouseButtonString(int button);
+    QString getKeyboardGkeyString(int key, int mode);
 
 protected:
-	QLibrary qlLogiGkey;
-	bool bValid;
+    QLibrary qlLogiGkey;
+    bool bValid;
 
-	BOOL (*LogiGkeyInit)(void *);
-	void (*LogiGkeyShutdown)();
-	BOOL (*LogiGkeyIsMouseButtonPressed)(int button);
-	BOOL (*LogiGkeyIsKeyboardGkeyPressed)(int key, int mode);
-	wchar_t *(*LogiGkeyGetMouseButtonString)(int button);
-	wchar_t *(*LogiGkeyGetKeyboardGkeyString)(int key, int mode);
+    BOOL (*LogiGkeyInit)(void *);
+    void (*LogiGkeyShutdown)();
+    BOOL (*LogiGkeyIsMouseButtonPressed)(int button);
+    BOOL (*LogiGkeyIsKeyboardGkeyPressed)(int key, int mode);
+    wchar_t *(*LogiGkeyGetMouseButtonString)(int button);
+    wchar_t *(*LogiGkeyGetKeyboardGkeyString)(int key, int mode);
 };
 
 #endif // MUMBLE_MUMBLE_GKEY_H

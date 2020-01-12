@@ -10,24 +10,27 @@
 #include "BonjourServiceBrowser.h"
 #include "BonjourServiceResolver.h"
 
-BonjourClient::BonjourClient() {
-	bsrResolver = NULL;
-	bsbBrowser = NULL;
+BonjourClient::BonjourClient()
+{
+    bsrResolver = NULL;
+    bsbBrowser = NULL;
 #ifdef Q_OS_WIN
-	HMODULE hLib = LoadLibrary(L"DNSSD.DLL");
-	if (hLib == NULL) {
-		qWarning("Bonjour: Failed to load dnssd.dll");
-		return;
-	}
-	FreeLibrary(hLib);
+    HMODULE hLib = LoadLibrary(L"DNSSD.DLL");
+    if (hLib == NULL)
+    {
+        qWarning("Bonjour: Failed to load dnssd.dll");
+        return;
+    }
+    FreeLibrary(hLib);
 #endif
-	bsbBrowser = new BonjourServiceBrowser(this);
-	bsbBrowser->browseForServiceType(QLatin1String("_mumble._tcp"));
-	bsrResolver = new BonjourServiceResolver(this);
-	return;
+    bsbBrowser = new BonjourServiceBrowser(this);
+    bsbBrowser->browseForServiceType(QLatin1String("_mumble._tcp"));
+    bsrResolver = new BonjourServiceResolver(this);
+    return;
 }
 
-BonjourClient::~BonjourClient() {
-	delete bsbBrowser;
-	delete bsrResolver;
+BonjourClient::~BonjourClient()
+{
+    delete bsbBrowser;
+    delete bsrResolver;
 }

@@ -8,10 +8,11 @@
 
 #include <QComboBox>
 
-class MUComboBox : public QComboBox {
-	Q_OBJECT
+class MUComboBox : public QComboBox
+{
+    Q_OBJECT
 public:
-	MUComboBox(QWidget *parent = NULL);
+    MUComboBox(QWidget *parent = NULL);
 };
 
 #endif

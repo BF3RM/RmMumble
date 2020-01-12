@@ -8,29 +8,36 @@
 #include "Overlay.h"
 #include "OverlayConfig.h"
 
-void Overlay::platformInit() {
-	d = NULL;
+void Overlay::platformInit()
+{
+    d = NULL;
 }
 
-void Overlay::setActive(bool) {
+void Overlay::setActive(bool)
+{
 }
 
-bool OverlayConfig::supportsInstallableOverlay() {
-	return false;
+bool OverlayConfig::supportsInstallableOverlay()
+{
+    return false;
 }
 
-bool OverlayConfig::isInstalled() {
-	return true;
+bool OverlayConfig::isInstalled()
+{
+    return true;
 }
 
-bool OverlayConfig::needsUpgrade() {
-	return false;
+bool OverlayConfig::needsUpgrade()
+{
+    return false;
 }
 
-bool OverlayConfig::installFiles() {
-	return false;
+bool OverlayConfig::installFiles()
+{
+    return false;
 }
 
-bool OverlayConfig::uninstallFiles() {
-	return false;
+bool OverlayConfig::uninstallFiles()
+{
+    return false;
 }

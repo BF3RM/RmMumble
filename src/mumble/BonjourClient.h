@@ -11,16 +11,17 @@
 class BonjourServiceBrowser;
 class BonjourServiceResolver;
 
-class BonjourClient : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(BonjourClient)
-	public:
-		BonjourClient();
-		~BonjourClient() Q_DECL_OVERRIDE;
+class BonjourClient : public QObject
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(BonjourClient)
+public:
+    BonjourClient();
+    ~BonjourClient() Q_DECL_OVERRIDE;
 
-		BonjourServiceBrowser *bsbBrowser;
-		BonjourServiceResolver *bsrResolver;
+    BonjourServiceBrowser *bsbBrowser;
+    BonjourServiceResolver *bsrResolver;
 };
 
 #endif

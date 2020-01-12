@@ -14,12 +14,13 @@
 # include <QtGui/QDialog>
 #endif
 
-class AboutDialog : public QDialog {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(AboutDialog)
-	public:
-		AboutDialog(QWidget *parent);
+class AboutDialog : public QDialog
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(AboutDialog)
+public:
+    AboutDialog(QWidget *parent);
 };
 
 #endif

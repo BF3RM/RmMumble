@@ -20,67 +20,69 @@
 
 struct PluginInfo;
 
-class PluginConfig : public ConfigWidget, public Ui::PluginConfig {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(PluginConfig)
-	protected:
-		void refillPluginList();
-		PluginInfo *pluginForItem(QTreeWidgetItem *) const;
-	public:
-		PluginConfig(Settings &st);
-		virtual QString title() const Q_DECL_OVERRIDE;
-		virtual QIcon icon() const Q_DECL_OVERRIDE;
-	public slots:
-		void save() const Q_DECL_OVERRIDE;
-		void load(const Settings &r) Q_DECL_OVERRIDE;
-		void on_qpbConfig_clicked();
-		void on_qpbAbout_clicked();
-		void on_qpbReload_clicked();
-		void on_qtwPlugins_currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *);
+class PluginConfig : public ConfigWidget, public Ui::PluginConfig
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(PluginConfig)
+protected:
+    void refillPluginList();
+    PluginInfo *pluginForItem(QTreeWidgetItem *) const;
+public:
+    PluginConfig(Settings &st);
+    virtual QString title() const Q_DECL_OVERRIDE;
+    virtual QIcon icon() const Q_DECL_OVERRIDE;
+public slots:
+    void save() const Q_DECL_OVERRIDE;
+    void load(const Settings &r) Q_DECL_OVERRIDE;
+    void on_qpbConfig_clicked();
+    void on_qpbAbout_clicked();
+    void on_qpbReload_clicked();
+    void on_qtwPlugins_currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *);
 };
 
 struct PluginFetchMeta;
 
-class Plugins : public QObject {
-		friend class PluginConfig;
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(Plugins)
-	protected:
-		QReadWriteLock qrwlPlugins;
-		QMutex qmPluginStrings;
-		QList<PluginInfo *> qlPlugins;
-		void clearPlugins();
-		int iPluginTry;
-		QMap<QString, PluginFetchMeta> qmPluginFetchMeta;
-		QString qsSystemPlugins;
-		QString qsUserPlugins;
+class Plugins : public QObject
+{
+    friend class PluginConfig;
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(Plugins)
+protected:
+    QReadWriteLock qrwlPlugins;
+    QMutex qmPluginStrings;
+    QList<PluginInfo *> qlPlugins;
+    void clearPlugins();
+    int iPluginTry;
+    QMap<QString, PluginFetchMeta> qmPluginFetchMeta;
+    QString qsSystemPlugins;
+    QString qsUserPlugins;
 #ifdef Q_OS_WIN
-		HANDLE hToken;
-		TOKEN_PRIVILEGES tpPrevious;
-		DWORD cbPrevious;
+    HANDLE hToken;
+    TOKEN_PRIVILEGES tpPrevious;
+    DWORD cbPrevious;
 #endif
-	public:
-		PluginInfo *locked;
-		PluginInfo *prevlocked;
+public:
+    PluginInfo *locked;
+    PluginInfo *prevlocked;
 
-		std::string ssContext, ssContextSent;
-		std::wstring swsIdentity, swsIdentitySent;
-		bool bValid;
-		bool bUnlink;
-		float fPosition[3], fFront[3], fTop[3];
-		float fCameraPosition[3], fCameraFront[3], fCameraTop[3];
+    std::string ssContext, ssContextSent;
+    std::wstring swsIdentity, swsIdentitySent;
+    bool bValid;
+    bool bUnlink;
+    float fPosition[3], fFront[3], fTop[3];
+    float fCameraPosition[3], fCameraFront[3], fCameraTop[3];
 
-		Plugins(QObject *p = NULL);
-		~Plugins() Q_DECL_OVERRIDE;
-	public slots:
-		void on_Timer_timeout();
-		void rescanPlugins();
-		bool fetch();
-		void checkUpdates();
-		void fetchedUpdatePAPlugins(QByteArray, QUrl);
-		void fetchedPAPluginDL(QByteArray, QUrl);
+    Plugins(QObject *p = NULL);
+    ~Plugins() Q_DECL_OVERRIDE;
+public slots:
+    void on_Timer_timeout();
+    void rescanPlugins();
+    bool fetch();
+    void checkUpdates();
+    void fetchedUpdatePAPlugins(QByteArray, QUrl);
+    void fetchedPAPluginDL(QByteArray, QUrl);
 };
 
 #endif

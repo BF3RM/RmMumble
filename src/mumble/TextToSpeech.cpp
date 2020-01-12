@@ -9,54 +9,65 @@
 
 #include <QTextToSpeech>
 
-class TextToSpeechPrivate {
-	public:
-		QTextToSpeech *m_tts;
-		QVector<QVoice> m_voices;
-		TextToSpeechPrivate();
-		~TextToSpeechPrivate();
-		void say(const QString &text);
-		void setVolume(int v);
+class TextToSpeechPrivate
+{
+public:
+    QTextToSpeech *m_tts;
+    QVector<QVoice> m_voices;
+    TextToSpeechPrivate();
+    ~TextToSpeechPrivate();
+    void say(const QString &text);
+    void setVolume(int v);
 };
 
-TextToSpeechPrivate::TextToSpeechPrivate() {
-	m_tts = new QTextToSpeech();
+TextToSpeechPrivate::TextToSpeechPrivate()
+{
+    m_tts = new QTextToSpeech();
 }
 
-TextToSpeechPrivate::~TextToSpeechPrivate() {
-	delete m_tts;
+TextToSpeechPrivate::~TextToSpeechPrivate()
+{
+    delete m_tts;
 }
 
-void TextToSpeechPrivate::say(const QString &text) {
-	m_tts->say(text);
+void TextToSpeechPrivate::say(const QString &text)
+{
+    m_tts->say(text);
 }
 
-void TextToSpeechPrivate::setVolume(int volume) {
-	m_tts->setVolume(volume);
+void TextToSpeechPrivate::setVolume(int volume)
+{
+    m_tts->setVolume(volume);
 }
 
-TextToSpeech::TextToSpeech(QObject *p) : QObject(p) {
-	enabled = true;
-	d = new TextToSpeechPrivate();
+TextToSpeech::TextToSpeech(QObject *p) : QObject(p)
+{
+    enabled = true;
+    d = new TextToSpeechPrivate();
 }
 
-TextToSpeech::~TextToSpeech() {
-	delete d;
+TextToSpeech::~TextToSpeech()
+{
+    delete d;
 }
 
-void TextToSpeech::say(const QString &text) {
-	if (enabled)
-		d->say(text);
+void TextToSpeech::say(const QString &text)
+{
+    if (enabled)
+        d->say(text);
 }
 
-void TextToSpeech::setEnabled(bool e) {
-	enabled = e;
+void TextToSpeech::setEnabled(bool e)
+{
+    enabled = e;
 }
 
-void TextToSpeech::setVolume(int volume) {
-	d->setVolume(volume);
+void TextToSpeech::setVolume(int volume)
+{
+    d->setVolume(volume);
 }
 
-bool TextToSpeech::isEnabled() const {
-	return enabled;
+bool TextToSpeech::isEnabled() const
+{
+    return enabled;
 }

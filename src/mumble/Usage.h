@@ -12,15 +12,16 @@
 
 class ClientUser;
 
-class Usage : public QObject {
-		Q_OBJECT
-	protected:
-		QBuffer qbReport;
-		QDataStream qdsReport;
-	public:
-		Usage(QObject *p = NULL);
-	public slots:
-		void registerUsage();
+class Usage : public QObject
+{
+    Q_OBJECT
+protected:
+    QBuffer qbReport;
+    QDataStream qdsReport;
+public:
+    Usage(QObject *p = NULL);
+public slots:
+    void registerUsage();
 };
 
 #endif

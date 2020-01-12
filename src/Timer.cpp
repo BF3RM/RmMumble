@@ -24,41 +24,49 @@
 
 #include "Timer.h"
 
-Timer::Timer(bool start) {
-	uiStart = start ? now() : 0;
+Timer::Timer(bool start)
+{
+    uiStart = start ? now() : 0;
 }
 
-quint64 Timer::elapsed() const {
-	Q_ASSERT(uiStart != 0);
-	return now() - uiStart;
+quint64 Timer::elapsed() const
+{
+    Q_ASSERT(uiStart != 0);
+    return now() - uiStart;
 }
 
-bool Timer::isElapsed(quint64 us) {
-	Q_ASSERT(uiStart != 0);
-	if (elapsed() > us) {
-		uiStart += us;
-		return true;
-	}
-	return false;
+bool Timer::isElapsed(quint64 us)
+{
+    Q_ASSERT(uiStart != 0);
+    if (elapsed() > us)
+    {
+        uiStart += us;
+        return true;
+    }
+    return false;
 }
 
-quint64 Timer::restart() {
-	quint64 n = now();
-	quint64 e = n - uiStart;
-	uiStart = n;
-	return e;
+quint64 Timer::restart()
+{
+    quint64 n = now();
+    quint64 e = n - uiStart;
+    uiStart = n;
+    return e;
 }
 
-bool Timer::isStarted() const {
-	return uiStart != 0;
+bool Timer::isStarted() const
+{
+    return uiStart != 0;
 }
 
-bool Timer::operator<(const Timer &other) const {
-	return uiStart > other.uiStart;
+bool Timer::operator<(const Timer &other) const
+{
+    return uiStart > other.uiStart;
 }
 
-bool Timer::operator>(const Timer &other) const {
-	return uiStart < other.uiStart;
+bool Timer::operator>(const Timer &other) const
+{
+    return uiStart < other.uiStart;
 }
 
 #ifdef USE_BOOST_CHRONO
@@ -70,30 +78,33 @@ bool Timer::operator>(const Timer &other) const {
 
 #include <boost/chrono.hpp>
 
-quint64 Timer::now() {
-	using namespace boost::chrono;
-	time_point<steady_clock> now = steady_clock::now();
-	time_point<steady_clock>::duration epochDuration = now.time_since_epoch();
-	microseconds epochDurationUsec = duration_cast<microseconds>(epochDuration);
-	return static_cast<quint64>(epochDurationUsec.count());
+quint64 Timer::now()
+{
+    using namespace boost::chrono;
+    time_point<steady_clock> now = steady_clock::now();
+    time_point<steady_clock>::duration epochDuration = now.time_since_epoch();
+    microseconds epochDurationUsec = duration_cast<microseconds>(epochDuration);
+    return static_cast<quint64>(epochDurationUsec.count());
 }
 #elif defined(Q_OS_WIN)
 #include <windows.h>
 
-quint64 Timer::now() {
-	static double scale = 0;
+quint64 Timer::now()
+{
+    static double scale = 0;
 
-	if (scale == 0) {
-		LARGE_INTEGER freq;
-		QueryPerformanceFrequency(&freq);
-		scale = 1000000. / freq.QuadPart;
-	}
+    if (scale == 0)
+    {
+        LARGE_INTEGER freq;
+        QueryPerformanceFrequency(&freq);
+        scale = 1000000. / freq.QuadPart;
+    }
 
-	LARGE_INTEGER li;
-	QueryPerformanceCounter(&li);
-	quint64 e = li.QuadPart;
+    LARGE_INTEGER li;
+    QueryPerformanceCounter(&li);
+    quint64 e = li.QuadPart;
 
-	return static_cast<quint64>(e * scale);
+    return static_cast<quint64>(e * scale);
 }
 #elif defined(Q_OS_UNIX)
 # include <errno.h>
@@ -101,28 +112,32 @@ quint64 Timer::now() {
 # include <unistd.h>
 # include <sys/time.h>
 # if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
-quint64 Timer::now() {
-	struct timespec ts;
-	if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
-		qFatal("Timer: clock_gettime() failed: (%i) %s", errno, strerror(errno));
-	}
-	quint64 e = ts.tv_sec * 1000000LL;
-	e += ts.tv_nsec / 1000LL;
-	return e;
+quint64 Timer::now()
+{
+    struct timespec ts;
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+    {
+        qFatal("Timer: clock_gettime() failed: (%i) %s", errno, strerror(errno));
+    }
+    quint64 e = ts.tv_sec * 1000000LL;
+    e += ts.tv_nsec / 1000LL;
+    return e;
 }
 # else
-quint64 Timer::now() {
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	quint64 e= tv.tv_sec * 1000000LL;
-	e += tv.tv_usec;
-	return e;
+quint64 Timer::now()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    quint64 e= tv.tv_sec * 1000000LL;
+    e += tv.tv_usec;
+    return e;
 }
 # endif
 #else
-quint64 Timer::now() {
-	static QTime ticker;
-	quint64 elapsed = ticker.elapsed();
-	return elapsed * 1000LL;
+quint64 Timer::now()
+{
+    static QTime ticker;
+    quint64 elapsed = ticker.elapsed();
+    return elapsed * 1000LL;
 }
 #endif

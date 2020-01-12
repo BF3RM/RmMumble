@@ -10,15 +10,16 @@
 
 class BonjourServiceRegister;
 
-class BonjourServer : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(BonjourServer)
-	public:
-		BonjourServer();
-		~BonjourServer();
+class BonjourServer : public QObject
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(BonjourServer)
+public:
+    BonjourServer();
+    ~BonjourServer();
 
-		BonjourServiceRegister *bsrRegister;
+    BonjourServiceRegister *bsrRegister;
 };
 
 #endif

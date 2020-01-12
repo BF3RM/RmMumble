@@ -20,69 +20,70 @@ class QLibrary;
 class QLocalServer;
 class OverlayPositionableItem;
 
-class OverlayClient : public QObject {
-		friend class Overlay;
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(OverlayClient)
-	protected:
-		OverlayMsg omMsg;
-		QLocalSocket *qlsSocket;
-		SharedMemory2 *smMem;
-		QRect qrLast;
-		Timer t;
+class OverlayClient : public QObject
+{
+    friend class Overlay;
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(OverlayClient)
+protected:
+    OverlayMsg omMsg;
+    QLocalSocket *qlsSocket;
+    SharedMemory2 *smMem;
+    QRect qrLast;
+    Timer t;
 
-		float framesPerSecond;
-		int iOffsetX, iOffsetY;
-		QGraphicsPixmapItem *qgpiCursor;
-		QGraphicsPixmapItem *qgpiLogo;
-		OverlayPositionableItem *qgpiFPS;
-		OverlayPositionableItem *qgpiTime;
+    float framesPerSecond;
+    int iOffsetX, iOffsetY;
+    QGraphicsPixmapItem *qgpiCursor;
+    QGraphicsPixmapItem *qgpiLogo;
+    OverlayPositionableItem *qgpiFPS;
+    OverlayPositionableItem *qgpiTime;
 
-		/// The process ID of the process this OverlayClient is connected to.
-		quint64 uiPid;
-		/// The path to the executable of the process that this OverlayClient is connected to.
-		QString qsExecutablePath;
+    /// The process ID of the process this OverlayClient is connected to.
+    quint64 uiPid;
+    /// The path to the executable of the process that this OverlayClient is connected to.
+    QString qsExecutablePath;
 
-		QGraphicsScene qgs;
-		OverlayUserGroup ougUsers;
+    QGraphicsScene qgs;
+    OverlayUserGroup ougUsers;
 
 #ifdef Q_OS_MAC
-		QMap<Qt::CursorShape, QPixmap> qmCursors;
+    QMap<Qt::CursorShape, QPixmap> qmCursors;
 #endif
 
-		bool bWasVisible;
-		bool bDelete;
+    bool bWasVisible;
+    bool bDelete;
 
-		void setupRender();
-		void setupScene(bool show);
+    void setupRender();
+    void setupScene(bool show);
 
-		bool eventFilter(QObject *, QEvent *) Q_DECL_OVERRIDE;
+    bool eventFilter(QObject *, QEvent *) Q_DECL_OVERRIDE;
 
-		void readyReadMsgInit(unsigned int length);
+    void readyReadMsgInit(unsigned int length);
 
-		QList<QRectF> qlDirty;
-	protected slots:
-		void readyRead();
-		void changed(const QList<QRectF> &);
-		void render();
-	public:
-		QGraphicsView qgv;
-		unsigned int uiWidth, uiHeight;
-		int iMouseX, iMouseY;
+    QList<QRectF> qlDirty;
+protected slots:
+    void readyRead();
+    void changed(const QList<QRectF> &);
+    void render();
+public:
+    QGraphicsView qgv;
+    unsigned int uiWidth, uiHeight;
+    int iMouseX, iMouseY;
 
-		OverlayClient(QLocalSocket *, QObject *);
-		~OverlayClient() Q_DECL_OVERRIDE;
-		void reset();
-	public slots:
-		void showGui();
-		void hideGui();
-		void scheduleDelete();
-		void updateMouse();
-		void updateFPS();
-		void updateTime();
-		bool update();
-		void openEditor();
+    OverlayClient(QLocalSocket *, QObject *);
+    ~OverlayClient() Q_DECL_OVERRIDE;
+    void reset();
+public slots:
+    void showGui();
+    void hideGui();
+    void scheduleDelete();
+    void updateMouse();
+    void updateFPS();
+    void updateTime();
+    bool update();
+    void openEditor();
 };
 
 #endif

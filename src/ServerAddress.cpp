@@ -8,35 +8,44 @@
 #include "ServerAddress.h"
 
 ServerAddress::ServerAddress()
-	: port(0) {}
+    : port(0) {}
 
 ServerAddress::ServerAddress(HostAddress host_, unsigned short port_)
-	: host(host_)
-	, port(port_) {}
+    : host(host_)
+    , port(port_) {}
 
-bool ServerAddress::isValid() const {
-	return host.isValid() && port != 0;
+bool ServerAddress::isValid() const
+{
+    return host.isValid() && port != 0;
 }
 
-bool operator==(const ServerAddress &lhs, const ServerAddress &rhs) {
-	return lhs.host == rhs.host && lhs.port == rhs.port;
+bool operator==(const ServerAddress &lhs, const ServerAddress &rhs)
+{
+    return lhs.host == rhs.host && lhs.port == rhs.port;
 }
 
-bool operator!=(const ServerAddress &lhs, const ServerAddress &rhs) {
-	return !operator==(lhs, rhs);
+bool operator!=(const ServerAddress &lhs, const ServerAddress &rhs)
+{
+    return !operator==(lhs, rhs);
 }
 
-bool operator<(const ServerAddress &lhs, const ServerAddress &rhs) {
-	if (lhs.host < rhs.host) {
-		return true;
-	} else if (lhs.host == rhs.host) {
-		if (lhs.port < rhs.port) {
-			return true;
-		}
-	}
-	return false;
+bool operator<(const ServerAddress &lhs, const ServerAddress &rhs)
+{
+    if (lhs.host < rhs.host)
+    {
+        return true;
+    }
+    else if (lhs.host == rhs.host)
+    {
+        if (lhs.port < rhs.port)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
-uint qHash(const ServerAddress &key) {
-	return qHash(key.host) ^ uint(key.port);
+uint qHash(const ServerAddress &key)
+{
+    return qHash(key.host) ^ uint(key.port);
 }

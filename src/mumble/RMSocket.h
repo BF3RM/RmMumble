@@ -12,29 +12,35 @@ class RMSocket : public QThread
 {
     Q_OBJECT
 public:
-	RMSocket() : Socket(nullptr) {}
-	RMMessage* NewMessage(EMessageType Type);
+    RMSocket() : Socket(nullptr) {}
+    RMMessage* NewMessage(EMessageType Type);
     void AddListener(OnMessageCallback Listener, EMessageType Type);
-    inline bool IsAlive() { return Socket != nullptr; }
-    inline class QTcpSocket* GetSocket() { return Socket; }
-	void AddMessageToPoll(class RMMessage* Message);
-	void Stop();
+    inline bool IsAlive()
+    {
+        return Socket != nullptr;
+    }
+    inline class QTcpSocket* GetSocket()
+    {
+        return Socket;
+    }
+    void AddMessageToPoll(class RMMessage* Message);
+    void Stop();
 protected:
-	void run() override;
+    void run() override;
 protected:
-	class RMMessage* GetPoolMessage();
+    class RMMessage* GetPoolMessage();
     class QTcpSocket* Socket;
     std::map<EMessageType, std::vector<OnMessageCallback>> MessageCallbacks;
 signals:
     void OnUuidReceived(QString Uuid);
-	void OnHostAndPortReceived(QString Uuid);
-	void OnMuteAndDeaf(bool Mute, bool Deaf);
+    void OnHostAndPortReceived(QString Uuid);
+    void OnMuteAndDeaf(bool Mute, bool Deaf);
     void OnDisconnected();
     void OnConnected();
 
 protected:
-	std::vector<class RMMessage*> MessagePool;
-	QMutex MessagePoolLock;
+    std::vector<class RMMessage*> MessagePool;
+    QMutex MessagePoolLock;
 };
 
 #endif

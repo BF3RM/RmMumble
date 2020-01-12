@@ -9,24 +9,30 @@
 
 unsigned int SharedMemory2::uiIndex = 0;
 
-QString SharedMemory2::name() const {
-	return a_ucData ? qsName : QString();
+QString SharedMemory2::name() const
+{
+    return a_ucData ? qsName : QString();
 }
 
-unsigned int SharedMemory2::size() const {
-	return a_ucData ? uiSize : 0;
+unsigned int SharedMemory2::size() const
+{
+    return a_ucData ? uiSize : 0;
 }
 
-unsigned char *SharedMemory2::data() {
-	return a_ucData;
+unsigned char *SharedMemory2::data()
+{
+    return a_ucData;
 }
 
-const unsigned char *SharedMemory2::data() const {
-	return a_ucData;
+const unsigned char *SharedMemory2::data() const
+{
+    return a_ucData;
 }
 
-void SharedMemory2::erase() {
-	if (a_ucData) {
-		memset(a_ucData, 0, uiSize);
-	}
+void SharedMemory2::erase()
+{
+    if (a_ucData)
+    {
+        memset(a_ucData, 0, uiSize);
+    }
 }

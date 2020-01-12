@@ -6,13 +6,14 @@
 #ifndef MUMBLE_SSLCIPHERINFO_H_
 #define MUMBLE_SSLCIPHERINFO_H_
 
-struct SSLCipherInfo {
-	const char *openssl_name;
-	const char *rfc_name;
-	const char *encryption;
-	const char *key_exchange_verbose;
-	const bool forward_secret;
-	const char *message_authentication;
+struct SSLCipherInfo
+{
+    const char *openssl_name;
+    const char *rfc_name;
+    const char *encryption;
+    const char *key_exchange_verbose;
+    const bool forward_secret;
+    const char *message_authentication;
 };
 
 const SSLCipherInfo *SSLCipherInfoLookupByOpenSSLName(const char *openSslCipherName);

@@ -12,25 +12,26 @@ class Channel;
 class User;
 class ServerUser;
 
-class Group {
-	private:
-		Q_DISABLE_COPY(Group)
-	public:
-		Channel *c;
-		QString qsName;
-		bool bInherit;
-		bool bInheritable;
-		QSet<int> qsAdd;
-		QSet<int> qsRemove;
-		QSet<int> qsTemporary;
-		Group(Channel *assoc, const QString &name);
+class Group
+{
+private:
+    Q_DISABLE_COPY(Group)
+public:
+    Channel *c;
+    QString qsName;
+    bool bInherit;
+    bool bInheritable;
+    QSet<int> qsAdd;
+    QSet<int> qsRemove;
+    QSet<int> qsTemporary;
+    Group(Channel *assoc, const QString &name);
 
 #ifdef MURMUR
-		QSet<int> members();
-		static QSet<QString> groupNames(Channel *c);
-		static Group *getGroup(Channel *c, QString name);
+    QSet<int> members();
+    static QSet<QString> groupNames(Channel *c);
+    static Group *getGroup(Channel *c, QString name);
 
-		static bool isMember(Channel *c, Channel *aclChan, QString name, ServerUser *);
+    static bool isMember(Channel *c, Channel *aclChan, QString name, ServerUser *);
 #endif
 };
 

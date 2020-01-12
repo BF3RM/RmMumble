@@ -22,21 +22,23 @@
 # include <QtGui/QDialog>
 #endif
 
-enum AboutDialogOptions {
-	AboutDialogOptionsShowAbout,
-	AboutDialogOptionsShowLicense,
-	AboutDialogOptionsShowAuthors,
-	AboutDialogOptionsShowThirdPartyLicenses,
+enum AboutDialogOptions
+{
+    AboutDialogOptionsShowAbout,
+    AboutDialogOptionsShowLicense,
+    AboutDialogOptionsShowAuthors,
+    AboutDialogOptionsShowThirdPartyLicenses,
 
-	AboutDialogOptionsDefault = AboutDialogOptionsShowAbout
+    AboutDialogOptionsDefault = AboutDialogOptionsShowAbout
 };
 
-class AboutDialog : public QDialog {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(AboutDialog)
-	public:
-		AboutDialog(QWidget *parent, AboutDialogOptions options = AboutDialogOptionsDefault);
+class AboutDialog : public QDialog
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(AboutDialog)
+public:
+    AboutDialog(QWidget *parent, AboutDialogOptions options = AboutDialogOptionsDefault);
 };
 
 #endif

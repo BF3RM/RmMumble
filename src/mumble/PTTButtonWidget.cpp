@@ -10,25 +10,30 @@
 #include "Global.h"
 
 PTTButtonWidget::PTTButtonWidget(QWidget *p) :
-		QWidget(p) {
-	setupUi(this);
+    QWidget(p)
+{
+    setupUi(this);
 
-	setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
+    setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
 
-	if (!g.s.qbaPTTButtonWindowGeometry.isEmpty()) {
-		restoreGeometry(g.s.qbaPTTButtonWindowGeometry);
-	}
+    if (!g.s.qbaPTTButtonWindowGeometry.isEmpty())
+    {
+        restoreGeometry(g.s.qbaPTTButtonWindowGeometry);
+    }
 }
 
-void PTTButtonWidget::closeEvent(QCloseEvent *e) {
-	g.s.qbaPTTButtonWindowGeometry = saveGeometry();
-	QWidget::closeEvent(e);
+void PTTButtonWidget::closeEvent(QCloseEvent *e)
+{
+    g.s.qbaPTTButtonWindowGeometry = saveGeometry();
+    QWidget::closeEvent(e);
 }
 
-void PTTButtonWidget::on_qpbPushToTalk_pressed() {
-	emit triggered(true, QVariant());
+void PTTButtonWidget::on_qpbPushToTalk_pressed()
+{
+    emit triggered(true, QVariant());
 }
 
-void PTTButtonWidget::on_qpbPushToTalk_released() {
-	emit triggered(false, QVariant());
+void PTTButtonWidget::on_qpbPushToTalk_released()
+{
+    emit triggered(false, QVariant());
 }

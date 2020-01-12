@@ -15,14 +15,15 @@
 #define MUMBLE_RELEASE MUMTEXT(MUMBLE_VERSION)
 #endif
 
-class MumbleVersion {
-	public:
-		static unsigned int getRaw(const QString &version = QLatin1String(MUMTEXT(MUMBLE_VERSION_STRING)));
-		static QString toString(unsigned int version);
-		static bool get(int *major, int *minor, int *patch, const QString &version = QLatin1String(MUMTEXT(MUMBLE_VERSION_STRING)));
+class MumbleVersion
+{
+public:
+    static unsigned int getRaw(const QString &version = QLatin1String(MUMTEXT(MUMBLE_VERSION_STRING)));
+    static QString toString(unsigned int version);
+    static bool get(int *major, int *minor, int *patch, const QString &version = QLatin1String(MUMTEXT(MUMBLE_VERSION_STRING)));
 
-		static unsigned int toRaw(int major, int minor, int patch);
-		static void fromRaw(unsigned int version, int *major, int *minor, int *patch);
+    static unsigned int toRaw(int major, int minor, int patch);
+    static void fromRaw(unsigned int version, int *major, int *minor, int *patch);
 };
 
 #endif

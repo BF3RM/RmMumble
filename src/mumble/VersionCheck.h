@@ -10,14 +10,15 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QUrl>
 
-class VersionCheck : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(VersionCheck)
-	public slots:
-		void fetched(QByteArray data, QUrl url);
-	public:
-		VersionCheck(bool autocheck, QObject *parent = NULL, bool focus = false);
+class VersionCheck : public QObject
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(VersionCheck)
+public slots:
+    void fetched(QByteArray data, QUrl url);
+public:
+    VersionCheck(bool autocheck, QObject *parent = NULL, bool focus = false);
 };
 
 #endif

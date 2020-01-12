@@ -9,95 +9,110 @@
 
 #include <QtNetwork/QHostInfo>
 
-class ServerResolverPrivate : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(ServerResolverPrivate)
-	public:
-		ServerResolverPrivate(QObject *parent);
+class ServerResolverPrivate : public QObject
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(ServerResolverPrivate)
+public:
+    ServerResolverPrivate(QObject *parent);
 
-		void resolve(QString hostname, quint16 port);
-		QList<ServerResolverRecord> records();
+    void resolve(QString hostname, quint16 port);
+    QList<ServerResolverRecord> records();
 
-		QString m_origHostname;
-		quint16 m_origPort;
+    QString m_origHostname;
+    quint16 m_origPort;
 
-		QList<ServerResolverRecord> m_resolved;
+    QList<ServerResolverRecord> m_resolved;
 
-	signals:
-		void resolved();
+signals:
+    void resolved();
 
-	public slots:
-		void hostResolved(QHostInfo hostInfo);
+public slots:
+    void hostResolved(QHostInfo hostInfo);
 };
 
 ServerResolverPrivate::ServerResolverPrivate(QObject *parent)
-	: QObject(parent)
-	, m_origPort(0) {
+    : QObject(parent)
+    , m_origPort(0)
+{
 }
 
-void ServerResolverPrivate::resolve(QString hostname, quint16 port) {
-	m_origHostname = hostname;
-	m_origPort = port;
+void ServerResolverPrivate::resolve(QString hostname, quint16 port)
+{
+    m_origHostname = hostname;
+    m_origPort = port;
 
-	QHostInfo::lookupHost(hostname, this, SLOT(hostResolved(QHostInfo)));
+    QHostInfo::lookupHost(hostname, this, SLOT(hostResolved(QHostInfo)));
 }
 
-QList<ServerResolverRecord> ServerResolverPrivate::records() {
-	return m_resolved;
+QList<ServerResolverRecord> ServerResolverPrivate::records()
+{
+    return m_resolved;
 }
 
-void ServerResolverPrivate::hostResolved(QHostInfo hostInfo) {
-	if (hostInfo.error() == QHostInfo::NoError) {
-		QList<QHostAddress> resolvedAddresses = hostInfo.addresses();
-		
-		// Convert QHostAddress -> HostAddress.
-		QList<HostAddress> addresses;
-		foreach (QHostAddress ha, resolvedAddresses) {
-			addresses << HostAddress(ha);
-		}
+void ServerResolverPrivate::hostResolved(QHostInfo hostInfo)
+{
+    if (hostInfo.error() == QHostInfo::NoError)
+    {
+        QList<QHostAddress> resolvedAddresses = hostInfo.addresses();
 
-		m_resolved << ServerResolverRecord(m_origHostname, m_origPort, 0, addresses);
-	}
+        // Convert QHostAddress -> HostAddress.
+        QList<HostAddress> addresses;
+        foreach (QHostAddress ha, resolvedAddresses)
+        {
+            addresses << HostAddress(ha);
+        }
 
-	emit resolved();
+        m_resolved << ServerResolverRecord(m_origHostname, m_origPort, 0, addresses);
+    }
+
+    emit resolved();
 }
 
 ServerResolver::ServerResolver(QObject *parent)
-	: QObject(parent)
-	{
+    : QObject(parent)
+{
 
-	d = new ServerResolverPrivate(this);
+    d = new ServerResolverPrivate(this);
 }
 
-QString ServerResolver::hostname() {
-	if (d) {
-		return d->m_origHostname;
-	}
+QString ServerResolver::hostname()
+{
+    if (d)
+    {
+        return d->m_origHostname;
+    }
 
-	return QString();
+    return QString();
 }
 
-quint16 ServerResolver::port() {
-	if (d) {
-		return d->m_origPort;
-	}
+quint16 ServerResolver::port()
+{
+    if (d)
+    {
+        return d->m_origPort;
+    }
 
-	return 0;
+    return 0;
 }
 
-void ServerResolver::resolve(QString hostname, quint16 port) {
-	if (d) {
-		connect(d, SIGNAL(resolved()), this, SIGNAL(resolved()));
-		d->resolve(hostname, port);
-	}
+void ServerResolver::resolve(QString hostname, quint16 port)
+{
+    if (d)
+    {
+        connect(d, SIGNAL(resolved()), this, SIGNAL(resolved()));
+        d->resolve(hostname, port);
+    }
 }
 
-QList<ServerResolverRecord> ServerResolver::records() {
-	if (d) {
-		return d->records();
-	}
-	return QList<ServerResolverRecord>();
+QList<ServerResolverRecord> ServerResolver::records()
+{
+    if (d)
+    {
+        return d->records();
+    }
+    return QList<ServerResolverRecord>();
 }
 
 #include "ServerResolver_nosrv.moc"

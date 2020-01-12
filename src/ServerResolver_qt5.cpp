@@ -12,38 +12,47 @@
 #include <QtNetwork/QHostInfo>
 
 ServerResolver::ServerResolver(QObject *parent)
-	: QObject(parent) {
+    : QObject(parent)
+{
 
-	d = new ServerResolverPrivate(this);
+    d = new ServerResolverPrivate(this);
 }
 
-QString ServerResolver::hostname() {
-	if (d) {
-		return d->m_origHostname;
-	}
+QString ServerResolver::hostname()
+{
+    if (d)
+    {
+        return d->m_origHostname;
+    }
 
-	return QString();
+    return QString();
 }
 
-quint16 ServerResolver::port() {
-	if (d) {
-		return d->m_origPort;
-	}
+quint16 ServerResolver::port()
+{
+    if (d)
+    {
+        return d->m_origPort;
+    }
 
-	return 0;
+    return 0;
 }
 
-void ServerResolver::resolve(QString hostname, quint16 port) {
-	if (d) {
-		connect(d, SIGNAL(resolved()), this, SIGNAL(resolved()));
-		d->resolve(hostname, port);
-	}
+void ServerResolver::resolve(QString hostname, quint16 port)
+{
+    if (d)
+    {
+        connect(d, SIGNAL(resolved()), this, SIGNAL(resolved()));
+        d->resolve(hostname, port);
+    }
 }
 
-QList<ServerResolverRecord> ServerResolver::records() {
-	if (d) {
-		return d->records();
-	}
-	return QList<ServerResolverRecord>();
+QList<ServerResolverRecord> ServerResolver::records()
+{
+    if (d)
+    {
+        return d->records();
+    }
+    return QList<ServerResolverRecord>();
 }
 

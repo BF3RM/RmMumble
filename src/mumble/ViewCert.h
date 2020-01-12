@@ -19,18 +19,19 @@
 
 class QListWidget;
 
-class ViewCert : public QDialog {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(ViewCert)
-	protected:
-		QList<QSslCertificate> qlCerts;
-		QListWidget *qlwChain, *qlwCert;
-	protected slots:
-		void on_Chain_currentRowChanged(int);
-	public:
-		ViewCert(QList<QSslCertificate> c, QWidget *p);
-		static QString prettifyDigest(QString);
+class ViewCert : public QDialog
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(ViewCert)
+protected:
+    QList<QSslCertificate> qlCerts;
+    QListWidget *qlwChain, *qlwCert;
+protected slots:
+    void on_Chain_currentRowChanged(int);
+public:
+    ViewCert(QList<QSslCertificate> c, QWidget *p);
+    static QString prettifyDigest(QString);
 };
 
 #endif

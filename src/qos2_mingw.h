@@ -12,8 +12,8 @@
 #define MUMBLE_QOS2_MINGW_H_
 
 #ifdef __MINGW32__
-	typedef UINT32 QOS_FLOWID, *PQOS_FLOWID;
-	#define QOS_NON_ADAPTIVE_FLOW 0x00000002 // MinGW's qos2.h header doesn't define QOS_NON_ADAPTIVE_FLOW, so we define it ourselves for MinGW to use.
+typedef UINT32 QOS_FLOWID, *PQOS_FLOWID;
+#define QOS_NON_ADAPTIVE_FLOW 0x00000002 // MinGW's qos2.h header doesn't define QOS_NON_ADAPTIVE_FLOW, so we define it ourselves for MinGW to use.
 #endif
 
 #endif

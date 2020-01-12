@@ -12,30 +12,32 @@
 
 #include "ui_UserInformation.h"
 
-namespace MumbleProto {
+namespace MumbleProto
+{
 class UserStats;
 }
 
 class QTimer;
 
-class UserInformation : public QDialog, Ui::UserInformation {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(UserInformation)
-	protected:
-		bool bRequested;
-		unsigned int uiSession;
-		QTimer *qtTimer;
-		QList<QSslCertificate> qlCerts;
-		static QString secsToString(unsigned int secs);
-		QFont qfCertificateFont;
-	protected slots:
-		void tick();
-		void on_qpbCertificate_clicked();
-	public:
-		UserInformation(const MumbleProto::UserStats &msg, QWidget *p = NULL);
-		void update(const MumbleProto::UserStats &msg);
-		unsigned int session() const;
+class UserInformation : public QDialog, Ui::UserInformation
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(UserInformation)
+protected:
+    bool bRequested;
+    unsigned int uiSession;
+    QTimer *qtTimer;
+    QList<QSslCertificate> qlCerts;
+    static QString secsToString(unsigned int secs);
+    QFont qfCertificateFont;
+protected slots:
+    void tick();
+    void on_qpbCertificate_clicked();
+public:
+    UserInformation(const MumbleProto::UserStats &msg, QWidget *p = NULL);
+    void update(const MumbleProto::UserStats &msg);
+    unsigned int session() const;
 };
 
 #endif

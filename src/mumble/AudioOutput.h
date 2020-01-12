@@ -47,71 +47,73 @@ class AudioOutputSample;
 
 typedef boost::shared_ptr<AudioOutput> AudioOutputPtr;
 
-class AudioOutputRegistrar {
-	private:
-		Q_DISABLE_COPY(AudioOutputRegistrar)
-	public:
-		static QMap<QString, AudioOutputRegistrar *> *qmNew;
-		static QString current;
-		static AudioOutputPtr newFromChoice(QString choice = QString());
+class AudioOutputRegistrar
+{
+private:
+    Q_DISABLE_COPY(AudioOutputRegistrar)
+public:
+    static QMap<QString, AudioOutputRegistrar *> *qmNew;
+    static QString current;
+    static AudioOutputPtr newFromChoice(QString choice = QString());
 
-		const QString name;
-		int priority;
+    const QString name;
+    int priority;
 
-		AudioOutputRegistrar(const QString &n, int priority = 0);
-		virtual ~AudioOutputRegistrar();
-		virtual AudioOutput *create() = 0;
-		virtual const QList<audioDevice> getDeviceChoices() = 0;
-		virtual void setDeviceChoice(const QVariant &, Settings &) = 0;
-		virtual bool canMuteOthers() const;
-		virtual bool usesOutputDelay() const;
-		virtual bool canExclusive() const;
+    AudioOutputRegistrar(const QString &n, int priority = 0);
+    virtual ~AudioOutputRegistrar();
+    virtual AudioOutput *create() = 0;
+    virtual const QList<audioDevice> getDeviceChoices() = 0;
+    virtual void setDeviceChoice(const QVariant &, Settings &) = 0;
+    virtual bool canMuteOthers() const;
+    virtual bool usesOutputDelay() const;
+    virtual bool canExclusive() const;
 };
 
-class AudioOutput : public QThread {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(AudioOutput)
-	private:
-		float *fSpeakers;
-		float *fSpeakerVolume;
-		bool *bSpeakerPositional;
-	protected:
-		enum { SampleShort, SampleFloat } eSampleFormat;
-		volatile bool bRunning;
-		unsigned int iFrameSize;
-		volatile unsigned int iMixerFreq;
-		unsigned int iChannels;
-		unsigned int iSampleSize;
-		QReadWriteLock qrwlOutputs;
-		QMultiHash<const ClientUser *, AudioOutputUser *> qmOutputs;
+class AudioOutput : public QThread
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(AudioOutput)
+private:
+    float *fSpeakers;
+    float *fSpeakerVolume;
+    bool *bSpeakerPositional;
+protected:
+    enum { SampleShort, SampleFloat } eSampleFormat;
+    volatile bool bRunning;
+    unsigned int iFrameSize;
+    volatile unsigned int iMixerFreq;
+    unsigned int iChannels;
+    unsigned int iSampleSize;
+    QReadWriteLock qrwlOutputs;
+    QMultiHash<const ClientUser *, AudioOutputUser *> qmOutputs;
 
-		virtual void removeBuffer(AudioOutputUser *);
-		void initializeMixer(const unsigned int *chanmasks, bool forceheadphone = false);
-		bool mix(void *output, unsigned int nsamp);
-	public:
-		void wipe();
+    virtual void removeBuffer(AudioOutputUser *);
+    void initializeMixer(const unsigned int *chanmasks, bool forceheadphone = false);
+    bool mix(void *output, unsigned int nsamp);
+public:
+    void wipe();
 
-                /// Construct an AudioOutput.
-                ///
-                /// This constructor is only ever called by Audio::startOutput(), and is guaranteed
-                /// to be called on the application's main thread.
-		AudioOutput();
+    /// Construct an AudioOutput.
+    ///
+    /// This constructor is only ever called by Audio::startOutput(), and is guaranteed
+    /// to be called on the application's main thread.
+    AudioOutput();
 
-                /// Destroy an AudioOutput.
-                ///
-                /// This destructor is only ever called by Audio::stopOutput() and Audio::stop(),
-                /// and is guaranteed to be called on the application's main thread.
-		~AudioOutput() Q_DECL_OVERRIDE;
+    /// Destroy an AudioOutput.
+    ///
+    /// This destructor is only ever called by Audio::stopOutput() and Audio::stop(),
+    /// and is guaranteed to be called on the application's main thread.
+    ~AudioOutput() Q_DECL_OVERRIDE;
 
-		void addFrameToBuffer(ClientUser *, const QByteArray &, unsigned int iSeq, MessageHandler::UDPMessageType type);
-		void removeBuffer(const ClientUser *);
-		AudioOutputSample *playSample(const QString &filename, bool loop = false);
-		void run() Q_DECL_OVERRIDE = 0;
-		virtual bool isAlive() const;
-		const float *getSpeakerPos(unsigned int &nspeakers);
-		static float calcGain(float dotproduct, float distance);
-		unsigned int getMixerFreq() const;
+    void addFrameToBuffer(ClientUser *, const QByteArray &, unsigned int iSeq, MessageHandler::UDPMessageType type);
+    void removeBuffer(const ClientUser *);
+    AudioOutputSample *playSample(const QString &filename, bool loop = false);
+    void run() Q_DECL_OVERRIDE = 0;
+    virtual bool isAlive() const;
+    const float *getSpeakerPos(unsigned int &nspeakers);
+    static float calcGain(float dotproduct, float distance);
+    unsigned int getMixerFreq() const;
 };
 
 #endif

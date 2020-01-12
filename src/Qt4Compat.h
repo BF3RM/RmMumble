@@ -6,10 +6,12 @@
 #ifndef MUMBLE_QT4COMPAT_H_
 #define MUMBLE_QT4COMPAT_H_
 
-namespace Qt {
+namespace Qt
+{
 
-inline QString escape(const QString &plain) {
-	return plain.toHtmlEscaped();
+inline QString escape(const QString &plain)
+{
+    return plain.toHtmlEscaped();
 }
 
 }

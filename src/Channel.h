@@ -19,71 +19,72 @@ class ChanACL;
 
 class ClientUser;
 
-class Channel : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(Channel)
-	private:
-		QSet<Channel *> qsUnseen;
-	public:
-		int iId;
-		int iPosition;
-		bool bTemporary;
-		Channel *cParent;
-		QString qsName;
-		QString qsDesc;
-		QByteArray qbaDescHash;
-		QList<Channel *> qlChannels;
-		QList<User *> qlUsers;
-		QHash<QString, Group *> qhGroups;
-		QList<ChanACL *> qlACL;
+class Channel : public QObject
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(Channel)
+private:
+    QSet<Channel *> qsUnseen;
+public:
+    int iId;
+    int iPosition;
+    bool bTemporary;
+    Channel *cParent;
+    QString qsName;
+    QString qsDesc;
+    QByteArray qbaDescHash;
+    QList<Channel *> qlChannels;
+    QList<User *> qlUsers;
+    QHash<QString, Group *> qhGroups;
+    QList<ChanACL *> qlACL;
 
-		QSet<Channel *> qsPermLinks;
-		QHash<Channel *, int> qhLinks;
+    QSet<Channel *> qsPermLinks;
+    QHash<Channel *, int> qhLinks;
 
-		bool bInheritACL;
+    bool bInheritACL;
 
-		/// Maximum number of users allowed in the channel. If this
-		/// value is zero, the maximum number of users allowed in the
-		/// channel is given by the server's "usersperchannel"
-		/// setting.
-		unsigned int uiMaxUsers;
+    /// Maximum number of users allowed in the channel. If this
+    /// value is zero, the maximum number of users allowed in the
+    /// channel is given by the server's "usersperchannel"
+    /// setting.
+    unsigned int uiMaxUsers;
 
-		Channel(int id, const QString &name, QObject *p = NULL);
-		~Channel();
+    Channel(int id, const QString &name, QObject *p = NULL);
+    ~Channel();
 
 #ifdef MUMBLE
-		unsigned int uiPermissions;
-		bool bFiltered;
+    unsigned int uiPermissions;
+    bool bFiltered;
 
-		static QHash<int, Channel *> c_qhChannels;
-		static QReadWriteLock c_qrwlChannels;
+    static QHash<int, Channel *> c_qhChannels;
+    static QReadWriteLock c_qrwlChannels;
 
-		static Channel *get(int);
-		static Channel *add(int, const QString &);
-		static void remove(Channel *);
+    static Channel *get(int);
+    static Channel *add(int, const QString &);
+    static void remove(Channel *);
 
-		void addClientUser(ClientUser *p);
+    void addClientUser(ClientUser *p);
 #endif
-		static bool lessThan(const Channel *, const Channel *);
+    static bool lessThan(const Channel *, const Channel *);
 
-		size_t getLevel() const;
-		size_t getDepth() const;
-		QString getPath() const;
+    size_t getLevel() const;
+    size_t getDepth() const;
+    QString getPath() const;
 
-		void addChannel(Channel *c);
-		void removeChannel(Channel *c);
-		void addUser(User *p);
-		void removeUser(User *p);
+    void addChannel(Channel *c);
+    void removeChannel(Channel *c);
+    void addUser(User *p);
+    void removeUser(User *p);
 
-		bool isLinked(Channel *c) const;
-		void link(Channel *c);
-		void unlink(Channel *c = NULL);
+    bool isLinked(Channel *c) const;
+    void link(Channel *c);
+    void unlink(Channel *c = NULL);
 
-		QSet<Channel *> allLinks();
-		QSet<Channel *> allChildren();
+    QSet<Channel *> allLinks();
+    QSet<Channel *> allChildren();
 
-		operator QString() const;
+    operator QString() const;
 };
 
 #endif

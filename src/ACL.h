@@ -13,60 +13,62 @@ class Channel;
 class User;
 class ServerUser;
 
-class ChanACL : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(ChanACL)
-	public:
-		enum Perm {
-			None = 0x0,
-			Write = 0x1,
-			Traverse = 0x2,
-			Enter = 0x4,
-			Speak = 0x8,
-			MuteDeafen = 0x10,
-			Move = 0x20,
-			MakeChannel = 0x40,
-			LinkChannel = 0x80,
-			Whisper = 0x100,
-			TextMessage = 0x200,
-			MakeTempChannel = 0x400,
+class ChanACL : public QObject
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(ChanACL)
+public:
+    enum Perm
+    {
+        None = 0x0,
+        Write = 0x1,
+        Traverse = 0x2,
+        Enter = 0x4,
+        Speak = 0x8,
+        MuteDeafen = 0x10,
+        Move = 0x20,
+        MakeChannel = 0x40,
+        LinkChannel = 0x80,
+        Whisper = 0x100,
+        TextMessage = 0x200,
+        MakeTempChannel = 0x400,
 
-			// Root channel only
-			Kick = 0x10000,
-			Ban = 0x20000,
-			Register = 0x40000,
-			SelfRegister = 0x80000,
+        // Root channel only
+        Kick = 0x10000,
+        Ban = 0x20000,
+        Register = 0x40000,
+        SelfRegister = 0x80000,
 
-			Cached = 0x8000000,
-			All = 0xf07ff
-		};
+        Cached = 0x8000000,
+        All = 0xf07ff
+    };
 
-		Q_DECLARE_FLAGS(Permissions, Perm)
+    Q_DECLARE_FLAGS(Permissions, Perm)
 
-		typedef QHash<Channel *, Permissions> ChanCache;
-		typedef QHash<User *, ChanCache * > ACLCache;
+    typedef QHash<Channel *, Permissions> ChanCache;
+    typedef QHash<User *, ChanCache * > ACLCache;
 
-		Channel *c;
-		bool bApplyHere;
-		bool bApplySubs;
+    Channel *c;
+    bool bApplyHere;
+    bool bApplySubs;
 
-		bool bInherited;
+    bool bInherited;
 
-		int iUserId;
-		QString qsGroup;
-		Permissions pAllow;
-		Permissions pDeny;
+    int iUserId;
+    QString qsGroup;
+    Permissions pAllow;
+    Permissions pDeny;
 
-		ChanACL(Channel *c);
+    ChanACL(Channel *c);
 #ifdef MURMUR
-		static bool hasPermission(ServerUser *p, Channel *c, QFlags<Perm> perm, ACLCache *cache);
-		static QFlags<Perm> effectivePermissions(ServerUser *p, Channel *c, ACLCache *cache);
+    static bool hasPermission(ServerUser *p, Channel *c, QFlags<Perm> perm, ACLCache *cache);
+    static QFlags<Perm> effectivePermissions(ServerUser *p, Channel *c, ACLCache *cache);
 #else
-		static QString whatsThis(Perm p);
+    static QString whatsThis(Perm p);
 #endif
-		static QString permName(QFlags<Perm> p);
-		static QString permName(Perm p);
+    static QString permName(QFlags<Perm> p);
+    static QString permName(Perm p);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ChanACL::Permissions)

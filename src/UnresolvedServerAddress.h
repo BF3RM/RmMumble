@@ -11,23 +11,24 @@
 /// UnresolvedServerAddress represents a
 /// server address consisting of a hostname
 /// and a port.
-struct UnresolvedServerAddress {
-	QString hostname;
-	unsigned short port;
+struct UnresolvedServerAddress
+{
+    QString hostname;
+    unsigned short port;
 
-	/// Construct a default UnresolvedServerAddress.
-	/// The default UnresolvedServerAddress value is considered
-	/// invalid per the |isValid| method.
-	UnresolvedServerAddress();
+    /// Construct a default UnresolvedServerAddress.
+    /// The default UnresolvedServerAddress value is considered
+    /// invalid per the |isValid| method.
+    UnresolvedServerAddress();
 
-	/// Construct a UnresolvedServerAddress pointing to |hostname| and |port|.
-	/// The passed-in hostname is normalized to lowercase.
-	UnresolvedServerAddress(QString hostname, unsigned short port);
+    /// Construct a UnresolvedServerAddress pointing to |hostname| and |port|.
+    /// The passed-in hostname is normalized to lowercase.
+    UnresolvedServerAddress(QString hostname, unsigned short port);
 
-	/// Check whether the UnresolvedServerAddress is valid.
-	/// An UnresolvedServerAddress is valid if it has a non-empty
-	/// |hostname| and if its |port| > 0.
-	bool isValid() const;
+    /// Check whether the UnresolvedServerAddress is valid.
+    /// An UnresolvedServerAddress is valid if it has a non-empty
+    /// |hostname| and if its |port| > 0.
+    bool isValid() const;
 };
 
 /// Check whether |lhs| and |rhs| are equal.

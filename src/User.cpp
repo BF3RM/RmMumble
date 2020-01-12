@@ -8,17 +8,19 @@
 #include "User.h"
 #include "Channel.h"
 
-User::User() {
-	uiSession = 0;
-	iId = -1;
-	bMute = bDeaf = false;
-	bSelfMute = bSelfDeaf = false;
-	bPrioritySpeaker = false;
-	bRecording = false;
-	bSuppress = false;
-	cChannel = 0;
+User::User()
+{
+    uiSession = 0;
+    iId = -1;
+    bMute = bDeaf = false;
+    bSelfMute = bSelfDeaf = false;
+    bPrioritySpeaker = false;
+    bRecording = false;
+    bSuppress = false;
+    cChannel = 0;
 }
 
-bool User::lessThan(const User *first, const User *second) {
-	return (QString::localeAwareCompare(first->qsName, second->qsName) < 0);
+bool User::lessThan(const User *first, const User *second)
+{
+    return (QString::localeAwareCompare(first->qsName, second->qsName) < 0);
 }

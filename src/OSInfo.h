@@ -9,13 +9,14 @@
 class QDomDocument;
 class QDomElement;
 
-class OSInfo {
-	public:
-		static QString getMacHash(const QList<QHostAddress> & = QList<QHostAddress>());
-		static QString getOS();
-		static QString getOSVersion();
-		static QString getOSDisplayableVersion();
-		static void fillXml(QDomDocument &doc, QDomElement &root, const QString &os = OSInfo::getOS(), const QString &osver = OSInfo::getOSVersion(), const QList<QHostAddress> & = QList<QHostAddress>());
+class OSInfo
+{
+public:
+    static QString getMacHash(const QList<QHostAddress> & = QList<QHostAddress>());
+    static QString getOS();
+    static QString getOSVersion();
+    static QString getOSDisplayableVersion();
+    static void fillXml(QDomDocument &doc, QDomElement &root, const QString &os = OSInfo::getOS(), const QString &osver = OSInfo::getOSVersion(), const QList<QHostAddress> & = QList<QHostAddress>());
 };
 
 #endif

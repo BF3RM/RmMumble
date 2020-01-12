@@ -63,15 +63,18 @@ void RmUpdater::CheckForUpdates(RmUpdater::Response Callback, bool Client)
 {
     QNetworkRequest Request;
     Request.setUrl(QUrl(QString("http://rm-mumble.skayahack.uk/latest/%1%2%3%4").arg(
-            UPDATER_PLATFORM, (Client ? "Client" : "Server"), UPDATER_ARCH, UPDATER_DEV
-    )));
+                            UPDATER_PLATFORM, (Client ? "Client" : "Server"), UPDATER_ARCH, UPDATER_DEV
+                        )));
     auto Reply = m_Manager->get(Request);
-    QObject::connect(Reply, &QNetworkReply::finished, [Reply, Callback, this]() { OnCheckForUpdatesReply(Reply, Callback); });
+    QObject::connect(Reply, &QNetworkReply::finished, [Reply, Callback, this]()
+    {
+        OnCheckForUpdatesReply(Reply, Callback);
+    });
 }
 
 void RmUpdater::OnCheckForUpdatesReply(class QNetworkReply* Reply, RmUpdater::Response Callback)
 {
-    if (Reply->error()) 
+    if (Reply->error())
     {
         qDebug() << "Updater: " << Reply->errorString();
         return;
@@ -100,37 +103,37 @@ void RmUpdater::OnCheckForUpdatesReply(class QNetworkReply* Reply, RmUpdater::Re
     int PatchInt = Patch.toString().toInt();
 
     if (MajorInt > RM_MAJOR_VERSION
-        || (MajorInt == RM_MAJOR_VERSION && MinorInt > RM_MINOR_VERSION)
-        || (MajorInt == RM_MAJOR_VERSION && MinorInt == RM_MINOR_VERSION && PatchInt > RM_PATCH_VERSION)
-    )
+            || (MajorInt == RM_MAJOR_VERSION && MinorInt > RM_MINOR_VERSION)
+            || (MajorInt == RM_MAJOR_VERSION && MinorInt == RM_MINOR_VERSION && PatchInt > RM_PATCH_VERSION)
+       )
     {
         Callback(true);
-    } 
+    }
     else
     {
         Callback(false);
     }
-    
+
 }
 
 void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, RmUpdater::ExtractProgress ExtractCallback, std::string StdPath, bool Client)
 {
     QNetworkRequest Request;
     Request.setUrl(QUrl(QString("http://rm-mumble.skayahack.uk/get-latest/%1%2%3%4").arg(
-            UPDATER_PLATFORM, (Client ? "Client" : "Server"), UPDATER_ARCH, UPDATER_DEV
-    )));
+                            UPDATER_PLATFORM, (Client ? "Client" : "Server"), UPDATER_ARCH, UPDATER_DEV
+                        )));
     qDebug() << "Downloading " << Request.url().toString();
     auto Reply = m_Manager->get(Request);
     QObject::connect(Reply, &QNetworkReply::downloadProgress, Progress);
-    QObject::connect(Reply, &QNetworkReply::finished, [StdPath, Reply, this, ExtractCallback]() 
-    { 
+    QObject::connect(Reply, &QNetworkReply::finished, [StdPath, Reply, this, ExtractCallback]()
+    {
         QString Path(StdPath.c_str());
         QTemporaryFile TempZip;
         if (TempZip.open())
         {
             TempZip.write(Reply->readAll());
             TempZip.close();
-            
+
             unzFile ZipFile = unzOpen(TempZip.fileName().toStdString().c_str());
             if (!ZipFile)
             {
@@ -180,29 +183,29 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, RmUpdater::
 
                     QFile File(Directory.filePath(FilePath));
 
-					const int MaxAttempts = 4;
-					int Attempts = 0;
-					while (true) 
-					{
-						if (Attempts++ >= MaxAttempts)
-						{
-							unzCloseCurrentFile(ZipFile);
-							unzClose(ZipFile);
-							QMessageBox::critical(nullptr, "Error", "Could not open " + File.fileName() + " for writing. Make sure that mumble isn't running and that the file isn't being used by any other process. (" + File.errorString() + ")");
-							QApplication::exit();
-							return;
-						}
+                    const int MaxAttempts = 4;
+                    int Attempts = 0;
+                    while (true)
+                    {
+                        if (Attempts++ >= MaxAttempts)
+                        {
+                            unzCloseCurrentFile(ZipFile);
+                            unzClose(ZipFile);
+                            QMessageBox::critical(nullptr, "Error", "Could not open " + File.fileName() + " for writing. Make sure that mumble isn't running and that the file isn't being used by any other process. (" + File.errorString() + ")");
+                            QApplication::exit();
+                            return;
+                        }
 
-						if (!File.open(QIODevice::Truncate | QIODevice::WriteOnly))
-						{
-							qInfo() << "Cannot open " << File.fileName() << " for writing. Retrying in" << 3 * Attempts << "seconds...";
-							std::this_thread::sleep_for(std::chrono::seconds(3 * Attempts));
-						}
-						else
-						{
-							break;
-						}
-					}
+                        if (!File.open(QIODevice::Truncate | QIODevice::WriteOnly))
+                        {
+                            qInfo() << "Cannot open " << File.fileName() << " for writing. Retrying in" << 3 * Attempts << "seconds...";
+                            std::this_thread::sleep_for(std::chrono::seconds(3 * Attempts));
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
 
                     const size_t BufferSize = 8192;
                     char* Buffer = new char[BufferSize];
@@ -220,7 +223,8 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, RmUpdater::
                         }
 
                         File.write(Buffer, Error);
-                    } while (Error > 0);
+                    }
+                    while (Error > 0);
                     qInfo() << "Extracted " << Directory.filePath(FilePath);
                     File.close();
                 }
@@ -243,7 +247,7 @@ void RmUpdater::DownloadLatest(RmUpdater::DownloadProgress Progress, RmUpdater::
             qCritical() << "Couldn't create a temporary file to store the update!";
             QApplication::exit();
         }
-       // OnCheckForUpdatesReply(Reply);
+        // OnCheckForUpdatesReply(Reply);
     });
 }
 
@@ -256,13 +260,13 @@ std::string RmUpdater::CopyUpdaterToTemporaryFile()
     QString LibPostfix = "dll";
     QString UpdaterPostfix = ".exe";
 
-    #ifndef WIN32
+#ifndef WIN32
     LibPostfix += "so";
     UpdaterPostfix = "";
-    #endif
+#endif
 
     QStringList Libraries = UpdaterDir.entryList(QStringList() << ("*." + LibPostfix), QDir::Files);
-	Libraries << "platforms";
+    Libraries << "platforms";
 
     for(auto& Library : Libraries)
     {

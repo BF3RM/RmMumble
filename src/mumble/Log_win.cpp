@@ -7,6 +7,7 @@
 
 #include "Log.h"
 
-void Log::postNotification(MsgType mt, const QString &plain) {
-	postQtNotification(mt, plain);
+void Log::postNotification(MsgType mt, const QString &plain)
+{
+    postQtNotification(mt, plain);
 }

@@ -31,9 +31,9 @@ int main(int Argc, char** Argv)
     Updater = new RmUpdater;
 
     QString ExeName = (IsClient ? "RmMumble" : "RmMurmur");
-    #ifdef WIN32
+#ifdef WIN32
     ExeName += ".exe";
-    #endif;
+#endif;
 
     QFile BinPath(Path.filePath(ExeName));
     //.\build\bin\RmUpdater.exe --path "C:\Users\Jury\Documents\dev\rm-mumble\build\bin"
@@ -59,7 +59,7 @@ int main(int Argc, char** Argv)
 
     if (!ForceUpdate)
     {
-        Updater->CheckForUpdates([Path, IsClient](bool UpdateAvailable) 
+        Updater->CheckForUpdates([Path, IsClient](bool UpdateAvailable)
         {
             if (!UpdateAvailable)
             {
@@ -83,7 +83,7 @@ int main(int Argc, char** Argv)
 
 void DownloadUpdate(std::string Path, bool IsClient)
 {
-    Updater->DownloadLatest([](uint64_t DownloadProgress, uint64_t Total) 
+    Updater->DownloadLatest([](uint64_t DownloadProgress, uint64_t Total)
     {
         Progress->setLabelText("Downloading");
         if (Total == DownloadProgress)
@@ -92,7 +92,7 @@ void DownloadUpdate(std::string Path, bool IsClient)
         }
         Progress->setMaximum(Total);
         Progress->setValue(DownloadProgress);
-    }, [IsClient, Path](uint32_t FileIndex, uint32_t FileTotal) 
+    }, [IsClient, Path](uint32_t FileIndex, uint32_t FileTotal)
     {
         Progress->setLabelText("Extracting");
         Progress->setMaximum(FileTotal);
@@ -103,11 +103,11 @@ void DownloadUpdate(std::string Path, bool IsClient)
             QDir MumblePath(Path.c_str());
             QString Name = (IsClient ? "RmMumble" : "RmMurmur");
             QMessageBox::information(Progress, "Update Complete", "Well done! You survived the update. Will restart " + Name + " in a moment...");
-            #ifdef WIN32
+#ifdef WIN32
             QProcess::startDetached(MumblePath.filePath(Name + ".exe"), {}, QString(Path.c_str()));
-            #else
+#else
             QProcess::startDetached(MumblePath.filePath(Name), {}, QString(Path.c_str()));
-            #endif
+#endif
             QApplication::quit();
         }
 

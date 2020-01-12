@@ -14,22 +14,25 @@
 #include <stdlib.h>
 #include <limits>
 
-class TestCryptographicRandom : public QObject {
-		Q_OBJECT
-	private slots:
-		void initTestCase();
-		void cleanupTestCase();
-		void fillBuffer();
-		void uint32();
-		void uniform();
+class TestCryptographicRandom : public QObject
+{
+    Q_OBJECT
+private slots:
+    void initTestCase();
+    void cleanupTestCase();
+    void fillBuffer();
+    void uint32();
+    void uniform();
 };
 
-void TestCryptographicRandom::initTestCase() {
-	MumbleSSL::initialize();
+void TestCryptographicRandom::initTestCase()
+{
+    MumbleSSL::initialize();
 }
 
-void TestCryptographicRandom::cleanupTestCase() {
-	MumbleSSL::destroy();
+void TestCryptographicRandom::cleanupTestCase()
+{
+    MumbleSSL::destroy();
 }
 
 // Verify the entropy of the data returned by the random source
@@ -39,46 +42,54 @@ void TestCryptographicRandom::cleanupTestCase() {
 // The inspiration for this check is from the rand_test.go file
 // for Go standard library's crypt/rand package:
 // https://golang.org/src/crypto/rand/rand_test.go
-bool verifyEntropy(unsigned char *buf, int len) {
-	QByteArray flated = qCompress(buf, len);
-	return (flated.size() >= ((len * 99) / 100));
+bool verifyEntropy(unsigned char *buf, int len)
+{
+    QByteArray flated = qCompress(buf, len);
+    return (flated.size() >= ((len * 99) / 100));
 }
 
-void TestCryptographicRandom::fillBuffer() {
-	const int buflen = 1000000;
+void TestCryptographicRandom::fillBuffer()
+{
+    const int buflen = 1000000;
 
-	for (int i = 0; i < 10; i++) {
-		unsigned char *buf = reinterpret_cast<unsigned char *>(calloc(buflen, 1));
-		CryptographicRandom::fillBuffer(buf, buflen);
-		QVERIFY(verifyEntropy(buf, buflen));
-		free(buf);
-	}
+    for (int i = 0; i < 10; i++)
+    {
+        unsigned char *buf = reinterpret_cast<unsigned char *>(calloc(buflen, 1));
+        CryptographicRandom::fillBuffer(buf, buflen);
+        QVERIFY(verifyEntropy(buf, buflen));
+        free(buf);
+    }
 }
 
-void TestCryptographicRandom::uint32() {
-	const int buflen = 1000000;
+void TestCryptographicRandom::uint32()
+{
+    const int buflen = 1000000;
 
-	for (int i = 0; i < 10; i++) {
-		unsigned char *buf = reinterpret_cast<unsigned char *>(calloc(buflen, 1));
-		int niter = buflen / sizeof(uint32_t);
-		for (int j = 0; j < niter; j++) {
-			int off = j * sizeof(uint32_t);
-			uint32_t val = CryptographicRandom::uint32();
-			buf[off] = val & 0xff;
-			buf[off+1] = (val >> 8) & 0xff;
-			buf[off+2] = (val >> 16) & 0xff;
-			buf[off+3] = (val >> 24) & 0xff;
-		}
-		QVERIFY(verifyEntropy(buf, buflen));
-		free(buf);
-	}
+    for (int i = 0; i < 10; i++)
+    {
+        unsigned char *buf = reinterpret_cast<unsigned char *>(calloc(buflen, 1));
+        int niter = buflen / sizeof(uint32_t);
+        for (int j = 0; j < niter; j++)
+        {
+            int off = j * sizeof(uint32_t);
+            uint32_t val = CryptographicRandom::uint32();
+            buf[off] = val & 0xff;
+            buf[off+1] = (val >> 8) & 0xff;
+            buf[off+2] = (val >> 16) & 0xff;
+            buf[off+3] = (val >> 24) & 0xff;
+        }
+        QVERIFY(verifyEntropy(buf, buflen));
+        free(buf);
+    }
 }
 
-void TestCryptographicRandom::uniform() {
-	for (uint32_t upperBound = 0; upperBound < 10000; upperBound++) {
-		uint32_t val = CryptographicRandom::uniform(upperBound);
-		QVERIFY(val <= upperBound);
-	}
+void TestCryptographicRandom::uniform()
+{
+    for (uint32_t upperBound = 0; upperBound < 10000; upperBound++)
+    {
+        uint32_t val = CryptographicRandom::uniform(upperBound);
+        QVERIFY(val <= upperBound);
+    }
 }
 
 

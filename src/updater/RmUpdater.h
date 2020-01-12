@@ -5,9 +5,9 @@
 class RmUpdater
 {
 public:
-    typedef std::function<void(int64_t BytesReceived, int64_t BytesTotal)> DownloadProgress; 
-    typedef std::function<void(uint32_t FileIndex, uint32_t TotalFiles)> ExtractProgress; 
-    typedef std::function<void(bool UpdateAvailable)> Response; 
+    typedef std::function<void(int64_t BytesReceived, int64_t BytesTotal)> DownloadProgress;
+    typedef std::function<void(uint32_t FileIndex, uint32_t TotalFiles)> ExtractProgress;
+    typedef std::function<void(bool UpdateAvailable)> Response;
 
 public:
     RmUpdater();

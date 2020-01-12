@@ -16,39 +16,41 @@
 
 class Channel;
 
-class User {
-	private:
-		Q_DISABLE_COPY(User)
-	public:
-		unsigned int uiSession;
-		int iId;
-		QString qsName;
-		QString qsComment;
-		QByteArray qbaCommentHash;
-		QString qsHash;
-		bool bMute, bDeaf, bSuppress;
-		bool bSelfMute, bSelfDeaf;
-		bool bPrioritySpeaker;
-		bool bRecording;
-		Channel *cChannel;
-		QByteArray qbaTexture;
-		QByteArray qbaTextureHash;
+class User
+{
+private:
+    Q_DISABLE_COPY(User)
+public:
+    unsigned int uiSession;
+    int iId;
+    QString qsName;
+    QString qsComment;
+    QByteArray qbaCommentHash;
+    QString qsHash;
+    bool bMute, bDeaf, bSuppress;
+    bool bSelfMute, bSelfDeaf;
+    bool bPrioritySpeaker;
+    bool bRecording;
+    Channel *cChannel;
+    QByteArray qbaTexture;
+    QByteArray qbaTextureHash;
 
-		User();
-		virtual ~User() {};
+    User();
+    virtual ~User() {};
 
-		static bool lessThan(const User *, const User *);
+    static bool lessThan(const User *, const User *);
 };
 
 // for last seen
-struct UserInfo {
-	int user_id;
-	QString name;
-	boost::optional<int> last_channel;
-	QDateTime last_active;
+struct UserInfo
+{
+    int user_id;
+    QString name;
+    boost::optional<int> last_channel;
+    QDateTime last_active;
 
-	UserInfo() : user_id(-1) {}
-	UserInfo(int id, QString uname) : user_id(id), name(uname) {}
+    UserInfo() : user_id(-1) {}
+    UserInfo(int id, QString uname) : user_id(id), name(uname) {}
 };
 
 #endif

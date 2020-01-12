@@ -12,32 +12,34 @@
 
 class G15LCDDeviceLGLCD;
 
-class G15LCDEngineLGLCD : public LCDEngine {
-		friend class G15LCDDeviceLGLCD;
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(G15LCDEngineLGLCD)
-	protected:
-		lgLcdConnectContextEx llcceConnect;
-		lgLcdOpenByTypeContext llcContext;
-	public:
-		G15LCDEngineLGLCD();
-		~G15LCDEngineLGLCD();
-		QList<LCDDevice *> devices() const;
+class G15LCDEngineLGLCD : public LCDEngine
+{
+    friend class G15LCDDeviceLGLCD;
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(G15LCDEngineLGLCD)
+protected:
+    lgLcdConnectContextEx llcceConnect;
+    lgLcdOpenByTypeContext llcContext;
+public:
+    G15LCDEngineLGLCD();
+    ~G15LCDEngineLGLCD();
+    QList<LCDDevice *> devices() const;
 };
 
-class G15LCDDeviceLGLCD : public LCDDevice {
-	protected:
-		G15LCDEngineLGLCD *engine;
-		bool bEnabled;
-	public:
-		G15LCDDeviceLGLCD(G15LCDEngineLGLCD *e);
-		~G15LCDDeviceLGLCD();
-		bool enabled();
-		void setEnabled(bool e);
-		void blitImage(QImage *img, bool alert);
-		QString name() const;
-		QSize size() const;
+class G15LCDDeviceLGLCD : public LCDDevice
+{
+protected:
+    G15LCDEngineLGLCD *engine;
+    bool bEnabled;
+public:
+    G15LCDDeviceLGLCD(G15LCDEngineLGLCD *e);
+    ~G15LCDDeviceLGLCD();
+    bool enabled();
+    void setEnabled(bool e);
+    void blitImage(QImage *img, bool alert);
+    QString name() const;
+    QSize size() const;
 };
 
 #else

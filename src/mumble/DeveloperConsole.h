@@ -15,19 +15,20 @@
 # include <QtGui/QMainWindow>
 #endif
 
-class DeveloperConsole : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(DeveloperConsole);
-	protected:
-		QPointer<QMainWindow> m_window;
-		QStringList m_logEntries;
-	public slots:
-		void addLogMessage(const QString &);
-	public:
-		DeveloperConsole(QObject *parent = NULL);
-		~DeveloperConsole();
-		void show();
+class DeveloperConsole : public QObject
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(DeveloperConsole);
+protected:
+    QPointer<QMainWindow> m_window;
+    QStringList m_logEntries;
+public slots:
+    void addLogMessage(const QString &);
+public:
+    DeveloperConsole(QObject *parent = NULL);
+    ~DeveloperConsole();
+    void show();
 };
 
 #endif

@@ -10,39 +10,40 @@
 
 #include "Overlay.h"
 
-class OverlayUser : public OverlayGroup {
-	private:
-		Q_DISABLE_COPY(OverlayUser)
-	public:
-		enum { Type = UserType + 1 };
-	protected:
-		QGraphicsPixmapItem *qgpiMuted, *qgpiDeafened;
-		QGraphicsPixmapItem *qgpiAvatar;
-		QGraphicsPixmapItem *qgpiName[4];
-		QGraphicsPixmapItem *qgpiChannel;
-		QGraphicsPathItem *qgpiBox;
+class OverlayUser : public OverlayGroup
+{
+private:
+    Q_DISABLE_COPY(OverlayUser)
+public:
+    enum { Type = UserType + 1 };
+protected:
+    QGraphicsPixmapItem *qgpiMuted, *qgpiDeafened;
+    QGraphicsPixmapItem *qgpiAvatar;
+    QGraphicsPixmapItem *qgpiName[4];
+    QGraphicsPixmapItem *qgpiChannel;
+    QGraphicsPathItem *qgpiBox;
 
-		OverlaySettings *os;
+    OverlaySettings *os;
 
-		unsigned int uiSize;
-		ClientUser *cuUser;
-		Settings::TalkState tsColor;
+    unsigned int uiSize;
+    ClientUser *cuUser;
+    Settings::TalkState tsColor;
 
-		QString qsName;
-		QString qsChannelName;
-		QByteArray qbaAvatar;
+    QString qsName;
+    QString qsChannelName;
+    QByteArray qbaAvatar;
 
-		void setup();
+    void setup();
 
-	public:
-		OverlayUser(ClientUser *cu, unsigned int uiSize, OverlaySettings *osptr);
-		OverlayUser(Settings::TalkState ts, unsigned int uiSize, OverlaySettings *osptr);
-		void updateUser();
-		void updateLayout();
+public:
+    OverlayUser(ClientUser *cu, unsigned int uiSize, OverlaySettings *osptr);
+    OverlayUser(Settings::TalkState ts, unsigned int uiSize, OverlaySettings *osptr);
+    void updateUser();
+    void updateLayout();
 
-		int type() const Q_DECL_OVERRIDE;
-		static QRectF scaledRect(const QRectF &qr, qreal scale);
-		static QPointF alignedPosition(const QRectF &box, const QRectF &item, Qt::Alignment a);
+    int type() const Q_DECL_OVERRIDE;
+    static QRectF scaledRect(const QRectF &qr, qreal scale);
+    static QPointF alignedPosition(const QRectF &box, const QRectF &item, Qt::Alignment a);
 };
 
 #endif

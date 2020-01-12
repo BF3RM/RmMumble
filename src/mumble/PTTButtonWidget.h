@@ -8,18 +8,19 @@
 
 #include "ui_PTTButtonWidget.h"
 
-class PTTButtonWidget : public QWidget, public Ui::qwPTTButtonWidget {
-		Q_OBJECT
-		Q_DISABLE_COPY(PTTButtonWidget)
-	protected:
-		void closeEvent(QCloseEvent *e) Q_DECL_OVERRIDE;
-	public:
-		PTTButtonWidget(QWidget *p = 0);
-	public slots:
-		void on_qpbPushToTalk_pressed();
-		void on_qpbPushToTalk_released();
-	signals:
-		void triggered(bool checked, QVariant);
+class PTTButtonWidget : public QWidget, public Ui::qwPTTButtonWidget
+{
+    Q_OBJECT
+    Q_DISABLE_COPY(PTTButtonWidget)
+protected:
+    void closeEvent(QCloseEvent *e) Q_DECL_OVERRIDE;
+public:
+    PTTButtonWidget(QWidget *p = 0);
+public slots:
+    void on_qpbPushToTalk_pressed();
+    void on_qpbPushToTalk_released();
+signals:
+    void triggered(bool checked, QVariant);
 };
 
 #endif  // PTTBUTTONWIDGET_H_

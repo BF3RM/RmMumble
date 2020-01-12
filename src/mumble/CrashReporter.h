@@ -22,23 +22,24 @@
 # include <QtGui/QTextEdit>
 #endif
 
-class CrashReporter : QDialog {
-		Q_OBJECT
-		Q_DISABLE_COPY(CrashReporter)
+class CrashReporter : QDialog
+{
+    Q_OBJECT
+    Q_DISABLE_COPY(CrashReporter)
 
-	public:
-		CrashReporter(QWidget *p = 0);
-		~CrashReporter() Q_DECL_OVERRIDE;
-		void run();
-	protected:
-		QEventLoop *qelLoop;
-		QProgressDialog *qpdProgress;
-		QNetworkReply *qnrReply;
-		QLineEdit *qleEmail;
-		QTextEdit *qteDescription;
-	public slots:
-		void uploadFinished();
-		void uploadProgress(qint64, qint64);
+public:
+    CrashReporter(QWidget *p = 0);
+    ~CrashReporter() Q_DECL_OVERRIDE;
+    void run();
+protected:
+    QEventLoop *qelLoop;
+    QProgressDialog *qpdProgress;
+    QNetworkReply *qnrReply;
+    QLineEdit *qleEmail;
+    QTextEdit *qteDescription;
+public slots:
+    void uploadFinished();
+    void uploadProgress(qint64, qint64);
 };
 
 #else

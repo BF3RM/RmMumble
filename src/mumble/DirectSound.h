@@ -9,24 +9,26 @@
 #include "AudioInput.h"
 #include "AudioOutput.h"
 
-class DXAudioOutput : public AudioOutput {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(DXAudioOutput)
-	public:
-		DXAudioOutput();
-		~DXAudioOutput() Q_DECL_OVERRIDE;
-		void run() Q_DECL_OVERRIDE;
+class DXAudioOutput : public AudioOutput
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(DXAudioOutput)
+public:
+    DXAudioOutput();
+    ~DXAudioOutput() Q_DECL_OVERRIDE;
+    void run() Q_DECL_OVERRIDE;
 };
 
-class DXAudioInput : public AudioInput {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(DXAudioInput)
-	public:
-		DXAudioInput();
-		~DXAudioInput() Q_DECL_OVERRIDE;
-		void run() Q_DECL_OVERRIDE;
+class DXAudioInput : public AudioInput
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(DXAudioInput)
+public:
+    DXAudioInput();
+    ~DXAudioInput() Q_DECL_OVERRIDE;
+    void run() Q_DECL_OVERRIDE;
 };
 
 #endif

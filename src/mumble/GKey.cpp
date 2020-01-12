@@ -80,65 +80,77 @@ const QUuid GKeyLibrary::quKeyboard = QUuid(QString::fromLatin1(GKEY_KEYBOARD_GU
 
 GKeyLibrary::GKeyLibrary()
 {
-	QStringList alternatives;
+    QStringList alternatives;
 
-	HKEY key = NULL;
-	DWORD type = 0;
-	WCHAR wcLocation[510];
-	DWORD len = 510;
-	if (RegOpenKeyEx(GKEY_LOGITECH_DLL_REG_HKEY, GKEY_LOGITECH_DLL_REG_PATH, 0, KEY_READ, &key) == ERROR_SUCCESS) {
-		LONG err = RegQueryValueEx(key, L"", NULL, &type, reinterpret_cast<LPBYTE>(wcLocation), &len);
-		if (err == ERROR_SUCCESS && type == REG_SZ) {
-			QString qsLocation = QString::fromUtf16(reinterpret_cast<ushort *>(wcLocation), len / 2);
-			qWarning("GKeyLibrary: Found ServerBinary with libLocation = \"%s\", len = %lu", qPrintable(qsLocation), static_cast<unsigned long>(len));
-			alternatives << qsLocation;
-		} else {
-			qWarning("GKeyLibrary: Error looking up ServerBinary (Error: 0x%lx, Type: 0x%lx, len: %lu)", static_cast<unsigned long>(err), static_cast<unsigned long>(type), static_cast<unsigned long>(len));
-		}
-	}
+    HKEY key = NULL;
+    DWORD type = 0;
+    WCHAR wcLocation[510];
+    DWORD len = 510;
+    if (RegOpenKeyEx(GKEY_LOGITECH_DLL_REG_HKEY, GKEY_LOGITECH_DLL_REG_PATH, 0, KEY_READ, &key) == ERROR_SUCCESS)
+    {
+        LONG err = RegQueryValueEx(key, L"", NULL, &type, reinterpret_cast<LPBYTE>(wcLocation), &len);
+        if (err == ERROR_SUCCESS && type == REG_SZ)
+        {
+            QString qsLocation = QString::fromUtf16(reinterpret_cast<ushort *>(wcLocation), len / 2);
+            qWarning("GKeyLibrary: Found ServerBinary with libLocation = \"%s\", len = %lu", qPrintable(qsLocation), static_cast<unsigned long>(len));
+            alternatives << qsLocation;
+        }
+        else
+        {
+            qWarning("GKeyLibrary: Error looking up ServerBinary (Error: 0x%lx, Type: 0x%lx, len: %lu)", static_cast<unsigned long>(err), static_cast<unsigned long>(type), static_cast<unsigned long>(len));
+        }
+    }
 
-	alternatives << QString::fromLatin1(GKEY_LOGITECH_DLL_DEFAULT_LOCATION);
-	foreach(const QString &lib, alternatives) {
-		qlLogiGkey.setFileName(lib);
+    alternatives << QString::fromLatin1(GKEY_LOGITECH_DLL_DEFAULT_LOCATION);
+    foreach(const QString &lib, alternatives)
+    {
+        qlLogiGkey.setFileName(lib);
 
-		if (qlLogiGkey.load()) {
-			bValid = true;
-			break;
-		}
-	}
+        if (qlLogiGkey.load())
+        {
+            bValid = true;
+            break;
+        }
+    }
 
-	RESOLVE(LogiGkeyInit);
-	RESOLVE(LogiGkeyShutdown);
-	RESOLVE(LogiGkeyIsMouseButtonPressed);
-	RESOLVE(LogiGkeyIsKeyboardGkeyPressed);
-	RESOLVE(LogiGkeyGetMouseButtonString);
-	RESOLVE(LogiGkeyGetKeyboardGkeyString);
+    RESOLVE(LogiGkeyInit);
+    RESOLVE(LogiGkeyShutdown);
+    RESOLVE(LogiGkeyIsMouseButtonPressed);
+    RESOLVE(LogiGkeyIsKeyboardGkeyPressed);
+    RESOLVE(LogiGkeyGetMouseButtonString);
+    RESOLVE(LogiGkeyGetKeyboardGkeyString);
 
-	if (bValid)
-		bValid = LogiGkeyInit(NULL);
+    if (bValid)
+        bValid = LogiGkeyInit(NULL);
 }
 
-GKeyLibrary::~GKeyLibrary() {
-	if (LogiGkeyShutdown != NULL)
-		LogiGkeyShutdown();
+GKeyLibrary::~GKeyLibrary()
+{
+    if (LogiGkeyShutdown != NULL)
+        LogiGkeyShutdown();
 }
 
-bool GKeyLibrary::isValid() const {
-	return bValid;
+bool GKeyLibrary::isValid() const
+{
+    return bValid;
 }
 
-bool GKeyLibrary::isMouseButtonPressed(int button) {
-	return LogiGkeyIsMouseButtonPressed(button);
+bool GKeyLibrary::isMouseButtonPressed(int button)
+{
+    return LogiGkeyIsMouseButtonPressed(button);
 }
 
-bool GKeyLibrary::isKeyboardGkeyPressed(int key, int mode) {
-	return LogiGkeyIsKeyboardGkeyPressed(key, mode);
+bool GKeyLibrary::isKeyboardGkeyPressed(int key, int mode)
+{
+    return LogiGkeyIsKeyboardGkeyPressed(key, mode);
 }
 
-QString GKeyLibrary::getMouseButtonString(int button) {
-	return QString::fromWCharArray(LogiGkeyGetMouseButtonString(button));
+QString GKeyLibrary::getMouseButtonString(int button)
+{
+    return QString::fromWCharArray(LogiGkeyGetMouseButtonString(button));
 }
 
-QString GKeyLibrary::getKeyboardGkeyString(int key, int mode) {
-	return QString::fromWCharArray(LogiGkeyGetKeyboardGkeyString(key, mode));
+QString GKeyLibrary::getKeyboardGkeyString(int key, int mode)
+{
+    return QString::fromWCharArray(LogiGkeyGetKeyboardGkeyString(key, mode));
 }

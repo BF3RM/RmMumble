@@ -20,21 +20,21 @@
 
 ///
 /// Class enabling theming of QApplication::palette from stylesheets.
-/// 
+///
 /// QPalette cannot be styled which creates issues as not all
 /// GUI elements in Qt can be styled. This class works around
 /// that by offering a QPROPERTY for each color role and group
 /// combination in QPalette. As you can set custom QPROPERTYs
 /// from stylesheet this allows the user to set all relevant
 /// palette brushes from the stylesheet.
-/// 
+///
 /// Due to restrictions on allowed property names as well as a
 /// mandatory prefix the attributes are exposed as lower cased:
 /// "qproperty-<role>_<group>".
-/// 
+///
 /// So a group of QPalette::Active and QPalette::Text role
 /// would be styled by:
-/// 
+///
 /// ApplicationPalette {
 ///     qproperty-text_active: #ff0000; /* Set color for active group */
 /// }
@@ -44,57 +44,62 @@
 ///
 /// You can also use the shorthand "qproperty-<role>" to set all groups
 /// to the same brush.
-/// 
+///
 /// The class will automatically pick up style changes on itself
 /// and update the application palette accordingly. To use the class
 /// simply instantiate it before setting the theme and keep it around
 /// till the application terminates.
-/// 
+///
 class ApplicationPalette : public QWidget
 {
-		Q_OBJECT
-%(properties)s
-	public:
-		explicit ApplicationPalette(QWidget *p = 0)
-		  : QWidget(p)
-		  , m_originalPalette(QApplication::palette()){
-			// Empty
-		}
-		
-%(getterssetters)s
-		
-	private slots:
-		void updateApplicationPalette() {
-			qWarning() << "Updating application palette";
-			
-			QPalette newPalette = m_originalPalette; // Do not re-use potentially already styled palette. Might not pick up system style changes though.
+    Q_OBJECT
+    %(properties)s
+public:
+    explicit ApplicationPalette(QWidget *p = 0)
+        : QWidget(p)
+        , m_originalPalette(QApplication::palette())
+    {
+        // Empty
+    }
 
-%(paletteupdates)s
+    %(getterssetters)s
 
-			QApplication::setPalette(newPalette);
-			resetAllProperties();
-		}
-		
-		void resetAllProperties() {
-%(propertyresets)s
-		}
+private slots:
+    void updateApplicationPalette()
+    {
+        qWarning() << "Updating application palette";
 
-	protected:
-		bool event(QEvent *e) Q_DECL_OVERRIDE {
-			bool result = QWidget::event(e);
-			
-			if (e->type() == QEvent::StyleChange) {
-				// Update global palette. Have to defer it
-				// as property updates are also signals.
-				QTimer::singleShot(0, this, SLOT(updateApplicationPalette()));
-			}
-			
-			return result;
-		}
-	private:
-		const QPalette m_originalPalette;
-		
-%(variables)s
+        QPalette newPalette = m_originalPalette; // Do not re-use potentially already styled palette. Might not pick up system style changes though.
+
+        %(paletteupdates)s
+
+        QApplication::setPalette(newPalette);
+        resetAllProperties();
+    }
+
+    void resetAllProperties()
+    {
+        %(propertyresets)s
+    }
+
+protected:
+    bool event(QEvent *e) Q_DECL_OVERRIDE
+    {
+        bool result = QWidget::event(e);
+
+        if (e->type() == QEvent::StyleChange)
+        {
+            // Update global palette. Have to defer it
+            // as property updates are also signals.
+            QTimer::singleShot(0, this, SLOT(updateApplicationPalette()));
+        }
+
+        return result;
+    }
+private:
+    const QPalette m_originalPalette;
+
+    %(variables)s
 };
 
 #endif // APPLICATIONPALETTE_H

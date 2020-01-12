@@ -19,36 +19,41 @@
 // "o" (lowercase O)
 // "l" (lowercase L)
 // "I" (uppercase i)
-static char password_alphabet[] = {
-	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n',
-	'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+static char password_alphabet[] =
+{
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n',
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 
-	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N',
-	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N',
+    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 
-	'2', '3', '4', '6', '7', '8', '9'
+    '2', '3', '4', '6', '7', '8', '9'
 };
 
 // Getter function for TestPasswordGenerator to get the
 // alphabet we're using.
-QVector<QChar> mumble_password_generator_alphabet() {
-	QVector<QChar> v;
-	size_t numAlphabetEntries = sizeof(password_alphabet);
-	for (size_t i = 0; i < numAlphabetEntries; i++) {
-		v << QChar(QLatin1Char(password_alphabet[i]));
-	}
-	return v;
+QVector<QChar> mumble_password_generator_alphabet()
+{
+    QVector<QChar> v;
+    size_t numAlphabetEntries = sizeof(password_alphabet);
+    for (size_t i = 0; i < numAlphabetEntries; i++)
+    {
+        v << QChar(QLatin1Char(password_alphabet[i]));
+    }
+    return v;
 }
 
-QString PasswordGenerator::generatePassword(int length) {
-	QByteArray buf(length, '\0');
+QString PasswordGenerator::generatePassword(int length)
+{
+    QByteArray buf(length, '\0');
 
-	uint32_t numAlphabetEntries = sizeof(password_alphabet);
+    uint32_t numAlphabetEntries = sizeof(password_alphabet);
 
-	for (int i = 0; i < length; i++) {
-		uint32_t index = CryptographicRandom::uniform(numAlphabetEntries-1);
-		buf[i] = password_alphabet[index];
-	}
+    for (int i = 0; i < length; i++)
+    {
+        uint32_t index = CryptographicRandom::uniform(numAlphabetEntries-1);
+        buf[i] = password_alphabet[index];
+    }
 
-	return QString::fromLatin1(buf.constData(), buf.size());
+    return QString::fromLatin1(buf.constData(), buf.size());
 }

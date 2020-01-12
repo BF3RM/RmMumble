@@ -11,27 +11,28 @@
 
 #include "ui_ConfigDialog.h"
 
-class ConfigDialog : public QDialog, public Ui::ConfigDialog {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(ConfigDialog)
-	protected:
-		QHash<ConfigWidget *, QWidget *> qhPages;
-		QMap<unsigned int, ConfigWidget *> qmWidgets;
-		QMap<QListWidgetItem *, ConfigWidget *> qmIconWidgets;
-		void updateListView();
-		void addPage(ConfigWidget *aw, unsigned int idx);
-		Settings s;
+class ConfigDialog : public QDialog, public Ui::ConfigDialog
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(ConfigDialog)
+protected:
+    QHash<ConfigWidget *, QWidget *> qhPages;
+    QMap<unsigned int, ConfigWidget *> qmWidgets;
+    QMap<QListWidgetItem *, ConfigWidget *> qmIconWidgets;
+    void updateListView();
+    void addPage(ConfigWidget *aw, unsigned int idx);
+    Settings s;
 
-	public:
-		ConfigDialog(QWidget *p = NULL);
-		~ConfigDialog() Q_DECL_OVERRIDE;
-	public slots:
-		void on_pageButtonBox_clicked(QAbstractButton *);
-		void on_dialogButtonBox_clicked(QAbstractButton *);
-		void on_qlwIcons_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-		void apply();
-		void accept() Q_DECL_OVERRIDE;
+public:
+    ConfigDialog(QWidget *p = NULL);
+    ~ConfigDialog() Q_DECL_OVERRIDE;
+public slots:
+    void on_pageButtonBox_clicked(QAbstractButton *);
+    void on_dialogButtonBox_clicked(QAbstractButton *);
+    void on_qlwIcons_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void apply();
+    void accept() Q_DECL_OVERRIDE;
 };
 
 #endif

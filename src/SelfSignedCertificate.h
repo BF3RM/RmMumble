@@ -12,13 +12,14 @@
 
 enum CertificateType { CertificateTypeServerCertificate, CertificateTypeClientCertificate };
 
-class SelfSignedCertificate {
+class SelfSignedCertificate
+{
 private:
-	static bool generate(CertificateType certificateType, QString clientCertName, QString clientCertEmail, QSslCertificate &qscCert, QSslKey &qskKey);
+    static bool generate(CertificateType certificateType, QString clientCertName, QString clientCertEmail, QSslCertificate &qscCert, QSslKey &qskKey);
 
 public:
-	static bool generateMumbleCertificate(QString name, QString email, QSslCertificate &qscCert, QSslKey &qskKey);
-	static bool generateMurmurV2Certificate(QSslCertificate &qscCert, QSslKey &qskKey);
+    static bool generateMumbleCertificate(QString name, QString email, QSslCertificate &qscCert, QSslKey &qskKey);
+    static bool generateMurmurV2Certificate(QSslCertificate &qscCert, QSslKey &qskKey);
 };
 
 #endif

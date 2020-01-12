@@ -8,9 +8,10 @@
 
 #include <QString>
 
-class PasswordGenerator {
-	public:
-		static QString generatePassword(int length);
+class PasswordGenerator
+{
+public:
+    static QString generatePassword(int length);
 };
 
 #endif

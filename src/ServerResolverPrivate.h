@@ -10,7 +10,8 @@
 #include <QtNetwork/QDnsLookup>
 #include <QtNetwork/QHostInfo>
 
-class ServerResolverPrivate : public QObject {
+class ServerResolverPrivate : public QObject
+{
 private:
     Q_OBJECT
     Q_DISABLE_COPY(ServerResolverPrivate)
@@ -29,11 +30,11 @@ public:
 
     QList<ServerResolverRecord> m_resolved;
 
-    signals:
-            void resolved();
+signals:
+    void resolved();
 
 public slots:
-            void srvResolved();
+    void srvResolved();
     void hostResolved(QHostInfo hostInfo);
     void hostFallbackResolved(QHostInfo hostInfo);
 };

@@ -13,22 +13,23 @@
 /// ServerAddress represents a server
 /// address consisting of a HostAddress
 /// and a port.
-struct ServerAddress {
-	HostAddress host;
-	unsigned short port;
+struct ServerAddress
+{
+    HostAddress host;
+    unsigned short port;
 
-	/// Construct a default ServerAddress.
-	/// The default ServerAddress value is considered
-	/// invalid per the |isValid| method.
-	ServerAddress();
+    /// Construct a default ServerAddress.
+    /// The default ServerAddress value is considered
+    /// invalid per the |isValid| method.
+    ServerAddress();
 
-	/// Construct a ServerAddress pointing to |host_| and |port_|.
-	ServerAddress(HostAddress host_, unsigned short port_);
+    /// Construct a ServerAddress pointing to |host_| and |port_|.
+    ServerAddress(HostAddress host_, unsigned short port_);
 
-	/// Check whether the ServerAddress is valid.
-	/// A ServerAddress is valid if it has a valid |host|
-	/// and if its |port| > 0.
-	bool isValid() const;
+    /// Check whether the ServerAddress is valid.
+    /// A ServerAddress is valid if it has a valid |host|
+    /// and if its |port| > 0.
+    bool isValid() const;
 };
 
 /// Check whether the ServerAddresses |lhs| and |rhs| are equal.

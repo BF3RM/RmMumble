@@ -7,9 +7,11 @@
 
 #include "LogEmitter.h"
 
-LogEmitter::LogEmitter(QObject *p) : QObject(p) {
+LogEmitter::LogEmitter(QObject *p) : QObject(p)
+{
 };
 
-void LogEmitter::addLogEntry(const QString &msg) {
-	emit newLogEntry(msg);
+void LogEmitter::addLogEntry(const QString &msg)
+{
+    emit newLogEntry(msg);
 };

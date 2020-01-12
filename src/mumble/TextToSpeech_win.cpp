@@ -13,63 +13,75 @@
 #undef FAILED
 #define FAILED(Status) (static_cast<HRESULT>(Status)<0)
 
-class TextToSpeechPrivate {
-	public:
-		ISpVoice * pVoice;
-		TextToSpeechPrivate();
-		~TextToSpeechPrivate();
-		void say(const QString &text);
-		void setVolume(int v);
+class TextToSpeechPrivate
+{
+public:
+    ISpVoice * pVoice;
+    TextToSpeechPrivate();
+    ~TextToSpeechPrivate();
+    void say(const QString &text);
+    void setVolume(int v);
 };
 
-TextToSpeechPrivate::TextToSpeechPrivate() {
-	pVoice = NULL;
+TextToSpeechPrivate::TextToSpeechPrivate()
+{
+    pVoice = NULL;
 
-	HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
-	if (FAILED(hr))
-		qWarning("TextToSpeechPrivate: Failed to allocate TTS Voice");
+    HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
+    if (FAILED(hr))
+        qWarning("TextToSpeechPrivate: Failed to allocate TTS Voice");
 }
 
-TextToSpeechPrivate::~TextToSpeechPrivate() {
-	if (pVoice)
-		pVoice->Release();
+TextToSpeechPrivate::~TextToSpeechPrivate()
+{
+    if (pVoice)
+        pVoice->Release();
 }
 
-void TextToSpeechPrivate::say(const QString &text) {
+void TextToSpeechPrivate::say(const QString &text)
+{
 #ifdef RM_DEBUG
-	if (pVoice) {
-		pVoice->Speak((const wchar_t *) text.utf16(), SPF_ASYNC, NULL);
-	}
+    if (pVoice)
+    {
+        pVoice->Speak((const wchar_t *) text.utf16(), SPF_ASYNC, NULL);
+    }
 #endif
 }
 
-void TextToSpeechPrivate::setVolume(int volume) {
-	if (pVoice)
-		pVoice->SetVolume(volume);
+void TextToSpeechPrivate::setVolume(int volume)
+{
+    if (pVoice)
+        pVoice->SetVolume(volume);
 }
 
-TextToSpeech::TextToSpeech(QObject *p) : QObject(p) {
-	enabled = true;
-	d = new TextToSpeechPrivate();
+TextToSpeech::TextToSpeech(QObject *p) : QObject(p)
+{
+    enabled = true;
+    d = new TextToSpeechPrivate();
 }
 
-TextToSpeech::~TextToSpeech() {
-	delete d;
+TextToSpeech::~TextToSpeech()
+{
+    delete d;
 }
 
-void TextToSpeech::say(const QString &text) {
-	if (enabled)
-		d->say(text);
+void TextToSpeech::say(const QString &text)
+{
+    if (enabled)
+        d->say(text);
 }
 
-void TextToSpeech::setEnabled(bool e) {
-	enabled = e;
+void TextToSpeech::setEnabled(bool e)
+{
+    enabled = e;
 }
 
-void TextToSpeech::setVolume(int volume) {
-	d->setVolume(volume);
+void TextToSpeech::setVolume(int volume)
+{
+    d->setVolume(volume);
 }
 
-bool TextToSpeech::isEnabled() const {
-	return enabled;
+bool TextToSpeech::isEnabled() const
+{
+    return enabled;
 }

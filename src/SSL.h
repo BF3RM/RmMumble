@@ -10,14 +10,15 @@
 #include <QList>
 #include <QSslCipher>
 
-class MumbleSSL {
-	public:
-		static void initialize();
-		static void destroy();
-		static QString defaultOpenSSLCipherString();
-		static QList<QSslCipher> ciphersFromOpenSSLCipherString(QString cipherString);
-		static void addSystemCA();
-		static QString protocolToString(QSsl::SslProtocol protocol);
+class MumbleSSL
+{
+public:
+    static void initialize();
+    static void destroy();
+    static QString defaultOpenSSLCipherString();
+    static QList<QSslCipher> ciphersFromOpenSSLCipherString(QString cipherString);
+    static void addSystemCA();
+    static QString protocolToString(QSsl::SslProtocol protocol);
 };
 
 #endif

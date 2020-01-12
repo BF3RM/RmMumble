@@ -11,43 +11,49 @@
 #include "Global.h"
 #include "ServerHandler.h"
 
-Tokens::Tokens(QWidget *p) : QDialog(p) {
-	setupUi(this);
+Tokens::Tokens(QWidget *p) : QDialog(p)
+{
+    setupUi(this);
 
-	qbaDigest = g.sh->qbaDigest;
-	QStringList tokens = g.db->getTokens(qbaDigest);
-	tokens.sort();
-	foreach(const QString &qs, tokens) {
-		QListWidgetItem *qlwi = new QListWidgetItem(qs);
-		qlwi->setFlags(qlwi->flags() | Qt::ItemIsEditable);
-		qlwTokens->addItem(qlwi);
-	}
+    qbaDigest = g.sh->qbaDigest;
+    QStringList tokens = g.db->getTokens(qbaDigest);
+    tokens.sort();
+    foreach(const QString &qs, tokens)
+    {
+        QListWidgetItem *qlwi = new QListWidgetItem(qs);
+        qlwi->setFlags(qlwi->flags() | Qt::ItemIsEditable);
+        qlwTokens->addItem(qlwi);
+    }
 }
 
-void Tokens::accept() {
-	QStringList qsl;
+void Tokens::accept()
+{
+    QStringList qsl;
 
-	QList<QListWidgetItem *> items = qlwTokens->findItems(QString(), Qt::MatchStartsWith);
-	foreach(QListWidgetItem *qlwi, items) {
-		const QString &text = qlwi->text().trimmed();
-		if (! text.isEmpty())
-			qsl << text;
-	}
-	g.db->setTokens(qbaDigest, qsl);
-	g.sh->setTokens(qsl);
-	QDialog::accept();
+    QList<QListWidgetItem *> items = qlwTokens->findItems(QString(), Qt::MatchStartsWith);
+    foreach(QListWidgetItem *qlwi, items)
+    {
+        const QString &text = qlwi->text().trimmed();
+        if (! text.isEmpty())
+            qsl << text;
+    }
+    g.db->setTokens(qbaDigest, qsl);
+    g.sh->setTokens(qsl);
+    QDialog::accept();
 }
 
-void Tokens::on_qpbAdd_clicked() {
-	QListWidgetItem *qlwi = new QListWidgetItem(tr("Empty Token"));
-	qlwi->setFlags(qlwi->flags() | Qt::ItemIsEditable);
+void Tokens::on_qpbAdd_clicked()
+{
+    QListWidgetItem *qlwi = new QListWidgetItem(tr("Empty Token"));
+    qlwi->setFlags(qlwi->flags() | Qt::ItemIsEditable);
 
-	qlwTokens->addItem(qlwi);
-	qlwTokens->editItem(qlwi);
+    qlwTokens->addItem(qlwi);
+    qlwTokens->editItem(qlwi);
 }
 
-void Tokens::on_qpbRemove_clicked() {
-	foreach(QListWidgetItem *qlwi, qlwTokens->selectedItems())
-		delete qlwi;
+void Tokens::on_qpbRemove_clicked()
+{
+    foreach(QListWidgetItem *qlwi, qlwTokens->selectedItems())
+        delete qlwi;
 }
 

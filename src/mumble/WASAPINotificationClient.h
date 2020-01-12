@@ -13,59 +13,60 @@
 /**
  * @brief Singleton for acting on WASAPINotification events for given devices.
  */
-class WASAPINotificationClient : public QObject, public IMMNotificationClient {
-	Q_OBJECT
+class WASAPINotificationClient : public QObject, public IMMNotificationClient
+{
+    Q_OBJECT
 public:
-	/* IMMNotificationClient interface */
-	HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow flow, ERole role, LPCWSTR pwstrDefaultDevice);
-	HRESULT STDMETHODCALLTYPE OnPropertyValueChanged(LPCWSTR pwstrDeviceId, const PROPERTYKEY key);
-	HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR pwstrDeviceId);
-	HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR pwstrDeviceId);
-	HRESULT STDMETHODCALLTYPE OnDeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState);
-	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID **ppvInterface);
-	ULONG STDMETHODCALLTYPE AddRef();
-	ULONG STDMETHODCALLTYPE Release();
+    /* IMMNotificationClient interface */
+    HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow flow, ERole role, LPCWSTR pwstrDefaultDevice);
+    HRESULT STDMETHODCALLTYPE OnPropertyValueChanged(LPCWSTR pwstrDeviceId, const PROPERTYKEY key);
+    HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR pwstrDeviceId);
+    HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR pwstrDeviceId);
+    HRESULT STDMETHODCALLTYPE OnDeviceStateChanged(LPCWSTR pwstrDeviceId, DWORD dwNewState);
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, VOID **ppvInterface);
+    ULONG STDMETHODCALLTYPE AddRef();
+    ULONG STDMETHODCALLTYPE Release();
 
-	/* Enlist/Unlist functionality */
-	void enlistDefaultDeviceAsUsed(LPCWSTR pwstrDefaultDevice);
+    /* Enlist/Unlist functionality */
+    void enlistDefaultDeviceAsUsed(LPCWSTR pwstrDefaultDevice);
 
-	void enlistDeviceAsUsed(LPCWSTR pwstrDevice);
-	void enlistDeviceAsUsed(const QString& device);
+    void enlistDeviceAsUsed(LPCWSTR pwstrDevice);
+    void enlistDeviceAsUsed(const QString& device);
 
-	void unlistDevice(LPCWSTR pwstrDevice);
+    void unlistDevice(LPCWSTR pwstrDevice);
 
-	void clearUsedDefaultDeviceList();
-	void clearUsedDeviceLists();
+    void clearUsedDefaultDeviceList();
+    void clearUsedDeviceLists();
 
-	/**
-	 * @return Singleton instance reference.
-	 */
-	static WASAPINotificationClient& get();
+    /**
+     * @return Singleton instance reference.
+     */
+    static WASAPINotificationClient& get();
 
 private:
-	WASAPINotificationClient();
-	~WASAPINotificationClient() Q_DECL_OVERRIDE;
+    WASAPINotificationClient();
+    ~WASAPINotificationClient() Q_DECL_OVERRIDE;
 
-	WASAPINotificationClient(const WASAPINotificationClient&);
-	WASAPINotificationClient& operator=(const WASAPINotificationClient&);
+    WASAPINotificationClient(const WASAPINotificationClient&);
+    WASAPINotificationClient& operator=(const WASAPINotificationClient&);
 
-	static WASAPINotificationClient& doGet();
-	static void doGetOnce();
+    static WASAPINotificationClient& doGet();
+    static void doGetOnce();
 
-	void restartAudio();
+    void restartAudio();
 
-	/* _fu = Non locking versions */
-	void _clearUsedDeviceLists();
-	void _enlistDeviceAsUsed(const QString& device);
+    /* _fu = Non locking versions */
+    void _clearUsedDeviceLists();
+    void _enlistDeviceAsUsed(const QString& device);
 
-	QStringList usedDefaultDevices;
-	QStringList usedDevices;
-	IMMDeviceEnumerator *pEnumerator;
-	LONG _cRef;
-	QMutex listsMutex;
+    QStringList usedDefaultDevices;
+    QStringList usedDevices;
+    IMMDeviceEnumerator *pEnumerator;
+    LONG _cRef;
+    QMutex listsMutex;
 
 signals:
-	void doResetAudio();
+    void doResetAudio();
 };
 
 #endif // WASAPINOTIFICATIONCLIENT_H_

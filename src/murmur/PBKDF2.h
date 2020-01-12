@@ -42,48 +42,49 @@ class QString;
 
 ///
 /// Fully static wrapper class for PBKF2 password hashing functionality used in Murmur.
-/// 
+///
 /// @note Using int all over the place because OpenSSL uses them in its C interface
 ///       and we want to make sure not to parameterize it in unexpected ways.
 /// @warning Operations in this class that experience internal failure will abort
 ///          program execution using qFatal.
 ///
-class PBKDF2 {
-	public:
-		///
-		/// @return Upper bound on iterations possible in
-		///         BENCHMARK_DURATION_TARGET_IN_MS on this machine.
-		///
-		static int benchmark();
-		
-		/// Performs a PBKDF2 hash operation using EVP_sha384.
-		/// 
-		/// @param hexSalt Hex encoded salt to use in operation.
-		/// @param password Password to hash.
-		/// @param iterationCount Number of PBKDF2 iterations to apply.
-		/// @return Hex encoded password hash of DERIVED_KEY_LENGTH octets.
-		///
-		static QString getHash(const QString &hexSalt,
-		                       const QString &password,
-		                       int iterationCount);
-		
-		///
-		/// @return SALT_LENGTH octets of hex encoded random salt.
-		///
-		static QString getSalt();
-		
-		/// Length of hash in octets
-		static const int DERIVED_KEY_LENGTH = 48;
-		/// Length salt in octests
-		static const int SALT_LENGTH = 8;
-		
-		/// Duration for hash operation the benchmark function should target
-		static const int BENCHMARK_DURATION_TARGET_IN_MS = 10;
-		/// Benchmark returns highest iteration number of N benchmark attemps
-		static const size_t BENCHMARK_N = 40;
-		/// Lower bound of iteration count returned by benchmark
-		/// regardless of duration (should be divisible by 2)
-		static const int BENCHMARK_MINIMUM_ITERATION_COUNT = 1000;
+class PBKDF2
+{
+public:
+    ///
+    /// @return Upper bound on iterations possible in
+    ///         BENCHMARK_DURATION_TARGET_IN_MS on this machine.
+    ///
+    static int benchmark();
+
+    /// Performs a PBKDF2 hash operation using EVP_sha384.
+    ///
+    /// @param hexSalt Hex encoded salt to use in operation.
+    /// @param password Password to hash.
+    /// @param iterationCount Number of PBKDF2 iterations to apply.
+    /// @return Hex encoded password hash of DERIVED_KEY_LENGTH octets.
+    ///
+    static QString getHash(const QString &hexSalt,
+                           const QString &password,
+                           int iterationCount);
+
+    ///
+    /// @return SALT_LENGTH octets of hex encoded random salt.
+    ///
+    static QString getSalt();
+
+    /// Length of hash in octets
+    static const int DERIVED_KEY_LENGTH = 48;
+    /// Length salt in octests
+    static const int SALT_LENGTH = 8;
+
+    /// Duration for hash operation the benchmark function should target
+    static const int BENCHMARK_DURATION_TARGET_IN_MS = 10;
+    /// Benchmark returns highest iteration number of N benchmark attemps
+    static const size_t BENCHMARK_N = 40;
+    /// Lower bound of iteration count returned by benchmark
+    /// regardless of duration (should be divisible by 2)
+    static const int BENCHMARK_MINIMUM_ITERATION_COUNT = 1000;
 
 };
 

@@ -7,27 +7,32 @@
 
 #include "AudioOutputUser.h"
 
-AudioOutputUser::AudioOutputUser(const QString& name) : qsName(name) {
-	iBufferSize = 0;
-	pfBuffer = NULL;
-	pfVolume = NULL;
-	fPos[0]=fPos[1]=fPos[2]=0.0;
-	m_LastUpdateTime = std::chrono::steady_clock::now();
+AudioOutputUser::AudioOutputUser(const QString& name) : qsName(name)
+{
+    iBufferSize = 0;
+    pfBuffer = NULL;
+    pfVolume = NULL;
+    fPos[0]=fPos[1]=fPos[2]=0.0;
+    m_LastUpdateTime = std::chrono::steady_clock::now();
 }
 
-AudioOutputUser::~AudioOutputUser() {
-	delete [] pfBuffer;
-	delete [] pfVolume;
+AudioOutputUser::~AudioOutputUser()
+{
+    delete [] pfBuffer;
+    delete [] pfVolume;
 }
 
-void AudioOutputUser::resizeBuffer(unsigned int newsize) {
-	if (newsize > iBufferSize) {
-		float *n = new float[newsize];
-		if (pfBuffer) {
-			memcpy(n, pfBuffer, sizeof(float) * iBufferSize);
-			delete [] pfBuffer;
-		}
-		pfBuffer = n;
-		iBufferSize = newsize;
-	}
+void AudioOutputUser::resizeBuffer(unsigned int newsize)
+{
+    if (newsize > iBufferSize)
+    {
+        float *n = new float[newsize];
+        if (pfBuffer)
+        {
+            memcpy(n, pfBuffer, sizeof(float) * iBufferSize);
+            delete [] pfBuffer;
+        }
+        pfBuffer = n;
+        iBufferSize = newsize;
+    }
 }

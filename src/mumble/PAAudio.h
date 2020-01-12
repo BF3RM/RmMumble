@@ -52,43 +52,46 @@ typedef boost::weak_ptr<PortAudioSystem> WeakPortAudioSystemPtr;
  * Basically this ensures that the PA lib is initialized and terminated properly and that
  * several threads can open/close streams as they like.
  */
-class PortAudioSystem : public QObject {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(PortAudioSystem)
-	protected:
-		//! Mutex around PA stream creation/deletion
-		static QMutex qmStream;
-	public:
-		static bool initStream(PaStream **stream, PaDeviceIndex devIndex, int frameSize, int *chans, bool isInput);
-		static bool terminateStream(PaStream *stream);
+class PortAudioSystem : public QObject
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(PortAudioSystem)
+protected:
+    //! Mutex around PA stream creation/deletion
+    static QMutex qmStream;
+public:
+    static bool initStream(PaStream **stream, PaDeviceIndex devIndex, int frameSize, int *chans, bool isInput);
+    static bool terminateStream(PaStream *stream);
 
-		static bool startStream(PaStream *stream);
-		static bool stopStream(PaStream *stream);
+    static bool startStream(PaStream *stream);
+    static bool stopStream(PaStream *stream);
 
-		static const QList<audioDevice> enumerateDevices(bool input, PaDeviceIndex match = -1);
+    static const QList<audioDevice> enumerateDevices(bool input, PaDeviceIndex match = -1);
 };
 
 
-class PortAudioInput : public AudioInput {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(PortAudioInput)
-	public:
-		PortAudioInput();
-		~PortAudioInput() Q_DECL_OVERRIDE;
-		void run() Q_DECL_OVERRIDE;
+class PortAudioInput : public AudioInput
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(PortAudioInput)
+public:
+    PortAudioInput();
+    ~PortAudioInput() Q_DECL_OVERRIDE;
+    void run() Q_DECL_OVERRIDE;
 };
 
 
-class PortAudioOutput : public AudioOutput {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(PortAudioOutput)
-	public:
-		PortAudioOutput();
-		~PortAudioOutput() Q_DECL_OVERRIDE;
-		void run() Q_DECL_OVERRIDE;
+class PortAudioOutput : public AudioOutput
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(PortAudioOutput)
+public:
+    PortAudioOutput();
+    ~PortAudioOutput() Q_DECL_OVERRIDE;
+    void run() Q_DECL_OVERRIDE;
 };
 
 #else

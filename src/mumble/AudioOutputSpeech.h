@@ -22,55 +22,56 @@ class OpusCodec;
 class ClientUser;
 struct OpusDecoder;
 
-class AudioOutputSpeech : public AudioOutputUser {
-	private:
-		Q_OBJECT
-		Q_DISABLE_COPY(AudioOutputSpeech)
-	protected:
-		unsigned int iAudioBufferSize;
-		unsigned int iBufferOffset;
-		unsigned int iBufferFilled;
-		unsigned int iOutputSize;
-		unsigned int iLastConsume;
-		unsigned int iFrameSize;
-		unsigned int iSampleRate;
-		unsigned int iMixerFreq;
-		bool bLastAlive;
-		bool bHasTerminator;
-		bool bStereo;
+class AudioOutputSpeech : public AudioOutputUser
+{
+private:
+    Q_OBJECT
+    Q_DISABLE_COPY(AudioOutputSpeech)
+protected:
+    unsigned int iAudioBufferSize;
+    unsigned int iBufferOffset;
+    unsigned int iBufferFilled;
+    unsigned int iOutputSize;
+    unsigned int iLastConsume;
+    unsigned int iFrameSize;
+    unsigned int iSampleRate;
+    unsigned int iMixerFreq;
+    bool bLastAlive;
+    bool bHasTerminator;
+    bool bStereo;
 
-		float *fFadeIn;
-		float *fFadeOut;
-		float *fResamplerBuffer;
+    float *fFadeIn;
+    float *fFadeOut;
+    float *fResamplerBuffer;
 
-		SpeexResamplerState *srs;
+    SpeexResamplerState *srs;
 
-		QMutex qmJitter;
-		JitterBuffer *jbJitter;
-		int iMissCount;
+    QMutex qmJitter;
+    JitterBuffer *jbJitter;
+    int iMissCount;
 
-		CELTCodec *cCodec;
-		CELTDecoder *cdDecoder;
+    CELTCodec *cCodec;
+    CELTDecoder *cdDecoder;
 
-		OpusCodec *oCodec;
-		OpusDecoder *opusState;
+    OpusCodec *oCodec;
+    OpusDecoder *opusState;
 
-		SpeexBits sbBits;
-		void *dsSpeex;
+    SpeexBits sbBits;
+    void *dsSpeex;
 
-		QList<QByteArray> qlFrames;
+    QList<QByteArray> qlFrames;
 
-		unsigned char ucFlags;
-	public:
-		MessageHandler::UDPMessageType umtType;
-		int iMissedFrames;
-		ClientUser *p;
+    unsigned char ucFlags;
+public:
+    MessageHandler::UDPMessageType umtType;
+    int iMissedFrames;
+    ClientUser *p;
 
-		virtual bool needSamples(unsigned int snum) Q_DECL_OVERRIDE;
+    virtual bool needSamples(unsigned int snum) Q_DECL_OVERRIDE;
 
-		void addFrameToBuffer(const QByteArray &, unsigned int iBaseSeq);
-		AudioOutputSpeech(ClientUser *, unsigned int freq, MessageHandler::UDPMessageType type);
-		~AudioOutputSpeech() Q_DECL_OVERRIDE;
+    void addFrameToBuffer(const QByteArray &, unsigned int iBaseSeq);
+    AudioOutputSpeech(ClientUser *, unsigned int freq, MessageHandler::UDPMessageType type);
+    ~AudioOutputSpeech() Q_DECL_OVERRIDE;
 };
 
 #endif  // AUDIOOUTPUTSPEECH_H_

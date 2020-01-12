@@ -8,33 +8,35 @@
 #include <QSvgRenderer>
 #include <QPainter>
 
-void SvgIcon::addSvgPixmapsToIcon(QIcon &icon, QString fn) {
-	QSvgRenderer svg(fn);
+void SvgIcon::addSvgPixmapsToIcon(QIcon &icon, QString fn)
+{
+    QSvgRenderer svg(fn);
 
-	QList<QSize> commonSizes;
-	commonSizes << QSize(8, 8);
-	commonSizes << QSize(16, 16);
-	commonSizes << QSize(22, 22); // Plasma notification area size
-	commonSizes << QSize(24, 24);
-	commonSizes << QSize(32, 32);
-	commonSizes << QSize(44, 44); // Plasma notification area size @x2
-	commonSizes << QSize(48, 48);
-	commonSizes << QSize(64, 64);
-	commonSizes << QSize(96, 96);
-	commonSizes << QSize(128, 128);
-	commonSizes << QSize(256, 256);
+    QList<QSize> commonSizes;
+    commonSizes << QSize(8, 8);
+    commonSizes << QSize(16, 16);
+    commonSizes << QSize(22, 22); // Plasma notification area size
+    commonSizes << QSize(24, 24);
+    commonSizes << QSize(32, 32);
+    commonSizes << QSize(44, 44); // Plasma notification area size @x2
+    commonSizes << QSize(48, 48);
+    commonSizes << QSize(64, 64);
+    commonSizes << QSize(96, 96);
+    commonSizes << QSize(128, 128);
+    commonSizes << QSize(256, 256);
 
-	foreach (QSize size, commonSizes) {
-		QPixmap pm(size);
-		pm.fill(Qt::transparent);
+    foreach (QSize size, commonSizes)
+    {
+        QPixmap pm(size);
+        pm.fill(Qt::transparent);
 
-		QPainter p(&pm);
-		p.setRenderHint(QPainter::Antialiasing);
-		p.setRenderHint(QPainter::TextAntialiasing);
-		p.setRenderHint(QPainter::SmoothPixmapTransform);
-		p.setRenderHint(QPainter::HighQualityAntialiasing);
-		svg.render(&p);
+        QPainter p(&pm);
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setRenderHint(QPainter::TextAntialiasing);
+        p.setRenderHint(QPainter::SmoothPixmapTransform);
+        p.setRenderHint(QPainter::HighQualityAntialiasing);
+        svg.render(&p);
 
-		icon.addPixmap(pm);
-	}
+        icon.addPixmap(pm);
+    }
 }

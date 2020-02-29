@@ -169,6 +169,9 @@ public:
     }
 
 protected:
+    QString TargetHost;
+    int TargetPort;
+    bool bConnected = false;
     QNetworkAccessManager HttpManager;
     class RMSocket* RmSocket;
     QString RmUser;

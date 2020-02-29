@@ -205,7 +205,6 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p)
         {
             g.sh->disconnect();
             g.sh->wait();
-            RmSocket->Stop();
         }
     });
 
@@ -263,10 +262,16 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p)
         if (SplitMessage.length() < 2) return;
         //if (RmLastConnectedUuid == SplitMessage[0]) return;
 
-        g.l->log(Log::Information, tr("Connecting to ") + SplitMessage[0]);
+        g.l->log(Log::Information, tr("Connecting to ") + Uuid);
 
         RmConnectingUuid = SplitMessage[0];
         RmUser = g.s.qsUsername = SplitMessage[1];
+
+        if (bConnected)
+        {
+            // Reconnect to trigger username change?
+            Connect(TargetHost, TargetPort);
+        }
         /*
         auto Url = QString::fromUtf8("https://pradminpanel.firebaseio.com/servers/%1.json").arg(RmConnectingUuid);
         auto Request = new QNetworkRequest(QUrl(Url));
@@ -385,41 +390,24 @@ void MainWindow::Connect(QString Host, int Port)
     QString User = RmUser;
     QString Pw = tr("");
 
-    if (g.uiSession == 0)
+    TargetHost = Host;
+    TargetPort = Port;
+
+    if (g.uiSession != 0)
     {
-        recreateServerHandler();
-
-        g.s.qsLastServer = tr("test");
-        rtLast = MumbleProto::Reject_RejectType_None;
-        bRetryServer = true;
-        qaServerDisconnect->setEnabled(true);
-        g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((Host).toHtmlEscaped(), Log::Server)));
-        g.sh->setConnectionInfo(Host, Port, User, Pw);
-        g.sh->start(QThread::TimeCriticalPriority);
-        QObject::connect(g.sh.get(), &ServerHandler::connected, this, [this]()
-        {
-            auto IdentityRequest = RmSocket->NewMessage(EMessageType::IdentityRequest);
-            IdentityRequest->Send();
-        });
-    }
-    else
-    {
-        QObject::connect(g.sh.get(), &ServerHandler::disconnected, this, [this, Host, Port, User, Pw](QAbstractSocket::SocketError, QString)
-        {
-            recreateServerHandler();
-
-            g.s.qsLastServer = tr("test");
-            rtLast = MumbleProto::Reject_RejectType_None;
-            bRetryServer = true;
-            qaServerDisconnect->setEnabled(true);
-            g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((Host).toHtmlEscaped(), Log::Server)));
-            g.sh->setConnectionInfo(Host, Port, User, Pw);
-            g.sh->start(QThread::TimeCriticalPriority);
-        });
-
         g.sh->disconnect();
         g.sh->wait();
     }
+
+    recreateServerHandler();
+
+    g.s.qsLastServer = tr("test");
+    rtLast = MumbleProto::Reject_RejectType_None;
+    bRetryServer = true;
+    qaServerDisconnect->setEnabled(true);
+    g.l->log(Log::Information, tr("Connecting to server %1.").arg(Log::msgColor((Host).toHtmlEscaped(), Log::Server)));
+    g.sh->setConnectionInfo(Host, Port, User, Pw);
+    g.sh->start(QThread::TimeCriticalPriority);
 }
 
 void MainWindow::SetupRmShortcuts()
@@ -3681,6 +3669,13 @@ void MainWindow::serverConnected()
 #ifdef Q_OS_WIN
     TaskList::addToRecentList(g.s.qsLastServer, uname, host, port);
 #endif
+
+    bConnected = true;
+    if (RmSocket && RmSocket->IsAlive())
+    {
+        auto IdentityRequest = RmSocket->NewMessage(EMessageType::IdentityRequest);
+        IdentityRequest->Send();
+    }
 }
 
 void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString reason)
@@ -3882,6 +3877,8 @@ void MainWindow::serverDisconnected(QAbstractSocket::SocketError err, QString re
     }
     qstiIcon->setToolTip(tr("Mumble -- %1").arg(QLatin1String(MUMBLE_RELEASE)));
     AudioInput::setMaxBandwidth(-1);
+
+    bConnected = false;
 }
 
 void MainWindow::resolverError(QAbstractSocket::SocketError, QString reason)

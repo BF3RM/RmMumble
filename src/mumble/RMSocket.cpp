@@ -16,7 +16,7 @@ void RMSocket::run()
         return;
     }
 
-    while (!bShouldBeDestroyed)
+    while (true)
     {
         if (!Server.waitForNewConnection(10))
         {
@@ -44,7 +44,7 @@ void RMSocket::run()
             
             if (Socket->waitForReadyRead(1) && Socket->bytesAvailable() > 0)
             {
-                RmPingTimeout->start(11000);
+                //RmPingTimeout->start(11000);
 
                 while (Socket->bytesAvailable() > 0)
                 {
@@ -73,6 +73,9 @@ void RMSocket::run()
                             // Some stuff needs to happen in the main thread, so we use qt signals to automate this
                             switch (Message->GetMessageType())
                             {
+                            case EMessageType::Ping:
+                                RmPingTimeout->start(11000);
+                                break;
                             case EMessageType::Uuid:
                                 emit OnUuidReceived(QString::fromUtf8((char*)Message->GetData()));
                                 break;
@@ -112,6 +115,7 @@ void RMSocket::run()
         emit OnDisconnected();
         g.mw->setStatusLeft("Disconnected");
         g.mw->setStatusMid("...");
+        bShouldBeDestroyed = false;
     }
 }
 

@@ -37,6 +37,11 @@ void RMSocket::run()
 
         while (RmPingTimeout->remainingTime() > 0 && Socket && Socket->isValid())
         {
+            if (bShouldBeDestroyed)
+            {
+                break;
+            }
+            
             if (Socket->waitForReadyRead(1) && Socket->bytesAvailable() > 0)
             {
                 RmPingTimeout->start(11000);
@@ -103,7 +108,7 @@ void RMSocket::run()
             Socket->close();
             Socket->deleteLater();
         }
-        
+
         emit OnDisconnected();
         g.mw->setStatusLeft("Disconnected");
         g.mw->setStatusMid("...");

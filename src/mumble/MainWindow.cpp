@@ -291,6 +291,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p)
         int Port = SplitMessage[1].toInt();
 
         g.l->log(Log::Information, tr("Received Host ip and port from vext..."));
+        qInfo() << Host;
         Connect(Host, Port);
     });
 
@@ -385,6 +386,7 @@ void MainWindow::Connect(QString Host, int Port)
     QString User = RmUser;
     QString Pw = tr("");
 
+    qInfo() << User;
     if (g.uiSession == 0)
     {
         recreateServerHandler();

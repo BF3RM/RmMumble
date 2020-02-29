@@ -41,6 +41,7 @@ signals:
 protected:
     std::vector<class RMMessage*> MessagePool;
     QMutex MessagePoolLock;
+    bool bShouldBeDestroyed = false;
 };
 
 #endif

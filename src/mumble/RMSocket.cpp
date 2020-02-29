@@ -16,9 +16,12 @@ void RMSocket::run()
         return;
     }
 
-    while (true)
+    while (!bShouldBeDestroyed)
     {
-        Server.waitForNewConnection(-1);
+        if (!Server.waitForNewConnection(10))
+        {
+            continue;
+        }
         Socket = Server.nextPendingConnection();
 
         if (!Socket) continue;
@@ -95,7 +98,12 @@ void RMSocket::run()
         }
 
         delete RmPingTimeout;
-        if (Socket) Socket->deleteLater();
+        if (Socket) 
+        {
+            Socket->close();
+            Socket->deleteLater();
+        }
+        
         emit OnDisconnected();
         g.mw->setStatusLeft("Disconnected");
         g.mw->setStatusMid("...");
@@ -107,6 +115,7 @@ class RMMessage* RMSocket::GetPoolMessage()
     MessagePoolLock.lock();
     if (MessagePool.empty())
     {
+        MessagePoolLock.unlock();
         return nullptr;
     }
 
@@ -137,9 +146,8 @@ void RMSocket::AddMessageToPoll(class RMMessage* Message)
 void RMSocket::Stop()
 {
     MessagePoolLock.lock();
-    Socket->disconnect();
+    bShouldBeDestroyed = true;
     g.mw->setStatusLeft("Socket Disconnected");
     g.mw->setStatusMid("...");
-    Socket->close();
     MessagePoolLock.unlock();
 }

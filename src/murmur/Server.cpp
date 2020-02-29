@@ -1735,7 +1735,6 @@ void Server::message(unsigned int uiType, const QByteArray &qbaMsg, ServerUser *
 		MumbleProto:: x msg; \
 		if (msg.ParseFromArray(qbaMsg.constData(), qbaMsg.size())) { \
 			if (uiType != MessageHandler::Ping) { \
-				printf("== %s:\n", #x); \
 				msg.PrintDebugString(); \
 			} \
 			msg.DiscardUnknownFields(); \

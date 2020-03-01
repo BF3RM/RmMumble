@@ -50,6 +50,7 @@
 #include "RMSocket.h"
 #include "Rm3DSocket.h"
 #include "RmUpdater.h"
+#include "RmVersion.h"
 #include <QCommandLineParser>
 
 #ifdef Q_OS_WIN
@@ -164,7 +165,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p)
 
     setStatusLeft("Socket Disconnected");
     setStatusMid("...");
-    setStatusRight("...");
+    setStatusRight(RM_VERSION);
 
     connect(qmUser, SIGNAL(aboutToShow()), this, SLOT(qmUser_aboutToShow()));
     connect(qmChannel, SIGNAL(aboutToShow()), this, SLOT(qmChannel_aboutToShow()));
@@ -318,7 +319,7 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p)
 
     if (g.s.m_ForceUpdate)
     {
-        RunUpdater();
+        ForceUpdate();
     }
 
 #ifdef RM_DEVELOPMENT
@@ -338,6 +339,12 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p)
 
     RmSocket->start();
     m_3DSocket = new Rm3DSocket(this);
+}
+
+void MainWindow::ForceUpdate()
+{
+    g.s.m_ForceUpdate = true;
+    RunUpdater();
 }
 
 void MainWindow::RunUpdater()
@@ -558,6 +565,10 @@ void MainWindow::setupGui()
     updateWindowTitle();
     setCentralWidget(qtvUsers);
     setAcceptDrops(true);
+
+    QMenu* UpdaterMenu = new QMenu(tr("&Updater"), this);
+    menubar->insertMenu(qmHelp->menuAction(), UpdaterMenu);
+    UpdaterMenu->addAction(tr("Force Update"), this, SLOT(ForceUpdate()), QKeySequence(tr("Ctrl+U")));
 
 #ifdef Q_OS_MAC
     QMenu *qmWindow = new QMenu(tr("&Window"), this);

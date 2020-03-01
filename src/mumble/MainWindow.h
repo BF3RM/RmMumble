@@ -348,7 +348,7 @@ public slots:
     /// Updates the user's image directory to the given path (any included
     /// filename is discarded).
     void updateImagePath(QString filepath) const;
-
+    void ForceUpdate();
 signals:
     void OnIdentityUpdated(const char* NewIdentity);
 

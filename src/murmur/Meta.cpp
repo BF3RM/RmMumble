@@ -72,7 +72,7 @@ MetaParams::MetaParams()
     iChannelNestingLimit = 10;
     iChannelCountLimit = 1000;
 
-    qrUserName = QRegExp(QLatin1String("[ -=\\w\\[\\]\\{\\}\\(\\)\\@\\|\\.]+"));
+    qrUserName = QRegExp(QLatin1String("[\\w\\.\\_\\\"\\'\\$\\:\\-\\|\\[\\]\\<\\>\\!\\?\\*\\@\\;\\(\\)\\{\\}\\~\\^\\ ]+"));
     qrChannelName = QRegExp(QLatin1String("[ \\-=\\w\\#\\[\\]\\{\\}\\(\\)\\@\\|]+"));
 
     iMessageLimit = 1;

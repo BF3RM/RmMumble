@@ -255,18 +255,14 @@ MainWindow::MainWindow(QWidget *p) : QMainWindow(p)
         UpdatePlayerIdentity(Message);
     }, EMessageType::UpdateData);
 
-    connect(RmSocket, &RMSocket::OnUuidReceived, this, [this](QString Uuid)
+    connect(RmSocket, &RMSocket::OnUuidReceived, this, [this](QString Username)
     {
         //QObject::connect(&HttpManager, &QNetworkAccessManager::finished, this, &MainWindow::OnUuidReceived);
 
-        QStringList SplitMessage = Uuid.split(tr("|"));
-        if (SplitMessage.length() < 2) return;
-        //if (RmLastConnectedUuid == SplitMessage[0]) return;
+        g.l->log(Log::Information, tr("Connecting to ") + Username);
 
-        g.l->log(Log::Information, tr("Connecting to ") + Uuid);
-
-        RmConnectingUuid = SplitMessage[0];
-        RmUser = g.s.qsUsername = SplitMessage[1];
+        RmConnectingUuid = QString();
+        RmUser = g.s.qsUsername = Username;
 
         if (bConnected)
         {

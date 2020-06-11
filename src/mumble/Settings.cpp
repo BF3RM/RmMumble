@@ -371,7 +371,7 @@ Settings::Settings()
     bPositionalAudio = true;
     bPositionalHeadphone = true;
     fAudioMinDistance = 1.0f;
-    fAudioMaxDistance = 75.0f;
+    fAudioMaxDistance = 40.0f;
     fAudioMaxDistVolume = 0.0f;
     fAudioBloom = 0.0f;
 
@@ -1031,9 +1031,11 @@ void Settings::save()
     SAVELOAD(iaeIdleAction, "audio/idleaction");
     SAVELOAD(bUndoIdleActionUponActivity, "audio/undoidleactionuponactivity");
 
+#ifdef RM_DEBUG
     SAVELOAD(fAudioMinDistance, "audio/mindistance");
     SAVELOAD(fAudioMaxDistance, "audio/maxdistance");
     SAVELOAD(fAudioMaxDistVolume, "audio/maxdistancevolume");
+#endif
     SAVELOAD(fAudioBloom, "audio/bloom");
     SAVELOAD(bEcho, "audio/echo");
     SAVELOAD(bEchoMulti, "audio/echomulti");

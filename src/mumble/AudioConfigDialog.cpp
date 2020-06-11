@@ -518,9 +518,11 @@ void AudioOutputDialog::load(const Settings &r)
     loadComboBox(qcbLoopback, r.lmLoopMode);
     loadSlider(qsPacketDelay, static_cast<int>(r.dMaxPacketDelay));
     loadSlider(qsPacketLoss, iroundf(r.dPacketLoss * 100.0f + 0.5f));
-    loadSlider(qsMinDistance, iroundf(r.fAudioMinDistance * 10.0f + 0.5f));
+#ifdef RM_DEBUG
+	loadSlider(qsMinDistance, iroundf(r.fAudioMinDistance * 10.0f + 0.5f));
     loadSlider(qsMaxDistance, iroundf(r.fAudioMaxDistance * 10.0f + 0.5f));
     loadSlider(qsMaxDistVolume, iroundf(r.fAudioMaxDistVolume * 100.0f + 0.5f));
+#endif
     loadSlider(qsBloom, iroundf(r.fAudioBloom * 100.0f + 0.5f));
     loadCheckBox(qcbHeadphones, r.bPositionalHeadphone);
     loadCheckBox(qcbPositional, r.bPositionalAudio);
